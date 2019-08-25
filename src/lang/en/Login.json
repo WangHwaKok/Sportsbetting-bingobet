@@ -1,0 +1,12 @@
+{
+  "user_name": "User name",
+  "user_password": "User password",
+  "sign_in": "Login",
+  "user_name_is_required": "User name is required",
+  "password_is_required": "Password is required",
+  "language_is_required": "Language is required",
+  "password_must_be_more_than_4_characters": "Password must be more than 4 characters",
+  "user_name_must_be_less_than_25_characters": "User name must be less than 25 characters",
+  "incorrect_user_name_or_password": "Incorrect User name or password!",
+  "login": "Login"
+}

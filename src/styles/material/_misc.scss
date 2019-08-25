@@ -1,0 +1,31 @@
+html {
+  font-size: $font-size-general;
+  font-family: "Roboto-Regular";
+}
+@media only screen and (max-width: 1600px) {
+  html{
+    font-size: $font-size-small-1;
+  }
+}
+@media only screen and (max-width: 1400px) {
+  html{
+    font-size: $font-size-small-2;
+  }
+}
+
+// body {
+//   font-size: $font-size-general;
+//   font-family: "Roboto-Regular";
+// }
+
+/* color table */
+// color {
+//   color: green;
+//   color: #4caf50;
+//   color: #495057;
+//   color: #82B1FF;
+//   color: #f55a4e;
+//   color: #00d3ee;
+//   color: #5cb860;
+//   color: #ffa21a;
+// }

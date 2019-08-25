@@ -1,0 +1,25 @@
+.v-list__tile {
+    font-size:14px !important;
+    // height: 45px !important;
+}
+@media only screen and (max-width: 1856px) {
+    .v-list__tile {
+        // font-size:13px !important;
+        // height: 35px !important;
+    }
+  }
+@media only screen and (max-width: 1600px) {
+    .v-list__tile {
+        // font-size:12px !important;
+        // height: 30px !important;
+    }
+}
+@media only screen and (max-width: 1440px) {
+    .v-list__tile {
+        // font-size:10px !important;
+        // height: 27px !important;
+    }
+    .v-list__tile__title {
+        // line-height: unset !important;
+    }
+}

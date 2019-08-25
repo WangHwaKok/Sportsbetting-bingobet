@@ -1,0 +1,12 @@
+{
+  "user_name": "Kullanıcı Adı",
+  "user_password": "Kullanıcı Şifresi",
+  "sign_in": "Giriş Yap",
+  "user_name_is_required": "Kullanıcı Adı Gerekli",
+  "password_is_required": "Şifre Gerekli",
+  "language_is_required": "Dil Gerekli",
+  "password_must_be_more_than_4_characters": "Şifre 4 karakterden fazla olmalı",
+  "user_name_must_be_less_than_25_characters": "Kullanıcı adı 25 karakterden kısa olmalıdır",
+  "incorrect_user_name_or_password": "Yanlış kullanıcı adı veya şifre!",
+  "login": "Oturum aç"
+}

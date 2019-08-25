@@ -1,0 +1,11 @@
+{
+  "user_name": "اسم المستخدم",
+  "user_password": "كلمة مرور المستخدم",
+  "sign_in": "تسجيل الدخول ",
+  "user_name_is_required": "اسم المستخدم مطلوب",
+  "password_is_required": "كلمة المرور مطلوبة",
+  "language_is_required": "اللغة مطلوبة",
+  "password_must_be_more_than_4_characters": "Password must be more than 4 characters",
+  "user_name_must_be_less_than_25_characters": "User name must be less than 25 characters",
+  "incorrect_user_name_or_password": "Incorrect User name or password!"
+}

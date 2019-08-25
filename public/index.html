@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <meta name="robots" content="noindex">
+  <meta name="googlebot" content="noindex">
+  
+  <link
+          href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,300italic,400italic"
+          rel="stylesheet"
+          type="text/css"
+  />
+  <link rel="icon" href="<%= BASE_URL %>img/logo_icon.png" />
+  <style>
+
+    .init_background{
+      background-color:black;
+    }
+
+    .first_loader{
+      display: inline-block;
+      width: 10px;
+      height: 100px;
+      background-color: #7cfc00;
+      margin: 2px;
+      border-radius: 1px;
+    }
+
+    .first_loader1{
+      animation: 1s cubic-bezier(0.2, 0.68, 0.18, 1.08) 0.1s infinite normal both running first_loading_frame;
+    }
+
+    .first_loader2{
+      animation: 1s cubic-bezier(0.2, 0.68, 0.18, 1.08) 0.2s infinite normal both running first_loading_frame;
+    }
+
+    .first_loader3{
+      animation: 1s cubic-bezier(0.2, 0.68, 0.18, 1.08) 0.3s infinite normal both running first_loading_frame;
+    }
+
+    .first_loader4{
+      animation: 1s cubic-bezier(0.2, 0.68, 0.18, 1.08) 0.4s infinite normal both running first_loading_frame;
+    }
+
+    .first_loader5{
+      animation: 1s cubic-bezier(0.2, 0.68, 0.18, 1.08) 0.5s infinite normal both running first_loading_frame;
+    }
+
+
+    /* Safari 4.0 - 8.0 */
+    @-webkit-keyframes first_loading_frame {
+      0% {
+        transform: scaleY(1);
+      }
+
+      50% {
+        transform: scaleY(0.4);
+      }
+
+      100% {
+        transform: scaleY(1);
+      }
+    }
+
+    /* Standard syntax */
+    @keyframes first_loading_frame {
+      0% {
+        transform: scaleY(1);
+      }
+
+      50% {
+        transform: scaleY(0.4);
+      }
+
+      100% {
+        transform: scaleY(1);
+      }
+    }
+  </style>
+  <title>Playbetic</title>
+</head>
+<body class="init_background">
+<noscript>
+  <strong
+  >We're sorry but material-free doesn't work properly without JavaScript
+    enabled. Please enable it to continue.</strong
+  >
+</noscript>
+<div id="app">
+  <div style="text-align:center; position:absolute; top:calc(50vh - 50px); left:calc(50vw - 30px);width:100vw;height:100vh;">
+    <div style="display: flex; flex: 0 auto !important;">
+      <div color="#36D7B7" height="35" heightunit="px" width="4" widthunit="px" radius="1" radiusunit="px" margin="2px"
+           version="1" class="first_loader first_loader1"></div>
+      <div color="#36D7B7" height="35" heightunit="px" width="4" widthunit="px" radius="1" radiusunit="px" margin="2px"
+           version="2" class="first_loader first_loader2"></div>
+      <div color="#36D7B7" height="35" heightunit="px" width="4" widthunit="px" radius="1" radiusunit="px" margin="2px"
+           version="3" class="first_loader first_loader3"></div>
+      <div color="#36D7B7" height="35" heightunit="px" width="4" widthunit="px" radius="1" radiusunit="px" margin="2px"
+           version="4" class="first_loader first_loader4"></div>
+      <div color="#36D7B7" height="35" heightunit="px" width="4" widthunit="px" radius="1" radiusunit="px" margin="2px"
+           version="5" class="first_loader first_loader5"></div>
+    </div>
+  </div>
+</div>
+<!-- built files will be auto injected -->
+</body>
+</html>

@@ -1,0 +1,27 @@
+.headline{
+    font-size:2rem !important;
+}
+.subheading{
+    font-size:1.33rem !important;
+}
+.body-2{
+    font-size:1.1667rem !important;
+}
+.body-1{
+    font-size:1.33rem !important;
+}
+.caption{
+    // font-size:.857rem !important;
+    font-size:1rem !important;
+}
+@media only screen and (max-width: 1680px) {
+    // .subheading{
+    //     font-size:1.2rem !important;
+    // }
+}
+@media only screen and (max-width: 1440px) {
+    // .subheading{
+    //     font-size:1.15rem !important;
+    // }
+}
+

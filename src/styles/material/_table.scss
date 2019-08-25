@@ -1,0 +1,25 @@
+table.v-table{
+    // background-color: unset !important;
+}
+table.v-table tbody td{
+    font-size:$font-size-general;
+}
+table.v-table thead th{
+    font-size:$font-size-general !important;
+}
+@media only screen and (max-width: 1680px) {
+    // table.v-table tbody td{
+    //     font-size:11px !important;
+    // }
+//     table.v-table thead th{
+//         font-size:12px !important;
+//     }
+}
+@media only screen and (max-width: 1440px) {
+    // table.v-table tbody td{
+    //     font-size:10px !important;
+    // }
+    // table.v-table thead th{
+    //     font-size:11px !important;
+    // }
+}

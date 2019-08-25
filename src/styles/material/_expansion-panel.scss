@@ -1,0 +1,22 @@
+.v-expansion-panel__header {
+    font-size:12px !important;
+    min-height: 35px !important;
+}
+
+@media only screen and (max-width: 1856px) {
+    .v-expansion-panel__header {
+        // font-size:11px !important;
+    }
+  }
+@media only screen and (max-width: 1600px) {
+    .v-expansion-panel__header {
+        // font-size:11px !important;
+        min-height: 35px !important;
+    }
+}
+@media only screen and (max-width: 1440px) {
+    .v-expansion-panel__header {
+        // font-size:10px !important;
+        min-height: 30px !important;
+    }
+}
