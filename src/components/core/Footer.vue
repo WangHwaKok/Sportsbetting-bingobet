@@ -1,7 +1,7 @@
 <template >
   <v-footer id="core-footer">
     <v-layout>
-      <div style="height:50px;background:black">
+      <div style="height:70px;background:black">
       </div>
     </v-layout>
   </v-footer>

@@ -1,40 +1,50 @@
 <template>
-  <v-layout v-if="hasLogin || (!hasLogin && isLoggedIn)" class="pt-2 login-bar" row justify-center align-center style="background:#101010;">
-    <span class="title font-weight-bold mr-4">{{$t('Common.welcome', {username:getUsername}) }}</span>
+  <v-layout v-if="hasLogin || (!hasLogin && isLoggedIn)" class="pt-2 login-bar" row justify-start align-top style="background:#101010;">
+    <div class="logo align-center justify-center ml-4" style="align-self:center; cursor:pointer;" @click="gotoHome">
+      <img :src="logourl" style="height:40px;"/>
+    </div>
+    <v-spacer></v-spacer>
+    <span class="title font-weight-bold mr-4" style="color:white">{{$t('Common.welcome', {username:getUsername}) }}</span>
     <v-select
+        light
         v-model="balanceInfo"
         :items="moneyList"
         item-text="name"
         item-value="value"
-        outlined
+        solo
         style="max-width:250px;"
       ></v-select>
-      <v-btn class="ml-1 my-0" icon outlined color="black" 
+      <v-btn :dark="false" class="ml-1 my-0" icon outlined dense color="black" 
         v-if="hasLogin || (!hasLogin && isLoggedIn)"
         @click="getBalance"
         :loading="is_refresh"
         :disabled="is_refresh">
-        <v-icon>mdi-refresh</v-icon>
+        <v-icon :dark="false" color="white">mdi-refresh</v-icon>
       </v-btn>
       
       <v-select
         v-if="$store.getters.getRole == 'user'"
+        light
         v-model="accountInfo"
         :items="accountUserPageList"
         item-text="name"
         item-value="value"
-        outlined
+        solo
+        dense
+        single-line
         style="max-width:200px;padding-right:10px"
         :label="$t('Common.account')"
       ></v-select>
 
-      <v-select
-        v-else
+      <v-select v-else
         v-model="accountInfo"
         :items="accountSupplierPageList"
         item-text="name"
         item-value="value"
-        outlined
+        light
+        solo
+        dense
+        single-line
         style="max-width:200px;padding-right:10px"
         :label="$t('Common.account')"
       ></v-select>
@@ -45,7 +55,10 @@
         item-text="name"
         item-value="value"
         @change="languageChanged"
-        outlined
+        light
+        solo
+        dense
+        single-line
         style="max-width:150px;padding-right:10px"
       >
         <template slot="selection" slot-scope="data">
@@ -65,67 +78,7 @@
           </v-list-tile-content>
         </template>
       </v-select>
-    <v-btn color="primary" class="ma-0 mr-4" style="max-width:60px;" @click="gotoAccount">{{$t('Common.account')}}</v-btn>
     <v-btn color="error" class="ma-0 mr-4" style="max-width:60px;" @click="logout">{{$t('Common.logout')}}</v-btn>
-  </v-layout>
-  <v-layout v-else class="pt-2 login-bar tertiary" row justify-center >
-      <v-text-field
-        class="mr-4"
-        style="max-width:250px;"
-        v-model="username"
-        :rules="[v => !!v || $t('Login.user_name_is_required'),
-                  v =>
-                    (v && v.length <= 25) || $t('Login.user_name_must_be_less_than_25_characters')
-                ]"
-        :label="$t('Login.user_name')"
-        required
-        solo
-        background-color="#181818"
-      ></v-text-field>
-      <v-text-field
-        class="mr-4"
-        style="max-width:250px;"
-        v-model="password"
-        :rules="[v => !!v || $t('Login.password_is_required'),
-                  v => (v && v.length >= 4) || $t('Login.password_must_be_more_than_4_characters')
-                ]"
-        :label="$t('Login.user_password')"
-        v-on:keyup.enter="signin()"
-        type="password"
-        required
-        solo
-        background-color="#181818"
-      ></v-text-field>
-      <span class="ma-0 mr-4" style="color: #f55a4e;">{{ message }}</span>
-      <v-select
-        v-model="languageInfo"
-        :items="languageList"
-        item-text="name"
-        item-value="value"
-        @change="languageChanged"
-        outlined
-        style="max-width:150px;padding-right:10px; padding-top:0px !important; margin-top:0px !important;"
-      >
-        <template slot="selection" slot-scope="data">
-          <v-list-tile-content>
-            <v-list-tile-title class="pl-2">
-              <flag :iso="data.item.flag" />
-              {{ data.item.name }}
-            </v-list-tile-title>
-          </v-list-tile-content>
-        </template>
-        <template slot="item" slot-scope="data">
-          <v-list-tile-content>
-            <v-list-tile-title>
-              <flag :iso="data.item.flag" />
-              {{ data.item.name }}
-            </v-list-tile-title>
-          </v-list-tile-content>
-        </template>
-      </v-select>
-      <v-btn color="green" class="ma-0 mr-4" style="max-width:60px;" @click="signin" :loading="is_loading" :disabled="is_loading">
-        {{ $t('Login.sign_in') }}
-      </v-btn>
   </v-layout>
 </template>
 
@@ -160,6 +113,7 @@ export default {
       password: '',
       message: '',
       is_loading: false,
+      logourl: '/img/demobetic.png'
     }
   },
   methods: {
@@ -260,27 +214,9 @@ export default {
       // this.$i18n.locale = this.language
       location.reload()
     },
-    // getUserInfo() {
-    //   this.axios
-    //     .get("zt_get_user_detail", {
-    //       headers: {
-    //         Authorization: "Bearer " + localStorage.betic_storage
-    //       }
-    //     })
-    //     .then(response => {
-    //       var data = response.data;
-    //       if (data.success) {
-    //         this.$store.commit("setUsername", data.success.username);
-    //         this.$store.commit("setUserId", data.success.userID);
-    //         this.$store.commit("setUserRole", data.success.membershipRole);
-    //         this.$store.commit("setEmail", data.success.email);
-    //       }
-    //     })
-    //     .catch(e => {
-    //       console.log(e);
-    //     });
-
-    // }
+    gotoHome(){
+      this.$router.push('/sports-betting')
+    }
   },
   computed: {
     getUsername() {
@@ -302,6 +238,8 @@ export default {
     else
       this.isLoggedIn = false
 
+    if(system_info.logo != "/img/localhost:2053.png")
+      this.logourl = system_info.logo;
     this.$store.commit("setLanguage", this.$i18n.locale)
     
     var self = this

@@ -1,5 +1,5 @@
 <template>
-  <v-app dark style="min-width:1280px;background: url('/img/bg_login.jpg'); background-size: 100% 100%;">
+  <v-app style="min-width:1280px;background: url('/img/bg_login.jpg'); background-size: 100% 100%;">
     <!-- <core-filter /> -->
     <v-content class="main-content">
       <core-header/>
@@ -7,235 +7,17 @@
       <core-inactivity/>
       <div id="core-view" style="background:black;">
         <v-fade-transition mode="out-in">
-          <v-layout class="sports-betting-view pb-4" fill-height style="background: url('/img/bg_sports_betting.jpg'); background-size: 100% 100%;">
-            <v-flex xs2 class="pl-1 mt-2 scroll-y" style="min-width:300px;">
-              <v-expansion-panel v-model="panel" expand>
-                <v-expansion-panel-content expand-icon="mdi-menu-down" class="top-leagues">
-                  <template v-slot:header>
-                    <div class="subheading font-weight-bold">{{$t('Betting.top_leagues')}}</div>
-                  </template>
-                  <v-list>
-                    <v-list-tile v-for="(item, index) in topLeagues" :key="index" @click="topLeagueSelected(item.sportID, item.categoryID, item.leagueID)" style="cursor:pointer;">
-                      <img :src="item.icon" style="width: 20px; height: 20px; margin-right: 10px;">
-
-                      <v-list-tile-content>
-                        <v-list-tile-title>
-                          {{ item.name }}
-                          <span style="float: right;">({{ item.count }})</span>
-                        </v-list-tile-title>
-                      </v-list-tile-content>
-                    </v-list-tile>
-                  </v-list>
-                </v-expansion-panel-content>
-                <v-expansion-panel-content expand-icon="mdi-menu-down" class="tertiary">
-                  <template v-slot:header>
-                    <div class="d-flex align-center subheading font-weight-bold">
-                      <div><v-icon color="yellow">mdi-star</v-icon></div>
-                      <div style="width:100%;">{{$t('Betting.favourites')}}</div>
-                    </div>
-                  </template>
-                  <template v-if="this.prematchFavourites.length == 0">
-                    <v-card class="pa-2 tertiary">
-                      <v-card-text class="league-text">
-                        {{$t('Betting.to_select_favourites')}}
-                      </v-card-text>
-                    </v-card>
-                  </template>
-                  <template v-else>
-                    <v-layout v-for="(favourite, idx) in prematchFavourites" :key="idx" align-center justify-start
-                              class="tertiary1 pa-1 px-2 mx-2 mb-2" style="cursor:pointer;border-radius:2px;"
-                              @click="selectPrematchFavourite(favourite, idx)">
-                      <img class="sb-icon" :src="`/img/country_flag/${favourite.categoryAlias}.png`" style="margin-right:10px;"/>
-                      <div class="caption" style="width:100%;white-space:nowrap;overflow:hidden;text-overflow: ellipsis;">{{ favourite.leagueName }}</div>
-                      <span class="body-2" style="margin-right:5px;">{{ favourite.total }}</span>
-                      <div :class='"favourite-status "+ favourite.checked'></div>
-                      <!-- <v-icon size="12" :class="`${favourite.checked=='on'?'rectangle-icon':''}`">mdi-checkbox-blank</v-icon> -->
-                      <v-icon size="18" class="remove-icon" @click.stop="removeFavourite(favourite, idx)">mdi-close</v-icon>
-                    </v-layout>
-                    <!-- <div class="align-center justify-start" style="width:100%;display:flex;">
-                      <img class="sb-icon" :src="`/img/country_flag/${favourite.categoryAlias}.png`" />
-                      <div class="w-100">{{ favourite.leagueName }}</div>
-                    </div> -->
-                  </template>
-                </v-expansion-panel-content>
-                <v-expansion-panel-content expand-icon="mdi-menu-down" class="tertiary">
-                  <template v-slot:header>
-                    <div class="subheading font-weight-bold">{{$t('Betting.time_filters')}}</div>
-                  </template>
-                  <v-slider
-                          v-model="times"
-                          step="1"
-                          :max="4"
-                          tick-size="5"
-                          class="pl-4 pr-4 mt-4"
-                          thumb-color="primary"
-                          thumb-label="always"
-                          :tick-labels="ticksLabels"
-                  >
-                    <template v-slot:thumb-label="props">
-                      <span>{{ ticksLabels[props.value] }}</span>
-                    </template>
-                  </v-slider>
-                </v-expansion-panel-content>
-              </v-expansion-panel>
-              <v-card color="tertiary" class="search-wrapper pa-2">
-                <v-text-field append-icon="mdi-magnify" class="mt-2" :label='$t("Betting.league_search")' solo-inverted v-model="searchSportItem"></v-text-field>
-              </v-card>
-              <v-card color="tertiary" class="sports-tree">
-                <v-card-title class="pb-1" style="padding-right:5px;">
-                  <v-layout align-center justify-start>
-                    <span class="subheading font-weight-bold">{{$t('Betting.sports')}}</span>
-                    <v-spacer></v-spacer>
-                    <v-icon style="cursor:pointer;" @click="clearSportItems">mdi-delete-forever</v-icon>
-                  </v-layout>
-
+          <v-layout class="sports-betting-view pb-1" fill-height style="background: url('/img/bg_sports_betting.jpg'); background-size: 100% 100%;">
+            <v-flex class="pl-1 mt-2 scroll-y" style="width:200px">
+              <v-card color="primary" class="sports-tree">
+                <v-card-title class="pa-1" style="padding-right:5px;">
+                  <span class="subheading font-weight-bold">{{$t('Betting.sports')}}</span>
                 </v-card-title>
                 <core-sports-betting-tree-list/>
               </v-card>
             </v-flex>
 
-            <v-flex v-if="eventViewFlag == 1" xs8 class="mx-1 mt-2 scroll-y eventview">
-              <template v-if="!is_waiting_page">
-              <v-container fluid class="pa-0 ma-0 tertiary">
-                <v-layout>
-                  <v-flex style="display: flex; align-items: center;" class>
-                    <v-btn class="ma-1 pa-0" icon outlined color="black"
-                      @click="backToPremath()">
-                      <v-icon>mdi-less-than</v-icon>
-                    </v-btn>
-                    <!-- <v-icon
-                            style="height:100%;width:50px;cursor:pointer;"
-                            @click="backToPremath()"
-                    >mdi-less-than</v-icon> -->
-                    <v-breadcrumbs :items="breadcrumbs" divider=">">
-                      <v-breadcrumbs-item
-                              slot="item"
-                              slot-scope="{ item }"
-                              :disabled="item.disabled"
-                              exact
-                              @click="selectBreadcrumb(item.sportID, item.categoryID, item.eventID)"
-                      >{{ item.text }}</v-breadcrumbs-item>
-                    </v-breadcrumbs>
-                  </v-flex>
-                  <v-spacer>
-                  </v-spacer>
-                  <v-layout align-center justify-end style="margin-right:20px;">
-                    <v-layout row wrap align-center justify-center fill-height :class="`market-row ${marketRow==1?'active':''}`" @click="selectMarketRow(1)">
-                      <v-flex xs12 v-for="n in (1, 3)" :key="n">
-                        <div class="market-row-line"></div>
-                      </v-flex>
-                    </v-layout>
-                    <v-layout row wrap align-center justify-center fill-height :class="`market-row ${marketRow==2?'active':''}`" @click="selectMarketRow(2)">
-                      <v-flex xs6 v-for="n in (1, 6)" :key="n">
-                        <div class="market-row-line"></div>
-                      </v-flex>
-                    </v-layout>
-                    <v-layout row wrap align-center justify-center fill-height :class="`market-row ${marketRow==3?'active':''}`" @click="selectMarketRow(3)">
-                      <v-flex xs4 v-for="n in (1, 9)" :key="n">
-                        <div class="market-row-line"></div>
-                      </v-flex>
-                    </v-layout>
-                  </v-layout>
-                </v-layout>
-                <v-layout
-                        style="background-image: url('/img/livebetbanner.png'); background-size: 100% auto; background-position: 0,-200px; height:200px; display: block;"
-                >
-                  <v-img :src="`/img/${eventViewData.sportAlias}board.png`" height="200">
-                    <!-- <v-flex class="black" style="opacity: .4; height: 100%;"></v-flex> -->
-                    <v-flex style="position: relative; left: 0px; font-size: 16px;">
-                      <v-layout class="pa-3 pt-5">
-                        <v-flex xs12 class="text-xs-center">
-                          <img
-                                  class="sb-icon"
-                                  :src="`/img/country_flag/${eventViewData.categoryAlias}.png`"
-                          >
-                          {{eventViewData.categoryName}}, {{eventViewData.leagueName}}
-                        </v-flex>
-                      </v-layout>
-                      <v-layout class="pa-2">
-                        <v-flex xs12 class="text-xs-center">
-                          <span
-                                  class="headline font-weight-medium"
-                          >{{eventViewData.homeTeam}} - {{eventViewData.awayTeam}}</span>
-                        </v-flex>
-                      </v-layout>
-                      <v-layout class="pa-3">
-                        <v-flex xs12 class="text-xs-center">
-                          <span class="title font-weight-medium">{{eventViewData.eventDate}}</span>
-                        </v-flex>
-                      </v-layout>
-                    </v-flex>
-                  </v-img>
-                </v-layout>
-
-                <v-layout>
-                  <v-btn-toggle v-model="toggle_kinds" mandatory class="bet-type tertiary">
-                    <v-btn flat style="width: 12.5%; opacity: 1;">{{$t('Betting.all')}}</v-btn>
-                    <v-btn
-                            v-for="btn in oddGroups"
-                            :key="btn.oddGroupID"
-                            flat
-                            style="width: 12.5%; opacity: 1;"
-                    >{{btn.name}}</v-btn>
-                  </v-btn-toggle>
-                </v-layout>
-                <v-layout style="font-size: 16px;" class="mid-panel">
-                  <v-flex v-for="count in marketRow" :key="count" :class="`pa-1 tertiary xs${12/marketRow}`">
-                    <v-layout
-                            xs12
-                            column
-                            v-for="(oddType,firstIndex) in oddTypeList"
-                            :key="firstIndex"
-                            v-if="(firstIndex >= (count-1)*rowOddCount) && (firstIndex < count*rowOddCount)"
-                            class="mid-panel"
-                    >
-                      <v-flex>
-                        <span class="subheading pa-1 odd-type-text">{{oddType.name}}</span>
-                      </v-flex>
-                      <v-flex
-                              v-if="oddType.lines != null"
-                              v-for="(line,index) in oddType.lines"
-                              :key="index"
-                      >
-                        <v-layout xs12 row>
-                          <v-flex
-                                  v-for="(item, idx) in line"
-                                  :key="idx"
-                                  :class="`xs${12/line.length} pa-1 ma-1 event-detail-cell ${is_betslip_odd(eventViewData.eventID, oddType.oddTypeID, item.oddID)?'active':''}`"
-                                  @click="update_betslip('prematch', eventViewData.eventID, eventViewData.homeTeam, eventViewData.awayTeam, oddType.oddTypeID, oddType.name,
-                              item.oddID, item.value, item.name, item.special, item.isSuspended==undefined?0:item.isSuspended)"
-                          >
-                            <p class="body-2 font-weight-regular pa-1 ma-0 market-odd-name" v-if="item.special != undefined && item.special!= 0">{{item.name}}({{item.special}})</p>
-                            <p class="body-2 font-weight-regular pa-1 ma-0 market-odd-name" v-else>{{item.name}}</p>
-                            <span class="body-2 font-weight-regular pa-1 market-odd-score odd-price-text" v-if="item.isSuspended == 1"><v-icon color="grey">mdi-lock-outline</v-icon></span>
-                            <span class="body-2 font-weight-regular pa-1 market-odd-score odd-price-text" v-else>{{item.value}}</span>
-                          </v-flex>
-                        </v-layout>
-                      </v-flex>
-                    </v-layout>
-                  </v-flex>
-                </v-layout>
-              </v-container>
-              </template>
-              <template v-else>
-                <v-layout justify-center align-center>
-                  <v-flex>
-                    <ScaleLoader
-                            class="scale-loader"
-                            :loading="is_waiting_page"
-                            color="lawngreen"
-                            :height=100
-                            :width=10
-                            :radius=1
-                            margin="2px"
-                            sizeUnit="px"
-                    />
-                  </v-flex>
-                </v-layout>
-              </template>
-            </v-flex>
-
-            <v-flex v-if="eventViewFlag == 0" xs8 class="mid-panel mx-1 mt-2 scroll-y" id="main-scroll" ref="matchTable">
+            <v-flex xs8 class="mid-panel mx-1 mt-2 scroll-y" id="main-scroll" ref="matchTable">
               <v-layout v-if="!is_refresh_page" column class="pa-0" v-scroll:#main-scroll="onMainScrollPos" >
                 <v-card color="primary" height="100" class="overflow-hidden">
                   <v-img src="/img/prematch_banner/vector.png" height="100%">
@@ -254,165 +36,7 @@
                   />
                 </v-card>
 
-                <v-toolbar :dense="true">
-                  <v-toolbar-items class="align-center" style="height:40px">
-                    <v-btn
-                            v-for="(sport, sportIdx) in topMenuSportList"
-                            :key="sportIdx"
-                            flat
-                            :class="sportID == sport.sportID ? 'tertiary2' : ''"
-                            @click="topMenuSelected(sport.sportID)"
-                    >
-                      <div class="mr-1" :class="`sport-title-icon ds-sport-icon ds-icon-${sport.sportID}`"></div>&nbsp;{{sport.name}}
-                    </v-btn>
-                    <v-text-field
-                            append-icon="mdi-magnify"
-                            :label='$t("Betting.event_search")'
-                            solo-inverted
-                            height="40"
-                            class="mr-4 mt-0 mb-0"
-                            style="margin-left:30px;width:250px;"
-                            v-model="searchPrematchStr"
-                            v-on:keyup.enter="searchPrematchList"
-                    ></v-text-field>
-                  </v-toolbar-items>
-                </v-toolbar>
                 <v-expansion-panel v-model="mainPanel" expand>
-                  <v-expansion-panel-content v-if="!menuSelected" expand-icon="mdi-menu-down" class="prematchMainPanel">
-                    <template v-slot:header>
-                      <div>{{$t('Betting.live')}}</div>
-                    </template>
-                    <template v-if="liveListTable[0] != undefined && liveListTable[0].data != undefined && Object.keys(liveListTable[0].data).length > 0">
-                      <v-data-table
-                              v-for="(table, index) in liveListTable"
-                              :id="`livetable_${index}`"
-                              :key="index"
-                              :headers="table.headers"
-                              :items="Object.values(table.data)"
-                              class="elevation-1"
-                              :pagination.sync="pagination"
-                              hide-actions
-                      >
-                        <template slot="headers" slot-scope="props">
-                          <tr>
-                            <th
-                                    v-for="(header, id) in props.headers"
-                                    :key="id"
-                                    :class="`text-xs-${header.align}`"
-                                    v-if="header.order == undefined || (header.order != undefined && (hasSize==0 || (hasSize== 1 && header.order <= 1) || (hasSize== 2 && header.order == 0)))"
-                                    :width="header.width"
-                            >
-                              <v-layout column v-if="header.cell != undefined">
-                                <template v-if="header.specialCell">
-                                  <v-flex :class="`offset-xs${12/header.cellCount}`">{{header.text}}</v-flex>
-                                </template>
-                                <template v-else>
-                                  <v-flex>{{header.text}}</v-flex>
-                                </template>
-                                <v-flex>
-                                  <v-layout row>
-                                    <v-flex
-                                            :v-if="header.specialCell"
-                                            :class="`xs${12/header.cellCount}`"
-                                    ></v-flex>
-                                    <v-flex
-                                            v-for="(cell, cellIndex) in header.cell"
-                                            :key="cellIndex"
-                                            :class="`xs${12/header.cellCount}`"
-                                    >{{cell.name}}</v-flex>
-                                  </v-layout>
-                                </v-flex>
-                              </v-layout>
-                              <span v-else>{{header.text}}</span>
-                              <v-layout align-center v-if="header.sportID || header.countryFlag">
-                                <v-flex d-flex v-if="header.sportID"
-                                        :class="`justify-center sport-title-icon ds-sport-icon ds-icon-${header.sportID}`">
-                                </v-flex>
-                                <div v-if="header.countryFlag">
-                                  <v-img
-                                          :src="header.countryFlag"
-                                          class="sb-icon"
-                                  />
-                                </div>
-                              </v-layout>
-                            </th>
-                          </tr>
-                        </template>
-                        <template v-slot:items="props">
-                          <template v-for="event in Object.values(props.item.dataList)" v-if="props.item.dataList != undefined && Object.keys(props.item.dataList).length > 0">
-                            <tr>
-                              <td
-                                      class="text-xs-center"
-                              >{{ event.liveMinute}}</td>
-
-                              <td class="text-xs-left">{{event.homeTeam+' - '+event.awayTeam}}</td>
-                              <td class="text-xs-center"><span class="green--text subheading font-weight-bold">{{ event.liveScoreHome+" - "+event.liveScoreAway }}</span></td>
-                              <td
-                                      class="text-xs-center"
-                                      v-for="(oddType, oddTypeIdx) in liveOddTypeRules.oddRules[props.item.sportAlias].oddTypes"
-                                      v-if="hasSize==0 || (hasSize== 1 && oddTypeIdx <= 1) || (hasSize== 2 && oddTypeIdx == 0)"
-                              >
-                                <v-layout row style="height:80%;">
-                                  <v-flex d-flex
-                                          v-if="liveOddTypeRules.oddRules[props.item.sportAlias].hasSpecial[oddTypeIdx]"
-                                          :class="`ma-1 align-center xs${12/(liveOddTypeRules.lineRules[oddType].length+1)}`"
-                                  >
-                                    <div class="yellow--text text--darken-4" v-if="event.oddTypes[oddType] != undefined && event.oddTypes[oddType].lines[0][0].special > 0">
-                                      {{event.oddTypes[oddType].lines[0][0].special}}
-                                    </div>
-                                    <div v-else>
-                                      <!-- <v-icon> mdi-lock-outline</v-icon> -->
-                                    </div>
-                                  </v-flex>
-                                  <template v-for="(oddCell, oddCellIdx) in liveOddTypeRules.lineRules[oddType]">
-                                    <v-flex d-flex
-                                            v-if="event.oddTypes != undefined && event.oddTypes[oddType] != undefined && event.oddTypes[oddType].lines[0][oddCellIdx] != undefined &&
-                                        event.oddTypes[oddType].lines[0][oddCellIdx].value > 0 && event.oddTypes[oddType].lines[0][oddCellIdx].isSuspended == 0 && isClosedTime(event.liveMinute, event.sportAlias)"
-                                            :class="`ma-1 align-center tableCell xs${12/(liveOddTypeRules.lineRules[oddType].length +
-                                        (liveOddTypeRules.oddRules[props.item.sportAlias].hasSpecial[oddTypeIdx] ? 1 : 0))} ${event.oddTypes[oddType].lines[0][oddCellIdx].changes != undefined ? event.oddTypes[oddType].lines[0][oddCellIdx].changes : ''} ${is_betslip_odd(event.eventID, event.oddTypes[oddType].oddTypeID, event.oddTypes[oddType].lines[0][oddCellIdx].oddID)?'active':''}`"
-                                            @click="update_betslip('live', event.eventID, event.homeTeam, event.awayTeam, event.oddTypes[oddType].oddTypeID, event.oddTypes[oddType].name,
-                                    event.oddTypes[oddType].lines[0][oddCellIdx].oddID, event.oddTypes[oddType].lines[0][oddCellIdx].value, event.oddTypes[oddType].lines[0][oddCellIdx].name, event.oddTypes[oddType].lines[0][oddCellIdx].special, event.oddTypes[oddType].lines[0][oddCellIdx].isSuspended==undefined?0:event.oddTypes[oddType].lines[0][oddCellIdx].isSuspended)"
-                                    >
-                                      <span class="caption">{{event.oddTypes[oddType].lines[0][oddCellIdx].value}}</span>
-                                    </v-flex>
-
-                                    <v-flex d-flex
-                                            v-else
-                                            :class="`ma-1 align-center xs${12/(liveOddTypeRules.lineRules[oddType].length +
-                                        (liveOddTypeRules.oddRules[props.item.sportAlias].hasSpecial[oddTypeIdx] ? 1 : 0))}`"
-                                    >
-                                      <div>
-                                        <v-icon color="grey">mdi-lock-outline</v-icon>
-                                      </div>
-                                      <!-- <div v-if="event.oddTypes != undefined && event.oddTypes[oddType] != undefined && event.oddTypes[oddType].lines[0][oddCellIdx] != undefined">
-                                        {{event.oddTypes[oddType].lines[0][oddCellIdx].value}}
-                                        {{event.oddTypes[oddType].lines[0][oddCellIdx].isSuspended}}
-                                      </div> -->
-                                    </v-flex>
-                                  </template>
-                                </v-layout>
-                              </td>
-
-                              <td class="text-xs-center">
-                                <div
-                                        class="align-center marketCell"
-                                        @click="gotoEventView(1, event.eventID)"
-                                >+{{ event.marketCount }}</div>
-                              </td>
-                              <td class="text-xs-center">
-                                <v-icon>mdi-chart-bar-stacked</v-icon>
-                              </td>
-                            </tr>
-                          </template>
-                        </template>
-                      </v-data-table>
-                    </template>
-                    <!-- <template v-else>
-                      <v-flex d-flex xs12 justify-center align-center style="height:60px;">
-                        <span class="title pa-2" style="text-align:center">{{$t('Betting.no_data_available')}}</span>
-                      </v-flex>
-                    </template> -->
-                  </v-expansion-panel-content>
                   <v-expansion-panel-content expand-icon="mdi-menu-down" class="prematchMainPanel">
                     <template v-slot:header>
                       <div>{{$t('Betting.upcoming')}}</div>
@@ -543,18 +167,18 @@
                   </v-expansion-panel-content>
                 </v-expansion-panel>
               </v-layout>
-              <!-- <v-layout align-center justify-center>
-                <v-progress-circular
-                  v-if="is_updating_page == true"
-                  :size="70"
-                  :width="7"
-                  color="green"
-                  indeterminate
-                ></v-progress-circular>
-              </v-layout> -->
               <v-layout v-if="is_updating_page || is_refresh_page" justify-center align-center>
-                <v-flex>
-                  <ScaleLoader
+                  <FadeLoader
+                          class="fade-loader"
+                          :loading="is_updating_page || is_refresh_page"
+                          color="#e09007"
+                          :height=20
+                          :width=10
+                          :radius=20
+                          margin="2px"
+                          sizeUnit="px"
+                  />
+                  <!-- <ScaleLoader
                           class="scale-loader"
                           :loading="is_updating_page || is_refresh_page"
                           color="lawngreen"
@@ -563,23 +187,8 @@
                           :radius=1
                           margin="2px"
                           sizeUnit="px"
-                  />
-                </v-flex>
+                  /> -->
               </v-layout>
-              <!-- <v-layout v-if="is_refresh_page" justify-center align-center fill-height>
-                <v-flex>
-                  <ScaleLoader
-                    class="scale-loader"
-                    :loading="is_refresh_page"
-                    color="lawngreen"
-                    :height=100
-                    :width=10
-                    :radius=1
-                    margin="2px"
-                    sizeUnit="px"
-                  />
-                </v-flex>
-              </v-layout> -->
             </v-flex>
 
             <v-flex xs2 class="mr-1 mt-2 scroll-y" style="overflow-x:hidden;min-width:250px;">
@@ -1169,12 +778,8 @@ import { parse } from 'path';
         this.pageNumber = 1
         this.is_updating_page = false
         this.is_last_page = false
-        if(this.menuSelected)
-          this.leftMenuSelected()
-        else{
-          this.getLiveList()
-          this.getUpcomingResult()
-        }
+        this.mainPanel = [true, true]
+        this.getUpcomingResult()
       },
       gotoEventView(type, eventID) {
         if(type == 0){      //prematch
@@ -1826,7 +1431,10 @@ import { parse } from 'path';
       this.$root.$on('resizeEvent', payload=>{
         this.hasSize = payload.hasSize
       })
-      
+      this.$root.$on('searchEvent', payload=>{
+        this.searchPrematchStr = payload.searchPrematchStr
+        this.searchPrematchList()
+      })
     },
     created(){
       window.addEventListener('scroll', this.onMainScrollPos);

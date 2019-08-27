@@ -1,8 +1,22 @@
 .v-expansion-panel__header {
-    font-size:12px !important;
-    min-height: 35px !important;
+    font-size:1rem !important;
+    min-height: 2.916rem !important;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    padding-left: .7rem;
+    padding-right: .6rem;
+    background: #141414;
 }
-
+.node{
+    .v-expansion-panel__header{
+        background: #191919;
+    }
+}
+.node2{
+    .v-expansion-panel__header{
+        background: #575757;
+    }
+}
 @media only screen and (max-width: 1856px) {
     .v-expansion-panel__header {
         // font-size:11px !important;

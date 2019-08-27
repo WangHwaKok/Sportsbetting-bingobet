@@ -12,9 +12,11 @@
 // login
 .login-bar, .deposit-bar {
   #core-toolbar{
-    background: black;
+    background: unset !important;
+    box-shadow: unset !important;
+    color:white;
     .v-btn--active{
-      color:lawngreen;
+      background:#904c0a !important;
     }
   }
   .v-btn {
@@ -24,6 +26,12 @@
     padding: 2px 0 2px 6px;
   }
   .v-text-field{
+    .v-text-field__details{
+      height: 0px; 
+    }
+    .v-select__selection--comma{
+      margin: 0px 4px 0px 0;
+    }
     input {
       padding: 2px 0;
     }
@@ -32,6 +40,12 @@
     font-size: 12px;
   }
 }
+
+.deposit-bar{
+  background-image: linear-gradient(#e19107, #b35f0a);
+  border: 1px solid #b35f0a;
+}
+
 /* ==================================================== Account Management ==================================================== */
 .account-view {
   .panel {
@@ -68,6 +82,7 @@
   }
 }
 .sports-tree {
+  border-radius: 3px;
   &.tertiary{
     border-top: 1px solid #303030 !important;
   }
@@ -172,7 +187,7 @@
 }
 
 .sports-betting-view {
-  height: calc(100vh - 200px);
+  height: calc(100vh - 175px);
   background-color:black;
 
   .league-text {
@@ -579,12 +594,7 @@
     }
   }
 }
-.v-expansion-panel__header{
-  padding-top: 0px;
-  padding-bottom: 0px;
-  min-height:35px;
-  background: #141414;
-}
+
 /* ==================================================== Casino ==================================================== */
 .casino {
   .left-menu {
@@ -769,7 +779,7 @@
   background-color: #000 !important;
   display: block !important;
   height: unset !important;
-  border-top: 2px solid #3cb251 !important;
+  // border-top: 2px solid #3cb251 !important;1
 }
 #core-footer .logo {
   bottom: unset;
@@ -1383,4 +1393,28 @@
     height:unset !important;
     font-size:1.2rem;
     padding:0 0rem !important;
+  }
+
+  .league-category{
+    background-image: linear-gradient(#656565, #606060);
+    cursor:pointer;
+    &.selected{
+      background-image: linear-gradient(#303030, #282828);
+    }
+    .league-category-item{
+      color:black;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow: ellipsis;
+      &.selected{
+        color:white;
+      }
+    }
+  }
+  .league-category:hover{
+    background-image: linear-gradient(#474747, #404040);
+  }
+  .fade-loader{
+    text-align: center;
+    color: #e09007;
   }
