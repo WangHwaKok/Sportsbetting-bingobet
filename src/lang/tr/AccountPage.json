@@ -79,5 +79,13 @@
     "new_password_is_mismatched":"Yeni parola eşleşmiyor",
     "password_does_not_match": "Şifre eşleşmiyor",
     "confirm_password": "Şifreyi Onayla",
-    "coupon_has_been_cancelled_successfully": "Kupon başarıyla iptal edildi"
+    "coupon_has_been_cancelled_successfully": "Kupon başarıyla iptal edildi",
+    "combination": "kombinasyon",
+    "amount": "Miktar",
+    "rate": "oran",
+    "gain": "Kazanç",
+    "combination_status": "Kombinasyon durumu",
+    "possible_winnings": "Muhtemel Kazançlar",
+    "winnings": "kazanç",
+    "show_system_columns": "Sistem Sütunlarını Göster"
 }

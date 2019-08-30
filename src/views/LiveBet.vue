@@ -349,7 +349,7 @@
                           <table v-if="eventViewList.sportAlias =='soccer'" cellspacing="0" cellpadding="0" class="scoreboard-table">
                             <tr>
                               <th class="text-xs-left" style="padding-left:10px;" width="*">
-                                <span v-if="eventViewList.liveGamePeriod != undefined && eventViewList.liveGamePeriod == 'HT' ">{{eventViewList.liveGamePeriod}}</span>
+                                <span v-if="eventViewList.liveGamePeriod != undefined && (eventViewList.liveGamePeriod.toLowerCase() == 'ht' || eventViewList.liveGamePeriod.toLowerCase() == 'live')">{{eventViewList.liveGamePeriod}}</span>
                                 <span v-else-if="eventViewList.liveMinute != undefined">{{eventViewList.liveMinute}}</span>
                               </th>
                               <th class="text-xs-center" width="8%">
@@ -2024,7 +2024,7 @@ export default {
         Object.keys(this.overViewList).forEach(leagueID => {
           if(self.overViewList[leagueID].data != undefined && self.overViewList[leagueID].data.dataList != undefined && Object.keys(self.overViewList[leagueID].data.dataList).length > 0){
             Object.keys(self.overViewList[leagueID].data.dataList).forEach(eventID => {
-              if(self.overViewList[leagueID].data.dataList[eventID].liveGamePeriod != undefined && self.overViewList[leagueID].data.dataList[eventID].liveGamePeriod == "HT"){
+              if(self.overViewList[leagueID].data.dataList[eventID].liveGamePeriod != undefined && (self.overViewList[leagueID].data.dataList[eventID].liveGamePeriod.toLowerCase() == "ht" || self.overViewList[leagueID].data.dataList[eventID].liveGamePeriod.toLowerCase() == "live")){
                 self.overViewList[leagueID].data.dataList[eventID].liveMinute = self.overViewList[leagueID].data.dataList[eventID].liveGamePeriod
               }
               else if(self.overViewList[leagueID].data.sportAlias == 'soccer'){
@@ -2076,7 +2076,7 @@ export default {
         })
       }
 
-      if(this.eventViewList != undefined && this.eventViewList.liveGamePeriod != undefined && this.eventViewList.liveGamePeriod == "HT"){
+      if(this.eventViewList != undefined && this.eventViewList.liveGamePeriod != undefined && (this.eventViewList.liveGamePeriod.toLowerCase() == "ht" || this.eventViewList.liveGamePeriod.toLowerCase() == "live")){
         this.eventViewList.liveMinute = this.eventViewList.liveGamePeriod
       }
       else if(this.eventViewList != undefined && this.eventViewList.sportAlias == 'soccer'){
@@ -2130,7 +2130,7 @@ export default {
             Object.keys(self.liveEventScoreList[sportID].leagues).forEach(leagueID => {
               if(self.liveEventScoreList[sportID].leagues[leagueID].events != undefined && self.liveEventScoreList[sportID].leagues[leagueID].events.length > 0){
                 self.liveEventScoreList[sportID].leagues[leagueID].events.map(event => {
-                  if(event.liveGamePeriod != undefined && event.liveGamePeriod == "HT"){
+                  if(event.liveGamePeriod != undefined && (event.liveGamePeriod.toLowerCase() == "ht" || event.liveGamePeriod.toLowerCase() == "live")){
                     event.liveMinute = event.liveGamePeriod
                   }
                   else if(self.liveEventScoreList[sportID].sportAlias == 'soccer'){

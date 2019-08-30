@@ -150,7 +150,6 @@
               <td>{{ props.item.amount }}</td>
               <td>{{ props.item.totalRate }}</td>
               <td>{{ props.item.potentialReturns }}</td>
-              <td>{{ props.item.note }}</td>
               <td>{{ props.item.type }}</td>
               <td>
                 <v-chip label v-if="props.item.couponResultAlias == 'W'" color="green">{{ props.item.couponResult }}</v-chip>
@@ -201,12 +200,14 @@
         </v-data-table>
       </v-flex>
     </v-layout>
-    <v-dialog
-      v-model="showDialog"
-    >
+    <v-dialog v-model="showDialog">
       <v-card>
         <v-card-title class="headline">
-          {{$t('AccountPage.coupon_code')}}:{{bet_detail.couponID}}
+          <div class="subheading mr-4">{{$t('AccountPage.coupon_code')}}: {{bet_detail.couponID}}</div>
+          <div class="subheading mr-4">{{$t('AccountPage.amount')}}: {{bet_detail.amount}}</div>
+          <div class="subheading mr-4">{{$t('AccountPage.possible_winnings')}}: {{bet_detail.potentialReturns}}</div>
+          <div class="subheading mr-4">{{$t('AccountPage.winnings')}}: {{bet_detail.earnedAmount}}</div>
+          <div class="subheading">{{$t('AccountPage.type')}}: {{bet_detail.type}}({{getCombinationString(bet_detail.selectedCombinations)}})</div>
           <v-spacer></v-spacer>
           <v-btn icon dark @click="showDialog = false">
             <v-icon>mdi-close</v-icon>
@@ -214,6 +215,75 @@
         </v-card-title>
         <v-card-text>
           <v-data-table
+            :headers="combinationHeaders"
+            :items="bet_detail.combinations"
+            class="elevation-1"
+            :expand="true"
+            item-key="combinationID"
+            hide-actions
+          >
+            <template v-slot:items="props">
+              <tr>
+                <td>{{props.item.complete}}</td>
+                <td>{{ props.item.amount }}</td>
+                <td>{{ props.item.rate }}</td>
+                <td>{{ props.item.gain }}</td>
+                <td class="text-xs-center">{{ props.item.combinationResult }}</td>
+                <td class="text-xs-center">
+                  <v-btn color="primary" @click="props.expanded = !props.expanded">
+                    <v-icon color="white">mdi-eye</v-icon>
+                  </v-btn>
+                </td>
+              </tr>
+
+            </template>
+            <template v-slot:expand="props1">
+              <v-card style="border-radius:0px;">
+                <v-data-table
+                  :headers="detailHeaders"
+                  :items="props1.item.odds"
+                  class="elevation-1"
+                  hide-actions
+                >
+                  <template slot="headers" slot-scope="props">
+                    <tr style="background:#171717">
+                      <th
+                        v-for="(header, id) in props.headers"
+                        :key="id"
+                        :class="`text-xs-${header.align}`"
+                      >
+                      {{header.text}}
+                      </th>
+                    </tr>
+                  </template>
+                  <template v-slot:items="props">
+                    <tr style="background:green">
+                      <td>
+                        <v-layout>
+                        <div v-if="props.item.eventState != undefined && props.item.eventState == 'live'" class="coupon-live" style="position: relative;">{{$t('Betting.live')}}</div>
+                        {{ props.item.league }}
+                        </v-layout>
+                      </td>
+                      <td>{{ props.item.eventDate }}</td>
+                      <td>{{ props.item.liveGamePeriod}} {{props.item.liveMinute}}</td>
+                      <td>{{ props.item.homeTeam }} - {{props.item.awayTeam}}</td>
+                      <td>{{ props.item.liveScoreHome }} : {{props.item.liveScoreAway}}</td>
+                      <td>{{ props.item.oddValue }}</td>
+                      <td>{{ props.item.oddTypeName }}</td>
+                      <td>{{ props.item.oddName }}</td>
+                      <td>
+                        <div v-if="props.item.oddResultAlias == 'W'">{{ props.item.finalScoreHome }} - {{props.item.finalScoreAway}}/{{ props.item.oddResult }}</div>
+                        <div v-else-if="props.item.oddResultAlias == 'L'">{{ props.item.finalScoreHome }} - {{props.item.finalScoreAway}}/{{ props.item.oddResult }}</div>
+                        <div v-else-if="props.item.oddResultAlias == 'P'">{{ props.item.finalScoreHome }} - {{props.item.finalScoreAway}}/{{ props.item.oddResult }}</div>
+                        <div v-else-if="props.item.oddResultAlias == 'C'">{{ props.item.finalScoreHome }} - {{props.item.finalScoreAway}}/{{ props.item.oddResult }}</div>
+                      </td>
+                    </tr>
+                  </template>
+                </v-data-table>
+              </v-card>
+            </template>
+          </v-data-table>
+          <!-- <v-data-table
             :headers="detailHeaders"
             :items="bet_detail.combinations"
             class="elevation-1"
@@ -223,9 +293,6 @@
               <template v-for="odd in props.item.odds">
                 <tr>
                   <td>
-                    <!-- <v-btn small color="success">
-                      {{$t('Betting.live')}}
-                    </v-btn> -->
                     <v-layout>
                     <div v-if="odd.eventState != undefined && odd.eventState == 'live'" class="coupon-live" style="position: relative;">{{$t('Betting.live')}}</div>
                     {{ odd.league }}
@@ -248,7 +315,7 @@
               </template>
 
             </template>
-          </v-data-table>
+          </v-data-table> -->
         </v-card-text>
       </v-card>
     </v-dialog>
@@ -308,10 +375,17 @@ export default {
         { text: this.$t('Betting.amount'), value: 'amount', align: 'left', width:'5%' },
         { text: this.$t('Betting.rate'), value: 'rate', align: 'left', width:'5%' },
         { text: this.$t('Betting.potential_returns'), value: 'potential_returns', align: 'left', width:'10%' },
-        { text: this.$t('AccountPage.note'), value: 'note', align: 'left', width:'*' },
         { text: this.$t('AccountPage.type'), value: 'type', align: 'left', width:'10%' },
         { text: this.$t('AccountPage.status'), value: 'status', align: 'left', width:'10%' },
-        { text: this.$t('AccountPage.action'), value: 'action', align: 'center', width:'10%' }
+        { text: this.$t('AccountPage.action'), value: 'action', align: 'center', width:'*' }
+      ],
+      combinationHeaders:[
+        { text: this.$t('AccountPage.combination'), value: 'combination', align: 'left' },
+        { text: this.$t('AccountPage.amount'), value: 'amount', align: 'left' },
+        { text: this.$t('AccountPage.rate'), value: 'rate', align: 'left' },
+        { text: this.$t('AccountPage.gain'), value: 'gain', align: 'left' },
+        { text: this.$t('AccountPage.combination_status'), value: 'combination_status', align: 'center' },
+        { text: this.$t('AccountPage.show_system_columns'), value: 'show_system_columns', align: 'center' },
       ],
       detailHeaders: [
         { text: this.$t('AccountPage.league'), value: 'leagueName', align: 'left' },
@@ -331,7 +405,7 @@ export default {
         'P': ['e5e2da', 'black'],
         'C': ['5c5c5b', 'white']
       },
-      start_date: moment(new Date()).subtract(1, 'years').format("YYYY-MM-DD"),
+      start_date: moment(new Date()).subtract(1, 'days').format("YYYY-MM-DD"),
       end_date: moment(new Date()).format("YYYY-MM-DD"),
       color_type:'',
       snackbar: false,
@@ -636,6 +710,11 @@ export default {
 
         const [year, month, day] = date.split('-')
         return `${day}/${month}/${year}`
+    },
+    getCombinationString(aryVal){
+      if(aryVal == undefined || aryVal.length == 0)
+        return
+      return aryVal.join('-')
     },
     onMainScrollPos(e){
       // console.log('yes')

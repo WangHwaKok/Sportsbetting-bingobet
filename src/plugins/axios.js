@@ -17,8 +17,8 @@ var domain = (function(){
 })();
 
 
-// window.APP_ENDPOINT = 'https://fp.'+domain
-window.APP_ENDPOINT = 'http://localhost:2053'
+window.APP_ENDPOINT = 'https://fp.'+domain
+// window.APP_ENDPOINT = 'http://localhost:2053'
 
 axios.defaults.baseURL = `${window.APP_ENDPOINT}/`
 // axios.defaults.headers = {'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json', 'Access-Control-Allow-Methods': 'GET, PUT, POST, DELETE, OPTIONS'}

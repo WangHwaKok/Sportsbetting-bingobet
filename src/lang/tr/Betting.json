@@ -29,11 +29,22 @@
     "event_view": "Maç Görünümü",
     "at_this_moment_odds_not_available": "Şu Anda Oranlar Mevcut Değil",
     "all": "Hepsi",
+    "today": "Bugün",
+    "tomorrow": "Yarın",
+    "hours": "saatler",
     "league_search": "Lig Arama",
     "event_search": "Takım / Maç Arama",
     "rate": "Oran",
     "no_odds_selected": "Seçili Oran Yok",
     "bet_amount": "Bahis Miktarı",
     "cancel_coupon": "Kuponu İptal Et",
-    "bet_amount_is_required": "Bahis Miktarı gereklidir."
+    "bet_amount_is_required": "Bahis Miktarı gereklidir.",
+    "there_are_no_event_yet": "Henüz bir etkinlik yok.",
+    "time": "Time",
+    "date": "Date",
+    "event": "Event",
+    "another": "Another",
+    "min": "Min",
+    "expand": "Expand",
+    "collapse": "Collapse"    
 }

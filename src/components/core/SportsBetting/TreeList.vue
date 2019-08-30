@@ -11,9 +11,9 @@
             <div class="caption font-weight-regular" style="width:100%;color:white">{{ sport.sportName }}</div>
           </div>
         </template>
-        <v-expansion-panel-content v-for="(category, categoryIdx) in sport.categories" :key="categoryIdx">
+        <v-expansion-panel-content v-for="(category, categoryIdx) in sport.categories" :key="categoryIdx" class="leftmenu-category">
           <template v-slot:header>
-            <div class="d-flex justify-start align-center pl-2">
+            <div class="d-flex justify-start align-center pl-2" @click="selectLeague(sport.sportID, category.categoryID, '')">
               <img style="margin-right:5px;" :src="`/img/country_flag/${category.categoryAlias}.png`" />
               <div class="caption font-weight-regular" style="width:100%;color:white">{{ category.categoryName }}</div>
             </div>

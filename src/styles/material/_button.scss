@@ -4,3 +4,9 @@
   // min-width: 7.333rem;
   padding: 0 1.333rem;
 }
+.v-btn-toggle .v-btn:not(:last-child) {
+  border-right: 1px solid black;
+}
+.v-btn-toggle {
+  border-radius: 3px;
+}

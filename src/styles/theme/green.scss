@@ -199,16 +199,15 @@
   }
   .prematch-game-img {
     position: absolute;
-    top: 30px;
-    right: -10px;
+    top: 0px;
+    right: -30px;
   }
   .v-datatable__progress{
     display: none;
   }
   thead tr:first-child{
-    // background-image: linear-gradient(green, #202020);
-    background: #007b27;
-    height: 40px;
+    background: #e09007;
+    height: 4rem;
   }
 
   .marketCell{
@@ -224,8 +223,9 @@
     cursor: pointer;
   }
   .tableCell:hover{
-    background-color:#303030;
-    border-radius: 3px;
+    // background-color:#303030;
+    background-image: linear-gradient(#636363, #8d8d8d);
+    // border-radius: 3px;
     cursor: pointer;
   }
 
@@ -236,6 +236,9 @@
   }
   .tableCell{
     position: relative;
+    border:solid 1px black;
+    border-radius: 3px;
+    background: #c5c5c5;
   }
 
   .tableCell::before,
@@ -270,21 +273,41 @@
         padding-left: 6px;
       }
       td{
-        font-weight: 400;
+        font-weight: bold;
+        color:black;
       }
     }
   }
   .prematchMainPanel {
     .v-expansion-panel__header {
-      background-color: #323131;
-    }
-    .v-expansion-panel__body {
-      margin-top: 2px;
-      margin-right: 3px;
-      margin-left: 3px;
-      // margin-bottom: 2px;
       background-color: #141414;
     }
+    .v-expansion-panel__body {
+      margin-top: 7px;
+      margin-right: 10px;
+      margin-left: 10px;
+      // margin-bottom: 2px;
+    }
+  }
+  .prematchMainPanel.v-expansion-panel__container{
+    background-color: #141414 !important;
+    border: solid 1px #141414;
+    border-radius: 3px;
+  }
+
+  .league-panel {
+    .v-expansion-panel__header {
+      background-color: #323232;
+    }
+    .v-expansion-panel__body {
+      margin: 0px;
+      // margin-bottom: 2px;
+    }
+  }
+  .league-panel.v-expansion-panel__container{
+    background-color: #323232 !important;
+    border: solid 1px #323232;
+    border-radius: 3px;
   }
 }
 
@@ -1417,4 +1440,23 @@
   .fade-loader{
     text-align: center;
     color: #e09007;
+  }
+  .v-subheader.board-name{
+    color:#e09007;
+    width: 100%;
+  }
+
+  .leftmenu-category {
+    .v-expansion-panel__header {
+      background-color: #141414;
+    }
+  }
+  .leftmenu-category.v-expansion-panel__container{
+    background-color: #141414 !important;
+  }
+  .chip-table{
+    cursor: pointer;
+    .v-chip__content{
+      padding: 0px;
+    }
   }

@@ -29,11 +29,22 @@
     "event_view": "Event View",
     "at_this_moment_odds_not_available": "At this moment odds not available",
     "all": "ALL",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "hours": "hours",
     "league_search": "Search",
     "event_search": "Search",
     "rate": "rate",
     "no_odds_selected": "No Odds Selected",
     "bet_amount": "Bet Amount",
     "cancel_coupon": "Cancel Coupon",
-    "bet_amount_is_required": "Bet Amount is required."
+    "bet_amount_is_required": "Bet Amount is required.",
+    "there_are_no_event_yet": "There are no event yet.",
+    "time": "Time",
+    "date": "Date",
+    "event": "Event",
+    "another": "Another",
+    "min": "Min",
+    "expand": "Expand",
+    "collapse": "Collapse"
 }

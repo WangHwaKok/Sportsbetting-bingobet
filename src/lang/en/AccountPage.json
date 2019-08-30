@@ -79,5 +79,13 @@
     "new_password_is_mismatched":"New Password is mismatched",
     "password_does_not_match": "Password does not match",
     "confirm_password": "Confirm Password",
-    "coupon_has_been_cancelled_successfully": "Coupon has been cancelled successfully"
+    "coupon_has_been_cancelled_successfully": "Coupon has been cancelled successfully",
+    "combination": "Combination",
+    "amount": "Amount",
+    "rate": "Rate",
+    "gain": "Gain",
+    "combination_status": "Combination Status",
+    "possible_winnings": "Possible Winnings",
+    "winnings": "Winnings",
+    "show_system_columns": "Show System Columns"
 }
