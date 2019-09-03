@@ -1,45 +1,74 @@
 <template>
-  <v-app dark>
+  <v-app dark style="min-width:1280px;background: url('/img/bingo_bet.jpg'); background-size: 100% 100%;">
     <!-- <core-filter /> -->
-    <core-header />
-    <core-socket />
-    <core-inactivity/>
     <v-content class="account-view">
+      <core-header />
+      <core-socket />
+      <core-inactivity/>
       <v-fade-transition mode="out-in">
-        <v-container fluid row  class="pa-0 mb-4">
+        <v-container fluid row style="height: calc(100vh - 175px);">
           <v-layout>
-            <v-navigation-drawer
-              v-model="drawer"
-              :clipped="$vuetify.breakpoint.lgAndUp"
-            >
-              <v-system-bar
-                status
-                color="primary"
-                height="32"
-                class="subheading"
-              >
-                {{$t('AccountPage.account_management')}}
-              </v-system-bar>
-              <v-list dense class="pt-0">
-                <template v-for="(panel, i) in panels" v-if="$store.getters.getRole=='supplier' || ($store.getters.getRole == 'user' && panel.role=='user')">
-                  <v-list-tile
-                    :key="i"
-                    :class="currentPanel == i ? 'tertiary2' : ''"
-                    @click="drawerClick(i)"
-                  >
-                    <v-list-tile-action>
-                      <v-icon>{{ panel.icon }}</v-icon>
-                    </v-list-tile-action>
-                    <v-list-tile-content>
-                      <v-list-tile-title>{{ panel.text }}</v-list-tile-title>
-                    </v-list-tile-content>
-                  </v-list-tile>
-                  <v-divider :key="panel.name"></v-divider>
-                </template>
-              </v-list>
-            </v-navigation-drawer>
+            <v-card style="border-radius:3px;background:unset;border:unset;box-shadow:unset;width:17rem;" class="mr-2">
+              <v-card-title style="background:#e09007;height:3.5rem;" class="pa-0 px-2">
+                <div class="subheading font-weight-medium" style="color:black;">{{$t('AccountPage.account_menu')}}</div>
+              </v-card-title>
+              <v-card-text class="pa-0">
+                <v-list dense class="pt-0 account-menu">
+                  
+                  <template v-for="(panel, i) in panelsSupplier" v-if="$store.getters.getRole=='supplier'">
+                    <v-list-tile
+                      class="title"
+                      v-if="panel.role == 'title'"
+                    >
+                      <v-list-tile-action>
+                        <v-icon color="#e09007">{{panel.icon}}</v-icon>
+                      </v-list-tile-action>
+                      <v-list-tile-content>
+                        <div class="body-2" style="color:#e19107">{{ panel.text }}</div>
+                      </v-list-tile-content>
+                    </v-list-tile>
+
+                    <v-list-tile
+                      v-else
+                      :key="i"
+                      :class="currentPanel == i ? 'tertiary2' : ''"
+                      @click="drawerClick(i)"
+                    >
+                      <v-list-tile-content>
+                        <div class="body-2" style="color:#c0c0c0">{{ panel.text }}</div>
+                      </v-list-tile-content>
+                    </v-list-tile>
+                  </template>
+
+                  <template v-for="(panel, i) in panelsUser" v-else>
+                    <v-list-tile
+                      class="title"
+                      v-if="panel.role == 'title'"
+                    >
+                      <v-list-tile-action>
+                        <v-icon color="#e09007">{{panel.icon}}</v-icon>
+                      </v-list-tile-action>
+                      <v-list-tile-content>
+                        <div class="body-2" style="color:#e19107">{{ panel.text }}</div>
+                      </v-list-tile-content>
+                    </v-list-tile>
+
+                    <v-list-tile
+                      v-else
+                      :key="i"
+                      :class="currentPanel == i ? 'tertiary2' : ''"
+                      @click="drawerClick(i)"
+                    >
+                      <v-list-tile-content>
+                        <div class="body-2" style="color:#c0c0c0">{{ panel.text }}</div>
+                      </v-list-tile-content>
+                    </v-list-tile>
+                  </template>
+                </v-list>
+              </v-card-text>
+            </v-card>
             <div class="panel">
-              <v-system-bar
+              <!-- <v-system-bar
                 status
                 color="primary"
                 height="32"
@@ -55,14 +84,15 @@
                   <v-icon>mdi-format-list-bulleted</v-icon>
                 </v-btn>
                 {{ panels[currentPanel].text }}
-              </v-system-bar>
-              <component :is="panels[currentPanel].name"></component>
+              </v-system-bar> -->
+              <component v-if="$store.getters.getRole=='supplier'" :is="panelsSupplier[currentPanel].name"></component>
+              <component v-else :is="panelsUser[currentPanel].name"></component>
             </div>
           </v-layout>
         </v-container>
       </v-fade-transition>
+      <core-footer />
     </v-content>
-    <core-footer />
   </v-app>
 </template>
 
@@ -74,7 +104,12 @@ export default {
       currentPanel: 0,
       drawer: false,
       hasSize: 0,
-      panels: [
+      panelsSupplier: [
+        {
+          icon: 'mdi-format-list-bulleted',
+          text: this.$t('AccountPage.account_activity'),
+          role:'title',
+        },
         {
           name: 'core-account-management-panel-my-bets',
           id: '#p_mybets',
@@ -90,6 +125,18 @@ export default {
           role:'user',
         },
         {
+          name: 'core-account-management-panel-income-expense',
+          id: '#p_income',
+          icon: 'mdi-cash-multiple',
+          text: this.$t('AccountPage.income_expense'),
+          role:'supplier',
+        },
+        {
+          icon: 'mdi-account',
+          text: this.$t('AccountPage.user_actions'),
+          role:'title',
+        },
+        {
           name: 'core-account-management-panel-user-list',
           id: '#p_users',
           icon: 'mdi-format-list-bulleted',
@@ -101,13 +148,6 @@ export default {
           id: '#p_userBalance',
           icon: 'mdi-wallet',
           text: this.$t('AccountPage.user_balance'),
-          role:'supplier',
-        },
-        {
-          name: 'core-account-management-panel-income-expense',
-          id: '#p_income',
-          icon: 'mdi-cash-multiple',
-          text: this.$t('AccountPage.income_expense'),
           role:'supplier',
         },
         {
@@ -125,43 +165,58 @@ export default {
           role:'user',
         }
       ],
+      panelsUser: [
+        {
+          icon: 'mdi-format-list-bulleted',
+          text: this.$t('AccountPage.account_activity'),
+          role:'title',
+        },
+        {
+          name: 'core-account-management-panel-my-bets',
+          id: '#p_mybets',
+          icon: 'mdi-calendar',
+          text: this.$t('AccountPage.my_bets'),
+          role:'user',
+        },
+        {
+          name: 'core-account-management-panel-account-activities',
+          id: '#p_activities',
+          icon: 'mdi-account',
+          text: this.$t('AccountPage.account_activities'),
+          role:'user',
+        },
+        {
+          icon: 'mdi-account',
+          text: this.$t('AccountPage.user_actions'),
+          role:'title',
+        },
+        {
+          name: 'core-account-management-panel-change-password',
+          id: '#p_chpwd',
+          icon: 'mdi-key-variant',
+          text: this.$t('AccountPage.change_password'),
+          role:'user',
+        }
+      ],
     }
   },
   watch: {
-    drawer: function(val) {
-      this.toggleDrawer(val)
-    }
+    // drawer: function(val) {
+    //   this.toggleDrawer(val)
+    // }
   },
   mounted() {
-    this.drawer = this.$vuetify.breakpoint.lgAndUp
-    this.toggleDrawer(this.drawer)
+    // this.drawer = this.$vuetify.breakpoint.lgAndUp
+    // this.toggleDrawer(this.drawer)
     if(localStorage.account_page != undefined){
       this.currentPanel = localStorage.account_page
-      localStorage.account_page = 0
     }
 
   },
   methods: {
-    toggleDrawer(val) {
-      let panel = document.getElementsByClassName('panel')[0]
-      let aside = document.getElementsByTagName('aside')[0]
-      if (!this.$vuetify.breakpoint.lgAndUp) {
-        aside.style.position = 'absolute'
-        setTimeout(() => {
-          if (val) {
-            aside.classList.add('pop')
-          } else {
-            aside.classList.remove('pop')
-          }
-        }, 100)
-        panel.classList.add('expand')
-      } else {
-        aside.style.position = 'unset'
-        panel.classList.remove('expand')
-      }
-    },
     drawerClick(panelNumber) {
       this.currentPanel = panelNumber
+      localStorage.account_page = panelNumber
     },
     setHasSize(){
       if (window.innerWidth >= 1450) {

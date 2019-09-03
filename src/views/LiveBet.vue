@@ -1,760 +1,268 @@
 <template>
-  <v-app dark style="min-width:1280px;">
+  <v-app dark style="min-width:1280px;background: url('/img/bingo_bet.jpg'); background-size: 100% 100%;">
     <!-- <core-filter/> -->
-    <core-header/>
-    <core-socket/>
-    <core-inactivity/>
-    <v-content>
-      <div id="core-view" class="fill-height">
+    <v-content class="main-content">
+      <core-header/>
+      <core-socket/>
+      <core-inactivity/>
+      <div id="core-view" style="background:black;">
         <v-fade-transition mode="out-in">
           <v-layout
             fill-height
-            pb-4
-            style="background: url('/img/bg_sports_betting.jpg'); background-size: 100% 100%;"
+            class="sports-betting-view pb-1"
+            style="background: url('/img/bingo_bet.jpg'); background-size: 100% 100%;height: calc(100vh - 175px);"
           >
-            <v-flex v-if="view == 0" xs10 class="pl-2 mt-2 mr-2 overview scroll-y" id="main-scroll" ref="matchTable">
-              <v-container style="max-width: unset;" class="fluid ma-0 pa-0 tertiary overview-menu" v-scroll:#main-scroll="onMainScrollPos">
-                <v-layout>
-                  <v-btn flat :class="view == 0 ? 'v-btn--active' : ''" @click="liveMenuSelected(0)">
-                    <v-icon>mdi-format-list-bulleted</v-icon>&nbsp;{{$t('Betting.overview')}}
-                  </v-btn>
-                  <v-btn flat :class="view == 1 ? 'v-btn--active' : ''" @click="liveMenuSelected(1)">
-                    <v-icon>mdi-folder-outline</v-icon>&nbsp;{{$t('Betting.event_view')}}
-                  </v-btn>
-                  <!-- <v-btn flat>
-                    <v-icon>mdi-calendar</v-icon>&nbsp;Calendar
-                  </v-btn> -->
-                </v-layout>
-                <v-layout>
-                  <v-btn-toggle v-model="toggle_sports" class="toggle-sports tertiary" mandatory>
-                    <v-btn
-                      v-for="(sport, sportIndex) in $store.getters.getLiveSports"
-                      :key="sportIndex"
-                      :class="sportID == sport.sportID ? 'tertiary' : ''"
-                      @click="sportMenuSelected(sport.sportID)"
-                    >
-                      <div class="mr-1" :class="`sport-title-icon ds-sport-icon ds-icon-${sport.sportID}`"></div>
-                      &nbsp;{{sport.name}}
-                    </v-btn>
-                  </v-btn-toggle>
-                </v-layout>
-                <v-layout column v-if="Object.keys(overViewList).length > 0" class="mt-2">
-                  <v-data-table
-                    v-for="(table, index) in setOverviewOrderList()"
-                    :id="`livetable_${index}`"
-                    :key="index"
-                    :headers="table.headers"
-                    :items="Object.values(table.data.dataList)"
-                    class="elevation-1"
-                    :pagination.sync="pagination"
-                    hide-actions
+            <v-flex xs10 class="pl-2 mt-2 mr-2 overview scroll-y" id="main-scroll" ref="matchTable">
+              <v-layout v-if="!is_refresh_page" column class="pa-0" v-scroll:#main-scroll="onMainScrollPos" >
+                <v-card color="black" height="60" class="overflow-hidden mb-3">
+                  <v-img
+                    :src="`/img/prematch_banner/${getBoardSportImage()}.png`"
+                    height="120"
+                    width="120"
+                    class="prematch-game-img"
+                  ></v-img>
+                  <div class="d-flex align-center justify-start">
+                    <img :src="`/img/prematch_banner/${getBoardSportImage()}_small.png`" height="19" width="19" style="margin-left:1rem;"/>
+                  <v-subheader class="board-name headline ma-2 px-0">{{$t('Betting.live_now')}}!</v-subheader>
+                  </div>
+                </v-card>
+                <v-tabs
+                  v-model="toggle_sports"
+                  color="#494949"
+                  hide-slider
+                  height="35"
+                  dark
+                  show-arrows
+                  class="sport-menu-list"
+                  style="border:1px;border-radius:3px;"
+                >
+                  <v-tab
+                    v-for="(sport, sportIndex) in $store.getters.getLiveSports"
+                    :key="sportIndex"
+                    ripple
+                    @click="sportMenuSelected(sport.sportID)"
                   >
-                    <template slot="headers" slot-scope="props">
+                    <div class="mr-1" :class="`sport-title-icon ds-sport-icon ds-icon-${sport.sportID}`"></div>
+                    {{sport.name}}
+                  </v-tab>
+                </v-tabs>
+                <template v-if="Object.keys(overViewList).length > 0">
+                  <v-layout row align-center justify-center class="px-2" style="background:#393939;">
+                    <table style="width:100%;">
                       <tr>
-                        <th
-                          v-for="(header, id) in props.headers"
-                          :key="id"
-                          :class="`text-xs-${header.align}`"
-                          :width="header.width"
-                        >
-                          <v-layout column v-if="header.cell != undefined">
-                            <template v-if="header.specialCell">
-                              <v-flex :class="`offset-xs${12/header.cellCount}`">{{header.text}}</v-flex>
-                            </template>
-                            <template v-else>
-                              <v-flex>{{header.text}}</v-flex>
-                            </template>
-                            <v-flex>
-                              <v-layout row>
-                                <v-flex
-                                  :v-if="header.specialCell"
-                                  :class="`xs${12/header.cellCount}`"
-                                ></v-flex>
-                                <v-flex
-                                  v-for="(cell, cellIndex) in header.cell"
-                                  :key="cellIndex"
-                                  :class="`xs${12/header.cellCount}`"
-                                >{{cell.name}}</v-flex>
-                              </v-layout>
-                            </v-flex>
-                          </v-layout>
-                          <span v-else>{{header.text}}</span>
-                          <v-layout align-center justify-center v-if="header.sportID || header.countryFlag">
-                            <div v-if="header.sportID"
-                              style="margin-right:1rem"
-                              :class="`sport-title-icon ds-sport-icon ds-icon-${header.sportID}`">
-                            </div>
-                            <img
-                              v-if="header.countryFlag"
-                              :src="header.countryFlag"
-                              class="sb-icon"
-                            />
+                        <th v-for="(header, id) in Object.values(this.overViewList)[0].headers" :key="id" :width="header.width">
+                          <v-layout class="my-1">
+                            <v-flex v-if="header.cell != undefined && header.specialCell" :class="`offset-xs${12/header.cellCount} body-2 font-weight-regular`" style="color:white">{{header.text}}</v-flex>
+                            <v-flex v-else-if="header.cell != undefined" class="body-2 font-weight-regular" style="color:white">{{header.text}}</v-flex>
                           </v-layout>
                         </th>
                       </tr>
-                    </template>
-                    <template v-slot:items="props">
+                    </table>
+                  </v-layout>
+                  <v-layout
+                    column
+                    justify-center align-center
+                    class="ma-0 pa-0"
+                    style="background:#171717">
+
+                    <table style="width:100%;" class="px-2">
                       <tr>
-                        <td
-                          class="text-xs-center"
-                        >{{ props.item.liveMinute}}</td>
-
-                        <td class="text-xs-left">{{props.item.homeTeam+' - '+props.item.awayTeam}}</td>
-                        <td class="text-xs-center green--text subheading font-weight-bold">{{ props.item.liveScoreHome+" - "+props.item.liveScoreAway }}</td>
-                        <td
-                          class="text-xs-center"
-                          v-for="(oddType, oddTypeIdx) in liveOddTypeRules.oddRules[table.data.sportAlias].oddTypes"
-                        >
-                          <v-layout row style="height:80%;">
-                            <v-flex d-flex
-                              v-if="liveOddTypeRules.oddRules[table.data.sportAlias].hasSpecial[oddTypeIdx]"
-                              :class="`ma-1 align-center xs${12/(liveOddTypeRules.lineRules[oddType].length+1)}`"
-                            >
-                              <div class="yellow--text text--darken-4" v-if="props.item.oddTypes[oddType] != undefined && props.item.oddTypes[oddType].lines[0][0].special > 0">
-                                {{props.item.oddTypes[oddType].lines[0][0].special}}
-                              </div>
-                              <div v-else>
-                                <!-- <v-icon color="grey"> mdi-lock-outline</v-icon> -->
-                              </div>
-                            </v-flex>
-                            <template v-for="(oddCell, oddCellIdx) in liveOddTypeRules.lineRules[oddType]">
-                              <v-flex d-flex
-                                v-if="props.item.oddTypes[oddType] != undefined && props.item.oddTypes[oddType].lines[0][oddCellIdx] != undefined &&
-                                  props.item.oddTypes[oddType].lines[0][oddCellIdx].value > 0 && props.item.oddTypes[oddType].lines[0][oddCellIdx].isSuspended == 0 && isClosedTime(props.item.liveMinute, table.data.sportAlias)"
-                                :class="`ma-1 align-center tableCell xs${12/(liveOddTypeRules.lineRules[oddType].length +
-                                  (liveOddTypeRules.oddRules[table.data.sportAlias].hasSpecial[oddTypeIdx] ? 1 : 0))} ${props.item.oddTypes[oddType].lines[0][oddCellIdx].changes != undefined?props.item.oddTypes[oddType].lines[0][oddCellIdx].changes:''} ${is_betslip_odd(props.item.eventID, props.item.oddTypes[oddType].oddTypeID, props.item.oddTypes[oddType].lines[0][oddCellIdx].oddID)?'active':''}`"
-                                @click="update_betslip('live', props.item.eventID, props.item.homeTeam, props.item.awayTeam, props.item.oddTypes[oddType].oddTypeID, props.item.oddTypes[oddType].name,
-                                  props.item.oddTypes[oddType].lines[0][oddCellIdx].oddID, props.item.oddTypes[oddType].lines[0][oddCellIdx].value, props.item.oddTypes[oddType].lines[0][oddCellIdx].name, props.item.oddTypes[oddType].lines[0][oddCellIdx].special, props.item.oddTypes[oddType].lines[0][oddCellIdx].isSuspended==undefined?0:props.item.oddTypes[oddType].lines[0][oddCellIdx].isSuspended)"
-                              >
-                                <div>{{props.item.oddTypes[oddType].lines[0][oddCellIdx].value}}</div>
-                              </v-flex>
-
-                              <v-flex d-flex
-                                v-else
-                                :class="`ma-1 align-center xs${12/(liveOddTypeRules.lineRules[oddType].length +
-                                  (liveOddTypeRules.oddRules[table.data.sportAlias].hasSpecial[oddTypeIdx] ? 1 : 0))}`"
-                              >
-                                <div>
-                                  <v-icon color="grey">mdi-lock-outline</v-icon>
-                                </div>
-                                <!-- <div v-if="props.item.oddTypes != undefined && props.item.oddTypes[oddType] != undefined && props.item.oddTypes[oddType].lines[0][oddCellIdx] != undefined">
-                                  {{props.item.oddTypes[oddType].lines[0][oddCellIdx].value}}
-                                  {{props.item.oddTypes[oddType].lines[0][oddCellIdx].isSuspended}}
-                                </div> -->
+                        <th v-for="(header, id) in Object.values(this.overViewList)[0].headers" :key="id" :width="header.width" style="padding: 0px 6px;">
+                          <v-layout class="my-1">
+                            <template v-if="header.cell != undefined">
+                              <v-flex>
+                                <v-layout>
+                                  <v-flex
+                                    :v-if="header.specialCell"
+                                    :class="`xs${12/header.cellCount}`"
+                                  ></v-flex>
+                                  <v-flex
+                                    v-for="(cell, cellIndex) in header.cell"
+                                    :key="cellIndex"
+                                    :class="`xs${12/header.cellCount} body-2 font-weight-regular`"
+                                     style="color:white"
+                                  >{{cell.name}}</v-flex>
+                                </v-layout>
                               </v-flex>
                             </template>
+                            <div v-else-if="id==0" class="body-2 font-weight-regular ml-4" style="color:white">{{header.text}}</div>
+                            <v-flex v-else class="body-2 font-weight-regular" style="color:white">{{header.text}}</v-flex>
                           </v-layout>
-                        </td>
-
-                        <td class="text-xs-center">
-                          <div
-                            class="align-center marketCell"
-                            @click="gotoEventView(props.item.eventID)"
-                          >+{{ props.item.marketCount }}</div>
-                        </td>
+                        </th>
                       </tr>
-                    </template>
-                  </v-data-table>
-                </v-layout>
-                <v-layout v-else-if="Object.keys(overViewList).length == 0 && is_updating_page==false"
-                column
-                justify-center align-center
-                class="ma-2">
-                  <v-flex d-flex class="ma-2" style="height:4.1rem">
-                    <span class="headline">{{$t('Betting.no_data_available')}}</span>
-                  </v-flex>
-                </v-layout>
-              </v-container>
-              <!-- <v-layout align-center justify-center>
-                <v-progress-circular
-                  v-if="is_updating_page == true"
-                  :size="70"
-                  :width="7"
-                  color="green"
-                  indeterminate
-                ></v-progress-circular>
-              </v-layout> -->
-              <v-layout v-if="is_updating_page" justify-center align-center>
-                <v-flex>
-                  <ScaleLoader
-                    class="scale-loader"
-                    :loading="is_updating_page"
-                    color="lawngreen"
-                    :height=100
-                    :width=10
-                    :radius=1
-                    margin="2px"
-                    sizeUnit="px"
-                  />
-                </v-flex>
-              </v-layout>
-            </v-flex>
-            <v-flex v-if="view == 1" xs2 class="pl-2 mt-2 eventview scroll-y" style="min-width:250px;">
-              <v-expansion-panel v-model="expandEventViewPanel" expand>
-                <v-expansion-panel-content expand-icon="mdi-menu-down" class="tertiary">
-                  <template v-slot:header>
-                    <div class="d-flex align-center subheading">
-                      <div><v-icon color="yellow">mdi-star</v-icon></div>
-                      <div style="width:100%;">{{$t('Betting.favourites')}}</div>
-                    </div>
-                  </template>
-                  <v-card color="tertiary">
-                    <template v-if="favouriteScoreList.length == 0">
-                      <v-card-text style="border: 1px solid grey;">
-                        {{$t('Betting.to_select_favourites')}}
-                      </v-card-text>
-                    </template>
-                    <template v-else>
-                      <div v-for="event in favouriteScoreList" @click="getLiveEventSingle(event.eventID)" style="cursor:pointer;" :class="`matchScoreList ${is_event_selected(event.eventID)?'active':''}`">
-                        <v-divider></v-divider>
-                        <v-list-tile ripple class="pt-2 pb-2">
-                          <v-list-tile-avatar>
-                            <v-icon @click.stop="favouriteSelect(1, event.eventID, event.sportID, event.leagueID)" color="yellow">mdi-star</v-icon>
-                          </v-list-tile-avatar>
-                          <v-list-tile-content>
-                            <v-list-tile-title>
-                              <v-layout>
-                                <v-flex xs8 class="text-xs-left score-list">
-                                  {{event.homeTeam}}
-                                  <br>
-                                  {{event.awayTeam}}
-
-                                </v-flex>
-                                <v-flex xs4 class="text-xs-right">
-                                  <span
-                                    class="score"
-                                  >{{event.liveScoreHome}}:{{event.liveScoreAway}}</span>
-                                  <br>
-                                  <span class="time">
-                                    {{event.liveMinute}}
-                                  </span>
-                                </v-flex>
-                              </v-layout>
-                            </v-list-tile-title>
-                          </v-list-tile-content>
-                        </v-list-tile>
-                      </div>
-                    </template>
-                    <v-text-field
-                      v-model="searchEventScoreStr"
-                      append-icon="mdi-magnify"
-                      class="mt-2"
-                      :label='$t("Betting.event_search")'
-                      solo-inverted
-                      hide-details
-                    ></v-text-field>
-                  </v-card>
-                </v-expansion-panel-content>
-
-                <v-expansion-panel-content
-                  expand-icon="mdi-menu-down"
-                  v-for="(sport, idx) in liveEventScoreList"
-                  :key="sport.sportID"
-                  v-if="sport != null"
-                >
-                  <template v-slot:header>
-                    <div class="d-flex align-center body-1 font-weight-bold">
-                      <div :class="`sport-title-icon ds-sport-icon ds-icon-${sport.sportID}`"></div>
-                      <span style="width:100%; float:left; margin-left:5px">{{ sport.sportName }}</span>
-                    </div>
-                  </template>
-                    <v-expansion-panel-content
-                      class="tertiary" expand-icon=""
-                      v-for="league in sport.leagues" :key="league.leagueID"
+                    </table>
+                    <v-data-table
+                      v-for="(table, index) in setOverviewOrderList()"
+                      v-if="Object.values(table.data.dataList).length > 0"
+                      :headers="table.headers"
+                      :key="index"
+                      :items="Object.values(table.data.dataList)"
+                      class="live-table px-2"
+                      hide-headers
+                      hide-actions
+                      item-key="eventID"
+                      style="width:100%;"
                     >
-                    <template v-slot:header>
-                      <div class="d-flex align-center caption font-weight-regular tertiary1">
-                        <img :src="`/img/country_flag/${league.countryFlag}`" style="width:20px;height:13px;">
-                        <span style="width:100%; float:left; margin-left:5px">{{ league.leagueName }}</span>
-                      </div>
-                    </template>
-                    <div v-for="event in league.events" @click="getLiveEventSingle(event.eventID)" style="cursor:pointer;" :class="`matchScoreList ${is_event_selected(event.eventID)?'active':''}`">
-                      <v-divider></v-divider>
-                      <v-list-tile ripple class="pt-2 pb-2">
-                        <v-list-tile-avatar>
-                          <v-icon @click.stop="favouriteSelect(0, event.eventID, sport.sportID, league.leagueID)" class="starIcon">mdi-star</v-icon>
-                        </v-list-tile-avatar>
-                        <v-list-tile-content>
-                          <v-list-tile-title>
-                            <v-layout>
-                              <v-flex xs8 class="text-xs-left score-list caption font-weight-thin">
-                                {{event.homeTeam}}
-                                <br>
-                                {{event.awayTeam}}
-                              </v-flex>
-                              <v-flex xs4 class="text-xs-right">
-                                <span
-                                  class="score"
-                                >{{event.liveScoreHome}}:{{event.liveScoreAway}}</span>
-                                <br>
-                                <span class="time">
-                                  {{event.liveMinute}}
-                                </span>
-                              </v-flex>
+                      <template v-slot:items="props">
+                        <tr>
+                          <td
+                            class="text-xs-left"
+                            :width="table.headers[0].width"
+                          >
+                            <v-layout row justify-start align-center>
+                              <div v-if="table.headers[0].sportID"
+                                style="margin-right:1rem"
+                                :class="`sport-title-icon ds-sport-icon ds-icon-${table.headers[0].sportID}`">
+                              </div>
+                              <div>
+                                {{props.item.homeTeam}}
+                                <br/>
+                                {{props.item.awayTeam}}
+                              </div>
                             </v-layout>
-                          </v-list-tile-title>
-                        </v-list-tile-content>
-                      </v-list-tile>
-                    </div>
-                    </v-expansion-panel-content>
-                </v-expansion-panel-content>
-              </v-expansion-panel>
-            </v-flex>
-            <v-flex v-if="view == 1" xs8 class="eventview mx-1 mt-2 scroll-y">
+                          </td>
 
-              <v-container fluid class="pa-0 ma-0 tertiary" v-if="is_updating_page == false">
-                <v-layout>
-                  <v-btn flat :class="view == 0 ? 'v-btn--active' : ''" @click="liveMenuSelected(0)">
-                    <v-icon>mdi-format-list-bulleted</v-icon>&nbsp;{{$t('Betting.overview')}}
-                  </v-btn>
-                  <v-btn flat :class="view == 1 ? 'v-btn--active' : ''" @click="liveMenuSelected(1)">
-                    <v-icon>mdi-folder-outline</v-icon>&nbsp;{{$t('Betting.event_view')}}
-                  </v-btn>
-                  <v-spacer>
-                  </v-spacer>
-                    <!-- <v-icon>mdi-calendar</v-icon>&nbsp;Calendar -->
-                  <v-layout align-center justify-end style="margin-right:20px;">
-                    <v-layout row wrap align-center justify-center fill-height :class="`market-row ${marketRow==1?'active':''}`" @click="selectMarketRow(1)">
-                      <v-flex xs12 v-for="n in (1, 3)" :key="n">
-                        <div class="market-row-line"></div>
-                      </v-flex>
-                    </v-layout>
-                    <v-layout row wrap align-center justify-center fill-height :class="`market-row ${marketRow==2?'active':''}`" @click="selectMarketRow(2)">
-                      <v-flex xs6 v-for="n in (1, 6)" :key="n">
-                        <div class="market-row-line"></div>
-                      </v-flex>
-                    </v-layout>
-                    <v-layout row wrap align-center justify-center fill-height :class="`market-row ${marketRow==3?'active':''}`" @click="selectMarketRow(3)">
-                      <v-flex xs4 v-for="n in (1, 9)" :key="n">
-                        <div class="market-row-line"></div>
-                      </v-flex>
-                    </v-layout>
-                  </v-layout>
-                </v-layout>
-                <v-layout>
-                  <v-img :src="`/img/${eventViewList.sportAlias}board.png`">
-                    <!-- <v-flex class="black" style="opacity: .4; height: 100%;"></v-flex> -->
-                    <v-flex
-                      style="position: relative; left: 0px;"
-                      v-if="eventViewList != undefined && Object.keys(eventViewList).length > 0"
-                    >
-                      <v-layout class="pa-3 pt-1">
-                        <v-flex>
-                          <img :src="`/img/country_flag/${eventViewList.categoryAlias}.png`" style="width:20px;height:13px;margin-right:10px;">
-                          <span class="subheading">{{eventViewList.sportName}} - {{eventViewList.leagueName}}</span>
-                        </v-flex>
-                      </v-layout>
-                      <v-layout class="pa-3" align-center justifiy-center>
-                        <v-flex offset-xs3 xs6 d-flex>
-                          <table v-if="eventViewList.sportAlias =='soccer'" cellspacing="0" cellpadding="0" class="scoreboard-table">
-                            <tr>
-                              <th class="text-xs-left" style="padding-left:10px;" width="*">
-                                <span v-if="eventViewList.liveGamePeriod != undefined && (eventViewList.liveGamePeriod.toLowerCase() == 'ht' || eventViewList.liveGamePeriod.toLowerCase() == 'live')">{{eventViewList.liveGamePeriod}}</span>
-                                <span v-else-if="eventViewList.liveMinute != undefined">{{eventViewList.liveMinute}}</span>
-                              </th>
-                              <th class="text-xs-center" width="8%">
-                                <img src="/img/corner.png">
-                              </th>
-                              <th class="text-xs-center" width="8%">
-                                <img src="/img/yellowcard.png">
-                              </th>
-                              <th class="text-xs-center" width="8%">
-                                <img src="/img/redcard.png">
-                              </th>
-                              <th class="text-xs-center" width="8%">
-                                <img src="/img/foul.png">
-                              </th>
-                              <th class="text-xs-center" width="8%">
-                                <img src="/img/goal.png">
-                              </th>
-                            </tr>
-                            <tr>
-                              <td class="text-xs-left" style="padding-left:10px;">
-                                <span>{{eventViewList.homeTeam}}</span>
-                              </td>
-                              <td class="text-xs-center">
-                                <span v-if="eventViewList.scores != undefined && eventViewList.scores['ft-corners'] != undefined">{{eventViewList.scores['ft-corners'].home}}</span>
-                                <span v-else>-</span>
-                              </td>
-                              <td class="text-xs-center">
-                                <span v-if="eventViewList.scores != undefined && eventViewList.scores['ft-yellow_cards'] != undefined">{{eventViewList.scores['ft-yellow_cards'].home}}</span>
-                                <span v-else>-</span>
-                              </td>
-                              <td class="text-xs-center">
-                                <span v-if="eventViewList.scores != undefined && eventViewList.scores['ft-red_cards'] != undefined">{{eventViewList.scores['ft-red_cards'].home}}</span>
-                                <span v-else>-</span>
-                              </td>
-                              <td class="text-xs-center">
-                                <span>-</span>
-                              </td>
-                              <td class="text-xs-center">
-                                <span class="livescore">{{eventViewList.liveScoreHome}}</span>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td class="text-xs-left" style="padding-left:10px;">
-                                <span>{{eventViewList.awayTeam}}</span>
-                              </td>
-                              <td class="text-xs-center">
-                                <span v-if="eventViewList.scores != undefined && eventViewList.scores['ft-corners'] != undefined">{{eventViewList.scores['ft-corners'].away}}</span>
-                                <span v-else>-</span>
-                              </td>
-                              <td class="text-xs-center">
-                                <span v-if="eventViewList.scores != undefined && eventViewList.scores['ft-yellow_cards'] != undefined">{{eventViewList.scores['ft-yellow_cards'].away}}</span>
-                                <span v-else>-</span>
-                              </td>
-                              <td class="text-xs-center">
-                                <span v-if="eventViewList.scores != undefined && eventViewList.scores['ft-red_cards'] != undefined">{{eventViewList.scores['ft-red_cards'].away}}</span>
-                                <span v-else>-</span>
-                              </td>
-                              <td class="text-xs-center">
-                                <span>-</span>
-                              </td>
-                              <td class="text-xs-center">
-                                <span class="livescore">{{eventViewList.liveScoreAway}}</span>
-                              </td>
-                            </tr>
-                          </table>
+                          <td class="text-xs-center" :width="table.headers[1].width">
+                            {{ props.item.liveScoreHome+" - "+props.item.liveScoreAway }}
+                            <br/>
+                            {{ props.item.liveGamePeriod }}
+                            <br/>
+                            {{ props.item.liveMinute }}
+                          </td>
+                          <td
+                            v-for="(oddType, oddTypeIdx) in liveOddTypeRules.oddRules[table.data.sportAlias].oddTypes"
+                            class="text-xs-center" :width="table.headers[2+oddTypeIdx].width"
+                          >
+                            <v-layout row style="height:80%;">
+                              <v-flex d-flex
+                                v-if="liveOddTypeRules.oddRules[table.data.sportAlias].hasSpecial[oddTypeIdx] && props.item.oddTypes[oddType] != undefined && props.item.oddTypes[oddType].lines[0][0].special > 0"
+                                :class="`ma-0 my-2 align-center specialCell xs${12/(liveOddTypeRules.lineRules[oddType].length+1)}`"
+                              >
+                                <div class="yellow--text text--darken-4 font-weight-medium" v-if="props.item.oddTypes[oddType] != undefined && props.item.oddTypes[oddType].lines[0][0].special > 0">
+                                  {{props.item.oddTypes[oddType].lines[0][0].special}}
+                                </div>
+                              </v-flex>
+                              <v-flex d-flex v-else :class="`ma-0 my-2 align-center xs${12/(liveOddTypeRules.lineRules[oddType].length+1)}`">
+                              </v-flex>  
+                              <template v-for="(oddCell, oddCellIdx) in liveOddTypeRules.lineRules[oddType]">
+                                <v-flex d-flex
+                                  v-if="props.item.oddTypes[oddType] != undefined && props.item.oddTypes[oddType].lines[0][oddCellIdx] != undefined &&
+                                    props.item.oddTypes[oddType].lines[0][oddCellIdx].value > 0 && props.item.oddTypes[oddType].lines[0][oddCellIdx].isSuspended == 0 && isClosedTime(props.item.liveMinute, table.data.sportAlias)"
+                                  :class="`ma-0 my-2 align-center tableCell xs${12/(liveOddTypeRules.lineRules[oddType].length +
+                                    (liveOddTypeRules.oddRules[table.data.sportAlias].hasSpecial[oddTypeIdx] ? 1 : 0))} ${props.item.oddTypes[oddType].lines[0][oddCellIdx].changes != undefined?props.item.oddTypes[oddType].lines[0][oddCellIdx].changes:''} ${is_betslip_odd(props.item.eventID, props.item.oddTypes[oddType].oddTypeID, props.item.oddTypes[oddType].lines[0][oddCellIdx].oddID)?'active':''}`"
+                                  @click="update_betslip('live', props.item.eventID, props.item.homeTeam, props.item.awayTeam, props.item.oddTypes[oddType].oddTypeID, props.item.oddTypes[oddType].name,
+                                    props.item.oddTypes[oddType].lines[0][oddCellIdx].oddID, props.item.oddTypes[oddType].lines[0][oddCellIdx].value, props.item.oddTypes[oddType].lines[0][oddCellIdx].name, props.item.oddTypes[oddType].lines[0][oddCellIdx].special, props.item.oddTypes[oddType].lines[0][oddCellIdx].isSuspended==undefined?0:props.item.oddTypes[oddType].lines[0][oddCellIdx].isSuspended)"
+                                >
+                                  <div class="captiong font-weight-medium" style="color:black;z-index:1;">{{props.item.oddTypes[oddType].lines[0][oddCellIdx].value}}</div>
+                                </v-flex>
 
-                          <table v-else-if="eventViewList.sportAlias =='volleyball'" cellspacing="0" cellpadding="0" class="scoreboard-table">
-                            <tr>
-                              <th class="text-xs-left" style="padding-left:10px;" width="*">
-                                <span v-if="eventViewList.liveClockIsStopped == false">{{eventViewList.liveMinute}}</span>
-                                <span v-else-if="eventViewList.liveClockIsStopped == true && eventViewList.liveGamePeriod != undefined">{{eventViewList.liveGamePeriod}}</span>
-                              </th>
-                              <th class="text-xs-center" width="8%">
-                                <span>1S</span>
-                              </th>
-                              <th class="text-xs-center" width="8%">
-                                <span>2S</span>
-                              </th>
-                              <th class="text-xs-center" width="8%">
-                                <span>3S</span>
-                              </th>
-                              <th class="text-xs-center" width="8%">
-                                <span>S</span>
-                              </th>
-                            </tr>
-                            <tr>
-                              <td class="text-xs-left" style="padding-left:10px;">
-                                <span>{{eventViewList.homeTeam}}</span>
-                              </td>
-                              <td class="text-xs-center">
-                                <span v-if="eventViewList.scores != undefined && eventViewList.scores['1s-points'] != undefined">{{eventViewList.scores['1s-points'].home}}</span>
-                                <span v-else>-</span>
-                              </td>
-                              <td class="text-xs-center">
-                                <span v-if="eventViewList.scores != undefined && eventViewList.scores['2s-points'] != undefined">{{eventViewList.scores['2s-points'].home}}</span>
-                                <span v-else>-</span>
-                              </td>
-                              <td class="text-xs-center">
-                                <span v-if="eventViewList.scores != undefined && eventViewList.scores['3s-points'] != undefined">{{eventViewList.scores['3s-points'].home}}</span>
-                                <span v-else>-</span>
-                              </td>
-                              <td class="text-xs-center">
-                                <span class="livescore" v-if="eventViewList.scores != undefined && eventViewList.scores['ft-sets'] != undefined">{{eventViewList.scores['ft-sets'].home}}</span>
-                                <span class="livescore" v-else>-</span>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td class="text-xs-left" style="padding-left:10px;">
-                                <span>{{eventViewList.homeTeam}}</span>
-                              </td>
-                              <td class="text-xs-center">
-                                <span v-if="eventViewList.scores != undefined && eventViewList.scores['1s-points'] != undefined">{{eventViewList.scores['1s-points'].away}}</span>
-                                <span v-else>-</span>
-                              </td>
-                              <td class="text-xs-center">
-                                <span v-if="eventViewList.scores != undefined && eventViewList.scores['2s-points'] != undefined">{{eventViewList.scores['2s-points'].away}}</span>
-                                <span v-else>-</span>
-                              </td>
-                              <td class="text-xs-center">
-                                <span v-if="eventViewList.scores != undefined && eventViewList.scores['3s-points'] != undefined">{{eventViewList.scores['3s-points'].away}}</span>
-                                <span v-else>-</span>
-                              </td>
-                              <td class="text-xs-center">
-                                <span class="livescore" v-if="eventViewList.scores != undefined && eventViewList.scores['ft-sets'] != undefined">{{eventViewList.scores['ft-sets'].away}}</span>
-                                <span class="livescore" v-else>-</span>
-                              </td>
-                            </tr>
-                          </table>
+                                <v-flex d-flex
+                                  v-else
+                                  :class="`ma-0 my-2 lockCell align-center xs${12/(liveOddTypeRules.lineRules[oddType].length +
+                                    (liveOddTypeRules.oddRules[table.data.sportAlias].hasSpecial[oddTypeIdx] ? 1 : 0))}`"
+                                >
+                                  <div>
+                                    <v-icon color="#d98808" style="font-size:1.5rem !important;">mdi-lock</v-icon>
+                                  </div>
+                                </v-flex>
+                              </template>
+                            </v-layout>
+                          </td>
 
-                          <table v-else-if="eventViewList.sportAlias =='tennis'" cellspacing="0" cellpadding="0" class="scoreboard-table">
-                            <tr>
-                              <th class="text-xs-left" style="padding-left:10px;" width="*">
-                                <span v-if="eventViewList.liveClockIsStopped == false">{{eventViewList.liveMinute}}</span>
-                                <span v-else-if="eventViewList.liveClockIsStopped == true && eventViewList.liveGamePeriod != undefined">{{eventViewList.liveGamePeriod}}</span>
-                              </th>
-                              <th class="text-xs-center" width="8%">
-                                <span>1S</span>
-                              </th>
-                              <th class="text-xs-center" width="8%">
-                                <span>2S</span>
-                              </th>
-                              <th class="text-xs-center" width="8%">
-                                <span>3S</span>
-                              </th>
-                              <th class="text-xs-center" width="8%">
-                                <span>S</span>
-                              </th>
-                              <th class="text-xs-center" width="8%">
-                                <span>P</span>
-                              </th>
-                            </tr>
-                            <tr>
-                              <td class="text-xs-left" style="padding-left:10px;">
-                                <span>{{eventViewList.homeTeam}}</span>
-                              </td>
-                              <td class="text-xs-center">
-                                <span v-if="eventViewList.scores != undefined && eventViewList.scores['1s-games'] != undefined">{{eventViewList.scores['1s-games'].home}}</span>
-                                <span v-else>-</span>
-                              </td>
-                              <td class="text-xs-center">
-                                <span v-if="eventViewList.scores != undefined && eventViewList.scores['2s-games'] != undefined">{{eventViewList.scores['2s-games'].home}}</span>
-                                <span v-else>-</span>
-                              </td>
-                              <td class="text-xs-center">
-                                <span v-if="eventViewList.scores != undefined && eventViewList.scores['3s-games'] != undefined">{{eventViewList.scores['3s-games'].home}}</span>
-                                <span v-else>-</span>
-                              </td>
-                              <td class="text-xs-center">
-                                <span v-if="eventViewList.scores != undefined && eventViewList.scores['ft-sets'] != undefined">{{eventViewList.scores['ft-sets'].home}}</span>
-                                <span v-else>-</span>
-                              </td>
-                              <td class="text-xs-center">
-                                <span class="livescore" v-if="eventViewList.scores != undefined && eventViewList.scores['ft-games'] != undefined">{{eventViewList.scores['ft-games'].home}}</span>
-                                <span class="livescore" v-else>-</span>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td class="text-xs-left" style="padding-left:10px;">
-                                <span>{{eventViewList.homeTeam}}</span>
-                              </td>
-                              <td class="text-xs-center">
-                                <span v-if="eventViewList.scores != undefined && eventViewList.scores['1s-games'] != undefined">{{eventViewList.scores['1s-games'].away}}</span>
-                                <span v-else>-</span>
-                              </td>
-                              <td class="text-xs-center">
-                                <span v-if="eventViewList.scores != undefined && eventViewList.scores['2s-games'] != undefined">{{eventViewList.scores['2s-games'].away}}</span>
-                                <span v-else>-</span>
-                              </td>
-                              <td class="text-xs-center">
-                                <span v-if="eventViewList.scores != undefined && eventViewList.scores['3s-games'] != undefined">{{eventViewList.scores['3s-games'].away}}</span>
-                                <span v-else>-</span>
-                              </td>
-                              <td class="text-xs-center">
-                                <span v-if="eventViewList.scores != undefined && eventViewList.scores['ft-sets'] != undefined">{{eventViewList.scores['ft-sets'].away}}</span>
-                                <span v-else>-</span>
-                              </td>
-                              <td class="text-xs-center">
-                                <span class="livescore" v-if="eventViewList.scores != undefined && eventViewList.scores['ft-games'] != undefined">{{eventViewList.scores['ft-games'].away}}</span>
-                                <span class="livescore" v-else>-</span>
-                              </td>
-                            </tr>
-                          </table>
-
-                          <table v-else-if="eventViewList.sportAlias =='basketball'" cellspacing="0" cellpadding="0" class="scoreboard-table">
-                            <tr>
-                              <th class="text-xs-left" style="padding-left:10px;" width="*">
-                                <span v-if="eventViewList.liveClockIsStopped == false">{{eventViewList.liveMinute}}</span>
-                                <span v-else-if="eventViewList.liveClockIsStopped == true && eventViewList.liveGamePeriod != undefined">{{eventViewList.liveGamePeriod}}</span>
-                              </th>
-                              <th class="text-xs-center" width="8%">
-                                <span>1Q</span>
-                              </th>
-                              <th class="text-xs-center" width="8%">
-                                <span>2Q</span>
-                              </th>
-                              <th class="text-xs-center" width="8%">
-                                <span>HT</span>
-                              </th>
-                              <th class="text-xs-center" width="8%">
-                                <span>3Q</span>
-                              </th>
-                              <th class="text-xs-center" width="8%">
-                                <span>4Q</span>
-                              </th>
-                              <th class="text-xs-center" width="8%">
-                                <span>P</span>
-                              </th>
-                            </tr>
-                            <tr>
-                              <td class="text-xs-left" style="padding-left:10px;">
-                                <span>{{eventViewList.homeTeam}}</span>
-                              </td>
-                              <td class="text-xs-center">
-                                <span v-if="eventViewList.scores != undefined && eventViewList.scores['1q-points'] != undefined">{{eventViewList.scores['1q-points'].home}}</span>
-                                <span v-else>-</span>
-                              </td>
-                              <td class="text-xs-center">
-                                <span v-if="eventViewList.scores != undefined && eventViewList.scores['2q-points'] != undefined">{{eventViewList.scores['2q-points'].home}}</span>
-                                <span v-else>-</span>
-                              </td>
-                              <td class="text-xs-center">
-                                <span v-if="eventViewList.scores != undefined && eventViewList.scores['ht-points'] != undefined">{{eventViewList.scores['ht-points'].home}}</span>
-                                <span v-else>-</span>
-                              </td>
-                              <td class="text-xs-center">
-                                <span v-if="eventViewList.scores != undefined && eventViewList.scores['3q-points'] != undefined">{{eventViewList.scores['3q-points'].home}}</span>
-                                <span v-else>-</span>
-                              </td>
-                              <td class="text-xs-center">
-                                <span v-if="eventViewList.scores != undefined && eventViewList.scores['4q-points'] != undefined">{{eventViewList.scores['4q-points'].home}}</span>
-                                <span v-else>-</span>
-                              </td>
-                              <td class="text-xs-center">
-                                <span class="livescore" v-if="eventViewList.scores != undefined && eventViewList.scores['ft-points'] != undefined">{{eventViewList.scores['ft-points'].home}}</span>
-                                <span class="livescore" v-else>-</span>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td class="text-xs-left" style="padding-left:10px;">
-                                <span>{{eventViewList.awayTeam}}</span>
-                              </td>
-                              <td class="text-xs-center">
-                                <span v-if="eventViewList.scores != undefined && eventViewList.scores['1q-points'] != undefined">{{eventViewList.scores['1q-points'].away}}</span>
-                                <span v-else>-</span>
-                              </td>
-                              <td class="text-xs-center">
-                                <span v-if="eventViewList.scores != undefined && eventViewList.scores['2q-points'] != undefined">{{eventViewList.scores['2q-points'].away}}</span>
-                                <span v-else>-</span>
-                              </td>
-                              <td class="text-xs-center">
-                                <span v-if="eventViewList.scores != undefined && eventViewList.scores['ht-points'] != undefined">{{eventViewList.scores['ht-points'].away}}</span>
-                                <span v-else>-</span>
-                              </td>
-                              <td class="text-xs-center">
-                                <span v-if="eventViewList.scores != undefined && eventViewList.scores['3q-points'] != undefined">{{eventViewList.scores['3q-points'].away}}</span>
-                                <span v-else>-</span>
-                              </td>
-                              <td class="text-xs-center">
-                                <span v-if="eventViewList.scores != undefined && eventViewList.scores['4q-points'] != undefined">{{eventViewList.scores['4q-points'].away}}</span>
-                                <span v-else>-</span>
-                              </td>
-                              <td class="text-xs-center">
-                                <span class="livescore" v-if="eventViewList.scores != undefined && eventViewList.scores['ft-points'] != undefined">{{eventViewList.scores['ft-points'].away}}</span>
-                                <span class="livescore" v-else>-</span>
-                              </td>
-                            </tr>
-                          </table>
-
-                          <table v-else cellspacing="0" cellpadding="0" class="scoreboard-table">
-                            <tr>
-                              <th class="text-xs-left" style="padding-left:10px;" width="*">
-                                <span v-if="eventViewList.liveClockIsStopped == false">{{eventViewList.liveMinute}}</span>
-                                <span v-else-if="eventViewList.liveClockIsStopped == true && eventViewList.liveGamePeriod != undefined">{{eventViewList.liveGamePeriod}}</span>
-                              </th>
-                              <th class="text-xs-center" width="8%">
-                                <span>P</span>
-                              </th>
-                            </tr>
-                            <tr>
-                              <td class="text-xs-left" style="padding-left:10px;">
-                                <span>{{eventViewList.homeTeam}}</span>
-                              </td>
-                              <td class="text-xs-center">
-                                <span class="livescore">{{eventViewList.liveScoreHome}}</span>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td class="text-xs-left" style="padding-left:10px;">
-                                <span>{{eventViewList.awayTeam}}</span>
-                              </td>
-                              <td class="text-xs-center">
-                                <span class="livescore">{{eventViewList.liveScoreAway}}</span>
-                              </td>
-                            </tr>
-                          </table>
-
-                        </v-flex>
-                      </v-layout>
-                    </v-flex>
-                  </v-img>
-                </v-layout>
-
-                <v-layout>
-                  <v-btn-toggle v-model="toggle_kinds" mandatory class="bet-type tertiary"
-                    v-if="Object.keys(eventViewList).length > 0 && eventViewList.oddGroups != undefined">
-                    <v-btn flat style="opacity: 1;width:7.333rem" @click="changeOddGroup(0)">{{$t('Betting.all')}}</v-btn>
-                    <v-btn
-                      flat
-                      style="opacity: 1;width:7.333rem"
-                      v-for="oddGroup in Object.values(eventViewList.oddGroups).sort(function(a, b){return parseInt(a.order) - parseInt(b.order)})"
-                      :key="oddGroup.oddGroupID"
-                      @click="changeOddGroup(oddGroup.oddGroupID)"
-                    >{{oddGroup.name}}</v-btn>
-                  </v-btn-toggle>
-                </v-layout>
-                <v-layout class="mid-panel">
-                  <template xs12 v-if="eventFilterViewList.length > 0">
-                    <v-flex v-for="count in marketRow" :key="count" :class="`pa-1 tertiary xs${12/marketRow}`">
-                      <v-layout
-                        xs12
-                        column
-                        v-for="(oddType,firstIndex) in eventFilterViewList"
-                        :key="firstIndex"
-                        v-if="(firstIndex >= (count-1)*rowOddCount) && (firstIndex < count*rowOddCount)"
-                        class="mid-panel"
-                      >
-                        <v-flex>
-                          <span class="subheading pa-1 odd-type-text">{{oddType.name}}</span>
-                        </v-flex>
-                        <v-flex
-                          :v-if="oddType.lines != undefined && oddType.lines.length > 0"
-                          v-for="(line,index) in oddType.lines"
-                          :key="index"
-                        >
-                          <v-layout xs12 row align-center justify-center>
-                            <v-flex
-                              v-for="(item, idx) in line"
-                              :key="idx"
-                              :class="`xs${12/line.length} ma-1 event-detail-cell ${item.changes && (item.isSuspended==undefined||item.isSuspended==0)?item.changes:''} ${is_betslip_odd(eventViewList.eventID, oddType.oddTypeID, item.oddID)?'active':''}`"
-                              @click="update_betslip('live', eventViewList.eventID, eventViewList.homeTeam, eventViewList.awayTeam, oddType.oddTypeID, oddType.name,
-                                item.oddID, item.value, item.name, item.special, item.isSuspended==undefined?0:item.isSuspended)"
-                            >
-                              <p class="body-2 font-weight-regular pa-1 ma-0 market-odd-name" v-if="item.special != undefined && item.special!= 0">{{item.name}}({{item.special}})</p>
-                              <p class="body-2 font-weight-regular pa-1 ma-0 market-odd-name" v-else>{{item.name}}</p>
-                              <span class="body-2 font-weight-regular pa-1 market-odd-score odd-price-text" v-if="item.isSuspended == 1 || !isClosedTime(eventViewList.liveMinute, eventViewList.sportAlias)"><v-icon color="grey">mdi-lock-outline</v-icon></span>
-                              <span class="body-2 font-weight-regular pa-1 market-odd-score odd-price-text" v-else>{{item.value}}</span>
-                            </v-flex>
+                          <td class="text-xs-center" :width="table.headers[table.headers.length-2].width">
+                            <v-chip label small color="#454545" class="ma-0" @click="getLiveEventSingle(props.item.eventID, props.expanded = !props.expanded)">
+                              <v-icon color="white" style="cursor:pointer;">mdi-plus</v-icon>
+                            </v-chip>
+                          </td>
+                          <td class="text-xs-center" :width="table.headers[table.headers.length-1].width">
+                            <v-chip label small color="#454545" class="ma-0">
+                              <v-icon color="white" style="cursor:pointer;">mdi-chart-bar-stacked</v-icon>
+                            </v-chip>
+                          </td>
+                        </tr>
+                      </template>
+                      <template v-slot:expand="props">
+                        <v-card style="border-radius:0px;background:black;height:300px;" class="scroll-y">
+                          <v-layout v-if="is_detail_updating_page" justify-center align-center>
+                            <FadeLoader
+                                class="fade-loader"
+                                :loading="is_detail_updating_page"
+                                color="#e09007"
+                                :height=20
+                                :width=10
+                                :radius=20
+                                margin="2px"
+                                sizeUnit="px"
+                            />
                           </v-layout>
-                        </v-flex>
-                      </v-layout>
-                    </v-flex>
-
-                  </template>
-                  <template v-else>
-                    <v-flex d-flex xs12 justify-center align-center style="height:100px;">
-                      <span class="headline pa-2" style="text-align:center">{{$t('Betting.at_this_moment_odds_not_available')}}</span>
-                    </v-flex>
-                  </template>
+                          <template v-else>
+                            <v-card-text style="background:black;">
+                              <v-card v-for="(oddType, oddTypeIdx) in eventFilterViewList" :key="oddTypeIdx" class="eventview mb-1" style="border-radius:3px;">
+                                <v-card-text style="background:#181818">
+                                  <v-layout row justify-center align-start>
+                                    <v-flex xs3>
+                                      <div class="body-2 font-weight-medium" style="color:#e09007">{{oddType.name}}</div>
+                                    </v-flex>
+                                    <v-flex >
+                                      <v-layout column>
+                                        <template v-if="oddType.lines != null" v-for="line in oddType.lines">
+                                          <v-layout row>
+                                            <v-flex
+                                                v-for="(item, idx) in line"
+                                                :class="`xs${12/line.length} ma-1 event-detail-cell ${is_betslip_odd(eventViewList.eventID, oddType.oddTypeID, item.oddID)?'active':''}`"
+                                                @click="update_betslip('live', eventViewList.eventID, eventViewList.homeTeam, eventViewList.awayTeam, oddType.oddTypeID, oddType.name,
+                                                item.oddID, item.value, item.name, item.special, item.isSuspended==undefined?0:item.isSuspended)"
+                                            >
+                                              <p class="body-2 font-weight-medium pa-1 ma-0 market-odd-name" style="z-index:1;color:black;" v-if="item.special != undefined && item.special!= 0">{{item.name}}({{item.special}})</p>
+                                              <p class="body-2 font-weight-medium pa-1 ma-0 market-odd-name" v-else style="z-index:1;color:black;">{{item.name}}</p>
+                                              <span class="body-2 font-weight-medium pa-1 market-odd-score" style="z-index:1;color:black;" v-if="item.isSuspended == 1">
+                                                <v-icon color="#d98808" style="font-size:1.5rem;">mdi-lock-outline</v-icon>
+                                              </span>
+                                              <span class="body-2 font-weight-medium pa-1 market-odd-score" style="z-index:1;color:black;" v-else>{{item.value}}</span>
+                                            </v-flex>
+                                          </v-layout>
+                                        </template>
+                                      </v-layout>
+                                    </v-flex>
+                                  </v-layout>
+                                </v-card-text>
+                              </v-card>
+                            </v-card-text>
+                          </template>
+                        </v-card>
+                      </template>
+                    </v-data-table>
+                  </v-layout>
+                </template>
+                <v-layout v-else 
+                  column
+                  justify-center align-center
+                  class="ma-0 px-2 py-0"
+                  style="background:#171717">
+                  <div class="subheading">{{$t('Betting.there_are_no_event_yet')}}</div>
                 </v-layout>
-              </v-container>
-              <v-layout v-else justify-center align-center fill-height>
-                <v-flex>
-                  <ScaleLoader
-                    class="scale-loader"
+              </v-layout>
+              <v-layout v-if="is_updating_page" justify-center align-center>
+                <FadeLoader
+                    class="fade-loader"
                     :loading="is_updating_page"
-                    color="lawngreen"
-                    :height=100
+                    color="#e09007"
+                    :height=20
                     :width=10
-                    :radius=1
+                    :radius=20
                     margin="2px"
                     sizeUnit="px"
-                  />
-                </v-flex>
+                />
               </v-layout>
             </v-flex>
             <v-flex xs2 class="mr-2 mt-2 scroll-y" style="overflow-x:hidden;min-width:250px;">
-              <!-- <div class="text-xs-center pa-1 tertiary">China 0:0 Uzbekistan</div>
-              <v-img src="/img/football_game.png"></v-img> -->
               <core-bet-slip/>
             </v-flex>
           </v-layout>
         </v-fade-transition>
       </div>
+      <core-footer/>
     </v-content>
-    <core-footer/>
   </v-app>
 </template>
 
@@ -777,7 +285,7 @@ export default {
       },
       toggle_kinds: 0,
       expandEventViewPanel: [],
-      view: 1,
+      view: 0,
       marketRow:1,
       overViewList: {},
       eventViewList: {},
@@ -797,6 +305,11 @@ export default {
       is_last_page: false,
       searchEventScoreStr:'',
       closingMinuteBetting: '',
+
+
+      is_refresh_page: true,
+      is_detail_updating_page: false,
+      searchPrematchStr: '',
     };
   },
   methods: {
@@ -964,7 +477,7 @@ export default {
     },
     getLiveEventView() {
       // var userID = "";
-      this.is_updating_page = true
+      this.is_detail_updating_page = true
       this.axios
         .post("zt_live_event_view", {
           sportID: '',
@@ -985,12 +498,12 @@ export default {
           }
           else{
             console.log("getLiveEventView error")
-            this.is_updating_page = false
+            this.is_detail_updating_page = false
           }
         })
         .catch(e => {
           console.log(e);
-          this.is_updating_page = false
+          this.is_detail_updating_page = false
         });
     },
     setLiveEventDetailView(apiData="",
@@ -1075,7 +588,7 @@ export default {
         }
         // console.log(this.eventFilterViewList)
         // console.log(Object.values(this.eventViewList))
-        this.is_updating_page = false
+        this.is_detail_updating_page = false
       }
 
       else if(updateOddsData != "" && updateOddsData.odds != undefined && updateOddsData.odds.length > 0 &&
@@ -1178,8 +691,13 @@ export default {
       //   this.eventFilterViewList = {}
       // }
     },
-    getLiveEventSingle(eventID) {
-      this.is_updating_page = true
+    getLiveEventSingle(eventID, expand) {
+      if(expand == false)
+      {
+        this.closeEventviewSocket()  
+        return
+      }
+      this.is_detail_updating_page = true
       this.closeEventviewSocket()
       this.eventID = eventID;
       this.connectEventviewSocket()
@@ -1201,13 +719,13 @@ export default {
           }
           else{
             console.log('zt_live_single error')
-            this.is_updating_page = false
+            this.is_detail_updating_page = false
           }
 
         })
         .catch(e => {
           console.log(e);
-          this.is_updating_page = false
+          this.is_detail_updating_page = false
         });
     },
     getLiveList(pagination=false) {
@@ -1222,7 +740,7 @@ export default {
             eventID: "",
             // categoryID: this.categoryID,
             // leagueID: this.leagueID,
-            // query: this.searchPrematchStr,
+            query: this.searchPrematchStr,
             page: this.pageNumber
           },
           {
@@ -1271,26 +789,26 @@ export default {
         return
       if (apiData != "") {
         // console.log(this.overViewList)
-
+        var sumWidth = 0;
         if(!pagination)
           this.overViewList = {}
         apiData.leagues.forEach((league, leagueCount, leagueObj) => {
-
+          sumWidth = 0
           var headers = [
             {
+              text: this.$t('Betting.matches_list'),
               sportID: league.sportID,
-              countryFlag:
-                "/img/country_flag/" + league.categoryAlias + ".png",
-              width: "8%",
-              align: "center"
+              countryFlag: "/img/country_flag/" + league.categoryAlias + ".png",
+              width: "20%",
+              align: "left"
             },
             {
-              text: league.leagueName,
-              align: "left",
-              width: "*"
+              text: this.$t('Betting.scope'),
+              align: "center",
+              width: "10%"
             },
-            { text: "", align: "center", width: "8%" }
           ];
+          sumWidth = 10;
           if(this.liveOddTypeRules.oddRules[league.sportAlias] != undefined){
             var self = this
             this.liveOddTypeRules.oddRules[league.sportAlias].oddTypes.forEach(function(oddType, oddIndex, Object){
@@ -1301,6 +819,7 @@ export default {
               partHeader.specialCell = specialCell
               partHeader.cellCount = self.liveOddTypeRules.lineRules[oddType].length + specialCell
               partHeader.width = (partHeader.cellCount)*5 + "%"
+              sumWidth = sumWidth + (partHeader.cellCount)*5
               partHeader.cell = self.liveOddTypeRules.lineRules[oddType]
               headers.push(partHeader)
             });
@@ -1310,6 +829,14 @@ export default {
             align: "center",
             width: "5%"
           });
+
+          headers.push({
+            text: "",
+            align: "center",
+            width: "*"
+          });
+          sumWidth += 15;
+          headers[0].width = (100 - sumWidth) + '%'
 
           var leaguePartTable = {
             leagueID: league.leagueID,
@@ -1788,32 +1315,34 @@ export default {
         this.is_updating_page = false
         this.is_last_page = false
 
+        this.is_refresh_page = false
+
         this.getLiveList()
-        this.getLiveEventScores()
-        if(this.$store.getters.getSelectLiveEvent != ''){
-          this.getLiveEventSingle(this.$store.getters.getSelectLiveEvent)
-        }
-        else
-          this.getLiveEventView()
+        // this.getLiveEventScores()
+        // if(this.$store.getters.getSelectLiveEvent != ''){
+        //   this.getLiveEventSingle(this.$store.getters.getSelectLiveEvent)
+        // }
+        // else
+        //   this.getLiveEventView()
 
         this.connectSocketChannels()
       }
     },
     connectSocketChannels(){
       this.connectOverviewSocket()
-      this.connectEventviewSocket()
-      this.connectEventScoreSocket()
+      // this.connectEventviewSocket()
+      // this.connectEventScoreSocket()
     },
     gotoEventView(eventID){
-      this.view = 1
+      // this.view = 1
       // this.closeEventviewSocket()
       // this.eventID = eventID
       // this.connectEventviewSocket()
 
       // if(this.liveEventScoreList.length > 0)
       //   this.expandEventViewPanel = [...Array(Object.values(this.liveEventScoreList)[0].leagues.length + 2).keys()].map(_ => true)
-      this.getLiveEventScores()
-      this.getLiveEventSingle(eventID)
+      // this.getLiveEventScores()
+      // this.getLiveEventSingle(eventID)
     },
     liveMenuSelected(selectedValue){
       // console.log("yes", selectedValue, this.liveEventScoreList.length)
@@ -1827,7 +1356,7 @@ export default {
         this.connectOverviewSocket()
       }
       else if(selectedValue == 1){    //eventView
-        this.getLiveEventScores()
+        // this.getLiveEventScores()
         this.closeEventviewSocket()
         this.connectEventviewSocket()
       }
@@ -1938,7 +1467,7 @@ export default {
       }
 
       localStorage.liveFavouriteAry = JSON.stringify(this.favouriteIDList)
-      this.getLiveEventSingle(eventID)
+      // this.getLiveEventSingle(eventID)
       this.getFilterScoreList()
     },
     getFilterScoreList(refresh = 0){
@@ -2183,6 +1712,58 @@ export default {
           }
         })
       }
+
+      if(this.favouriteScoreList != undefined && this.favouriteScoreList.length > 0){
+        this.favouriteScoreList.map(event => {
+          if(event.liveGamePeriod != undefined && (event.liveGamePeriod.toLowerCase() == "ht" || event.liveGamePeriod.toLowerCase() == "live")){
+            event.liveMinute = event.liveGamePeriod
+          }
+          else if(event.sportAlias == 'soccer'){
+            if(event.liveTime == undefined){
+              event.liveTime = Math.round(new Date().getTime()/1000) - event.liveClockTimestamp + event.liveClockStartSeconds
+              var parseTime = event.liveMinute.split(':'); // split it at the colons
+              if(parseTime != null && parseTime.length != 0){
+                // minutes are worth 60 seconds. Hours are worth 60 minutes.
+                event.liveTime = (+parseTime[0]) *60 + (+parseTime[1]); 
+              }
+            }
+            else{
+              event.liveTime = event.liveTime + 1
+            }
+            minute = ('0' + Math.trunc(event.liveTime/60)).substr(-2)
+            second = ('0' + event.liveTime%60).substr(-2)
+            event.liveMinute = minute + ':' + second
+          }
+          else if(event.liveClockTimestamp != undefined && event.liveMinute != undefined && event.liveClockStartSeconds != undefined && event.liveClockIsStopped == false){
+            if(event.liveClockIsCountDown == true){   //count down
+              if(event.liveTime == undefined){
+                event.liveTime = Math.round(new Date().getTime()/1000) - event.liveClockTimestamp + event.liveClockStartSeconds
+              }
+              else{
+                event.liveTime = event.liveTime - 1
+              }
+              minute = ('0' + Math.trunc(event.liveTime/60)).substr(-2)
+              second = ('0' + event.liveTime%60).substr(-2)
+              event.liveMinute = minute + ':' + second
+            }
+            else{   //count up
+              if(event.liveTime == undefined){
+                event.liveTime = Math.round(new Date().getTime()/1000) - event.liveClockTimestamp + event.liveClockStartSeconds
+              }
+              else{
+                event.liveTime = event.liveTime + 1
+              }
+              minute = ('0' + Math.trunc(event.liveTime/60)).substr(-2)
+              second = ('0' + event.liveTime%60).substr(-2)
+              event.liveMinute = minute + ':' + second
+            }
+          }
+          else if(event.liveClockIsStopped == true && event.liveGamePeriod != undefined){
+            event.liveMinute = event.liveGamePeriod
+          }
+          return event;
+        })
+      }
       this.$forceUpdate()
     },
     selectMarketRow(row){
@@ -2224,7 +1805,26 @@ export default {
     },
     setOverviewOrderList(){
       return Object.values(this.overViewList).sort(function(a, b){return a.data.leagueOrder-b.data.leagueOrder})
-    }
+    },
+
+
+    getBoardSportImage(){
+      if(this.$store.getters.getLiveSports != undefined && this.$store.getters.getLiveSports.length > 0){
+        var sportIdx = -1
+        this.$store.getters.getLiveSports.find((sport, index) =>{
+          if(sport.sportID == this.sportID){
+            sportIdx = index
+            return sportIdx
+          }
+
+        })
+        if(sportIdx != -1){
+          return this.$store.getters.getLiveSports[sportIdx].alias
+        }
+      }
+      return ''
+    },
+
   },
   watch: {
     searchEventScoreStr: function(){
@@ -2247,6 +1847,10 @@ export default {
     this.$root.$on("update-list", ()=>{
       // console.log("yes of course")
       this.$forceUpdate()
+    })
+    this.$root.$on('searchEvent', payload=>{
+      this.searchPrematchStr = payload.searchPrematchStr
+      this.getLiveList()
     })
     var system_info = JSON.parse(localStorage.system_conf);
     this.closingMinuteBetting = system_info.closingMinuteBetting

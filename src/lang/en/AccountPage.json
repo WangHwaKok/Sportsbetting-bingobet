@@ -1,6 +1,6 @@
 {
     "account_management":"Account Management",
-    "my_bets":"My Bets",
+    "my_bets":"Bet History",
     "account_activities":"Account Activities",
     "user_list":"User List",
     "user_balance":"User Balance",
@@ -34,7 +34,7 @@
     "date_of_completion":"Date of Completion",
     "coupon_type":"Coupon Type",
     "coupon_id":"Coupon Id",
-    "coupon_code":"Coupon Code",
+    "coupon_code":"Bet No",
     "coupon_result":"Coupon Result",
     "bulletin_type":"Bulletin Type",
     "server_is_unavailable_now":"Server is unavailable now.",
@@ -87,5 +87,16 @@
     "combination_status": "Combination Status",
     "possible_winnings": "Possible Winnings",
     "winnings": "Winnings",
-    "show_system_columns": "Show System Columns"
+    "show_system_columns": "Show System Columns",
+    "account_menu": "Account Menu",
+    "account_activity":"Account Activity",
+    "user_actions": "User Actions",
+    "please_select_a_date_range": "Please select a range",
+    "bets_in_between": "Bets in Between",
+    "transactions_in_between": "Transactions in Between",
+    "show": "Show",
+    "print": "Print",
+    "financial_transactions": "Financial Transactions",
+    "accounts": "Accounts",
+    "graphical_analysis_of_slip": "Graphical Analysis Of Slip"
 }

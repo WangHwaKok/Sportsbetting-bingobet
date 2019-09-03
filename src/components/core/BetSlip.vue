@@ -1,319 +1,326 @@
 <template>
-  <div id="core-view" style="background-color:#303030;">
+  <div id="core-view">
     <v-container fluid pa-0 style="min-height:40px;">
-      <v-layout column fill-height>
-        <v-flex class="justify-center align-center">
-          <v-layout row justify-center class="ma-0">
-            <v-flex class="pa-0">
-              <!-- <v-btn-toggle v-model="toggle_slip_type" mandatory class="betslip-btntoggle tertiary">
-                <v-flex xs4>
-                  <v-btn flat style="width:100%">{{$t('Betting.single')}}</v-btn>
-                </v-flex>
-                <v-flex xs4>
-                  <v-btn flat style="width:100%">{{$t('Betting.multiple')}}</v-btn>
-                </v-flex>
-                <v-flex xs4>
-                  <v-btn flat style="width:100%">{{$t('Betting.system')}}</v-btn>
-                </v-flex>
-              </v-btn-toggle> -->
-              <v-toolbar height="36px" id="bet_menu" color="black">
-                <v-toolbar-items style="width:100%">
-                  <v-layout align-center justify-center>
-                    <v-flex xs4 d-flex fill-height>
-                      <v-btn
-                          flat
-                          :class="`${toggle_slip_type == 0 ? 'betslip-btntoggle' : 'tertiary'}`"
-                          @click="betMenuSelected(0, 'single')"
-                      >
-                        <v-layout justify-center align-center column>
-                          <span>{{$t('Betting.single')}}</span>
-                        </v-layout>
-                      </v-btn>
+      <v-card color="black" class="bet-slip-card">
+        <v-card-title class="pa-1" style="padding-right:5px;">
+          <v-icon color="black">mdi-format-list-bulleted</v-icon>
+          <span class="subheading font-weight-bold" style="color:black">{{$t('Betting.bets')}}</span>
+        </v-card-title>
+        <v-card-text>
+          <v-layout column fill-height>
+            <v-flex class="justify-center align-center">
+              <v-layout row justify-center class="ma-0">
+                <v-flex class="pa-0">
+                  <!-- <v-btn-toggle v-model="toggle_slip_type" mandatory class="betslip-btntoggle tertiary">
+                    <v-flex xs4>
+                      <v-btn flat style="width:100%">{{$t('Betting.single')}}</v-btn>
                     </v-flex>
-                    <v-flex xs4 d-flex fill-height>
-                      <v-btn
-                          flat
-                          :class="`${toggle_slip_type == 1 ? 'betslip-btntoggle' : 'tertiary'}`"
-                          @click="betMenuSelected(1, 'Multiple')"
-                      >
-                        <v-layout justify-center align-center column>
-                          <span>{{$t('Betting.multiple')}}</span>
-                        </v-layout>
-                      </v-btn>
+                    <v-flex xs4>
+                      <v-btn flat style="width:100%">{{$t('Betting.multiple')}}</v-btn>
                     </v-flex>
-                    <v-flex xs4 d-flex fill-height>
-                      <v-btn
-                          flat
-                          :class="`${toggle_slip_type == 2 ? 'betslip-btntoggle' : 'tertiary'}`"
-                          @click="betMenuSelected(2, 'System')"
-                      >
-                        <v-layout justify-center align-center column>
-                          <span>{{$t('Betting.system')}}</span>
-                        </v-layout>
-                      </v-btn>
+                    <v-flex xs4>
+                      <v-btn flat style="width:100%">{{$t('Betting.system')}}</v-btn>
                     </v-flex>
-                  </v-layout>
+                  </v-btn-toggle> -->
+                  <v-toolbar light height="36px" id="bet_menu" color="black">
+                    <v-toolbar-items style="width:100%">
+                      <v-layout align-center justify-center>
+                        <v-flex xs4 d-flex fill-height>
+                          <v-btn
+                              flat
+                              :class="`${toggle_slip_type == 0 ? 'betslip-btntoggle' : 'white'}`"
+                              @click="betMenuSelected(0, 'single')"
+                          >
+                            <v-layout justify-center align-center column>
+                              <span>{{$t('Betting.single')}}</span>
+                            </v-layout>
+                          </v-btn>
+                        </v-flex>
+                        <v-flex xs4 d-flex fill-height>
+                          <v-btn
+                              flat
+                              :class="`${toggle_slip_type == 1 ? 'betslip-btntoggle' : 'white'}`"
+                              @click="betMenuSelected(1, 'Multiple')"
+                          >
+                            <v-layout justify-center align-center column>
+                              <span>{{$t('Betting.multiple')}}</span>
+                            </v-layout>
+                          </v-btn>
+                        </v-flex>
+                        <v-flex xs4 d-flex fill-height>
+                          <v-btn
+                              flat
+                              :class="`${toggle_slip_type == 2 ? 'betslip-btntoggle' : 'white'}`"
+                              @click="betMenuSelected(2, 'System')"
+                          >
+                            <v-layout justify-center align-center column>
+                              <span>{{$t('Betting.system')}}</span>
+                            </v-layout>
+                          </v-btn>
+                        </v-flex>
+                      </v-layout>
 
-
-
-                </v-toolbar-items>
-              </v-toolbar>
-              <v-divider></v-divider>
+                    </v-toolbar-items>
+                  </v-toolbar>
+                  <v-divider></v-divider>
+                </v-flex>
+              </v-layout>
             </v-flex>
-          </v-layout>
-        </v-flex>
 
-        <v-flex class="justify-center align-center">
-          <v-container class="pa-0" style="">
-            <div v-if="Object.keys(slipList).length == 0">
-              <v-container fluid pa-2 class="black">
-                <div class="d-flex body-1 justify-center align-center" style="color:#cccccc;font-weight:500;">
-                  {{$t('Betting.no_odds_selected')}}
-                </div>
-              </v-container>
-            </div>
-
-            <template v-if="!(index = 0)">
-              <template v-if="Object.keys(slipList).length != 0" v-for="(event) in Object.values(slipList)">
-                <template
-                        v-for="(oddType) in Object.values(event)"
-                >
-                  <v-card
-                          v-for="odd in Object.values(oddType)"
-                          :key="odd.oddID"
-                          class="pa-1 pb-2 pr-2 black"
-                          style="font-size:1.16rem;position: relative;"
-                  >
-                    <div class="d-flex">
-                      <div class="num" style="flex:0 0 auto !important;">{{(++index)}}</div>
-                      <div style="font-weight:bold;width:100%;white-space:nowrap;overflow:hidden;text-overflow: ellipsis;">{{ odd.homeTeam }} - {{odd.awayTeam}}</div>
-                      <div class="align-center" style="float:right;" >
-                        <v-icon size="20px" class="betslip-closeicon" @click="remove_bet(odd.eventID, odd.oddTypeID, odd.oddID)">mdi-close</v-icon>
-                      </div>
+            <v-flex class="justify-center align-center">
+              <v-container class="pa-0" style="">
+                <div v-if="Object.keys(slipList).length == 0">
+                  <v-container fluid pa-2 class="white">
+                    <div class="d-flex body-1 justify-center align-center" style="color:black;font-weight:500;">
+                      {{$t('Betting.no_odds_selected')}}
                     </div>
+                  </v-container>
+                </div>
 
-                    <div
-                            :class="`${odd.type == 'live'?'bet-slip-live':''}`"
-                            style="position: relative;">
-                      <div class="odd-info">
-                        <div class="evname">{{odd.oddTypeName}}</div>
-                      </div>
-                      <div class="odd-info d-flex">
-                        <div class="evname" v-if="odd.special != undefined && odd.special != ''">{{$t('Betting.pick')}} {{odd.pick}}({{odd.special}})</div>
-                        <div class="evname" v-else>{{$t('Betting.pick')}} {{odd.pick}}</div>
-                        <div class="coef" v-if="odd.isSuspended == 1">
-                          <v-icon color="grey">mdi-lock-outline</v-icon>
-                        </div>
-                        <div v-else class="coef"
-                              :class="`${odd.changes != undefined?odd.changes:''} live-cell`"
-                        >{{odd.oddValue}}</div>
-                      </div>
-
-                      <div class="odd-info with-inp"
-                            v-if="toggle_slip_type == 0"
+                <template v-if="!(index = 0)">
+                  <template v-if="Object.keys(slipList).length != 0" v-for="(event) in Object.values(slipList)">
+                    <template
+                            v-for="(oddType) in Object.values(event)"
+                    >
+                      <v-card
+                              light
+                              v-for="odd in Object.values(oddType)"
+                              :key="odd.oddID"
+                              class="pa-1 pb-2 pr-2 white"
+                              style="font-size:1.16rem;position: relative;border-radius:unset;background:#e5e5e5"
                       >
-                        <div>
-                          <span>{{$t('Betting.treble')}}:</span>
-                          <v-text-field
-                                  class="bet-amount-input ma-0 pa-0"
-                                  label=""
-                                  v-model="slipList[odd.eventID][odd.oddTypeID][odd.oddID].treble"
-                                  @keyup="update_values()"
-                                  @change="update_single_format(odd.eventID, odd.oddTypeID, odd.oddID, 'treble')"
-                                  single-line
-                                  :disabled="is_updating_page"
-                                  hide-details
-                                  filled
-                                  style="min-width:auto;min-height:auto;"
-                          ></v-text-field>
-                        </div>
-                      </div>
-
-                      <div class="odd-info with-inp"
-                            v-if="toggle_slip_type == 0"
-                      >
-                        <div>
-                          <span>{{$t('Betting.potential_returns')}}:</span>
-                          <div class="bet-amount">
-                            {{odd.potentialReturns}}
+                        <div class="d-flex">
+                          <div class="num" style="flex:0 0 auto !important;">{{(++index)}}</div>
+                          <div style="font-weight:bold;width:100%;white-space:nowrap;overflow:hidden;text-overflow: ellipsis;">{{ odd.homeTeam }} - {{odd.awayTeam}}</div>
+                          <div class="align-center" style="float:right;" >
+                            <v-icon size="20px" class="betslip-closeicon" @click="remove_bet(odd.eventID, odd.oddTypeID, odd.oddID)">mdi-close</v-icon>
                           </div>
                         </div>
-                      </div>
 
-                      <div class="odd-info with-inp"
-                            v-if="odd.hasError == true || odd.isSuspended == 1"
-                      >
-                        <div class="d-flex justify-center align-center">
-                          <v-icon color="red" style="font-size: 20px;width:20px;margin-right:4px;">mdi-alert-circle</v-icon>
-                          <span style="font-size: 14px;width:100%;">{{$t('Betting.this_pick_cannot_be_combined')}}</span>
+                        <div
+                                :class="`${odd.type == 'live'?'bet-slip-live':''}`"
+                                style="position: relative;">
+                          <div class="odd-info">
+                            <div class="evname">{{odd.oddTypeName}}</div>
+                          </div>
+                          <div class="odd-info d-flex">
+                            <div class="evname" v-if="odd.special != undefined && odd.special != ''">{{$t('Betting.pick')}} {{odd.pick}}({{odd.special}})</div>
+                            <div class="evname" v-else>{{$t('Betting.pick')}} {{odd.pick}}</div>
+                            <div class="coef" v-if="odd.isSuspended == 1">
+                              <v-icon color="grey">mdi-lock-outline</v-icon>
+                            </div>
+                            <div v-else class="coef"
+                                  :class="`${odd.changes != undefined?odd.changes:''} live-cell`"
+                            >{{odd.oddValue}}</div>
+                          </div>
+
+                          <div class="odd-info with-inp"
+                                v-if="toggle_slip_type == 0"
+                          >
+                            <div>
+                              <span class="evname">{{$t('Betting.treble')}}:</span>
+                              <v-text-field
+                                      class="bet-amount-input ma-0 pa-0"
+                                      label=""
+                                      v-model="slipList[odd.eventID][odd.oddTypeID][odd.oddID].treble"
+                                      @keyup="update_values()"
+                                      @change="update_single_format(odd.eventID, odd.oddTypeID, odd.oddID, 'treble')"
+                                      single-line
+                                      :disabled="is_updating_page"
+                                      hide-details
+                                      filled
+                                      style="min-width:auto;min-height:auto;"
+                              ></v-text-field>
+                            </div>
+                          </div>
+
+                          <div class="odd-info with-inp"
+                                v-if="toggle_slip_type == 0"
+                          >
+                            <div>
+                              <span class="evname">{{$t('Betting.potential_returns')}}:</span>
+                              <div class="bet-amount">
+                                {{odd.potentialReturns}}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="odd-info with-inp"
+                                v-if="odd.hasError == true || odd.isSuspended == 1"
+                          >
+                            <div class="d-flex justify-center align-center">
+                              <v-icon color="red" style="font-size: 20px;width:20px;margin-right:4px;">mdi-alert-circle</v-icon>
+                              <span style="font-size: 14px;width:100%;">{{$t('Betting.this_pick_cannot_be_combined')}}</span>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
+                      </v-card>
+                      <v-divider></v-divider>
+                    </template>
+                  </template>
+                </template>
+              </v-container>
+            </v-flex>
+
+            <v-flex v-if="Object.keys(slipList).length != 0" class="justify-center align-center">
+              <v-card
+                      v-if="toggle_slip_type == 2"
+                      class="pa-1 px-2 justify-center tertiary1"
+                      style="-webkit-border-radius: 0px;-moz-border-radius: 0px;border-radius: 0px;flex-direction: column;">
+                <v-flex class="overflow-x:auto;" style="width:100%">
+                  <v-btn-toggle v-model="slipInfo.combination_group" multiple>
+                    <v-btn
+                        v-for="n in (1,total_item_count)"
+                        :key="n"
+                        @click="update_values()"
+                        class="combination_btn"
+                        style="min-width: auto !important;"
+                        flat>
+                      <span>{{total_item_count - n + 1}}</span>
+                    </v-btn>
+                  </v-btn-toggle>
+                </v-flex>
+                <div class="d-flex xs12">
+
+                  <span>{{total_item_count}} {{$t('Betting.matched', {combination:total_combination}) }}</span>
+                </div>
+              </v-card>
+              <v-divider v-if="toggle_slip_type == 2"></v-divider>
+              <v-card class="pa-2 d-flex justify-center align-center column tertiary" style="height:40px;-webkit-border-radius: 0px;-moz-border-radius: 0px;border-radius: 0px;">
+                <v-flex>
+                  <v-checkbox
+                          v-model="acceptChangingRates"
+                          :label='$t("Betting.accept_price_change")'
+                          hide-details
+                          class="ma-0 pa-0"
+                  ></v-checkbox>
+                </v-flex>
+                <v-flex ml-1>
+                  <v-text-field
+                          ref="bet_amount"
+                          v-if="toggle_slip_type == 1"
+                          align="center"
+                          single-line
+                          height="24px"
+                          @change="update_multi_format()"
+                          @keyup="update_values()"
+                          v-model="slipInfo.amount_multi"
+                          :disabled="is_updating_page"
+                          class="ma-0 pa-0"
+                          :rules="[v => !!v || $t('AccountPage.required')]" required
+                          :label="$t('Betting.bet_amount')">
+                  </v-text-field>
+                  <v-text-field
+                          ref="bet_amount"
+                          v-if="toggle_slip_type == 2"
+                          align="center"
+                          hide-details
+                          single-line
+                          height="24px"
+                          @change="update_system_format()"
+                          @keyup="update_values()"
+                          v-model="slipInfo.amount_system"
+                          :disabled="is_updating_page"
+                          class="ma-0 pa-0"
+                          :rules="[v => !!v || $t('AccountPage.required')]" required
+                          :label="$t('Betting.bet_amount')">
+                  </v-text-field>
+                </v-flex>
+              </v-card>
+              <v-divider></v-divider>
+              <v-layout column justify-center class="ma-0">
+
+                <v-flex class="ma-0" v-if="toggle_slip_type==0">
+                  <v-card class="pa-2 px-3" color="black">
+                    <span style="font-weight:500;font-size:1.1rem;">{{$t('Betting.amount')}}:</span>
+                    <span style="float: right;font-weight:500;font-size:1.2rem;">{{ amount_single }}</span>
                   </v-card>
                   <v-divider></v-divider>
-                </template>
-              </template>
-            </template>
-          </v-container>
-        </v-flex>
-
-        <v-flex v-if="Object.keys(slipList).length != 0" class="justify-center align-center">
-          <v-card
-                  v-if="toggle_slip_type == 2"
-                  class="pa-1 px-2 justify-center tertiary"
-                  style="-webkit-border-radius: 0px;-moz-border-radius: 0px;border-radius: 0px;flex-direction: column;">
-            <v-flex class="overflow-x:auto;" style="width:100%">
-              <v-btn-toggle v-model="slipInfo.combination_group" multiple>
-                <v-btn
-                    v-for="n in (1,total_item_count)"
-                    :key="n"
-                    @click="update_values()"
-                    class="combination_btn"
-                    style="min-width: auto !important;"
-                    flat>
-                  <span>{{total_item_count - n + 1}}</span>
-                </v-btn>
-              </v-btn-toggle>
-            </v-flex>
-            <div class="d-flex xs12">
-
-              <span>{{total_item_count}} {{$t('Betting.matched', {combination:total_combination}) }}</span>
-            </div>
-          </v-card>
-          <v-divider v-if="toggle_slip_type == 2"></v-divider>
-          <v-card class="pa-2 d-flex justify-center align-center column tertiary" style="height:40px;-webkit-border-radius: 0px;-moz-border-radius: 0px;border-radius: 0px;">
-            <v-flex>
-              <v-checkbox
-                      v-model="acceptChangingRates"
-                      :label='$t("Betting.accept_price_change")'
-                      hide-details
-                      class="ma-0 pa-0"
-              ></v-checkbox>
-            </v-flex>
-            <v-flex ml-1>
-              <v-text-field
-                      ref="bet_amount"
-                      v-if="toggle_slip_type == 1"
-                      align="center"
-                      single-line
-                      height="24px"
-                      @change="update_multi_format()"
-                      @keyup="update_values()"
-                      v-model="slipInfo.amount_multi"
-                      :disabled="is_updating_page"
-                      class="ma-0 pa-0"
-                      :rules="[v => !!v || $t('AccountPage.required')]" required
-                      :label="$t('Betting.bet_amount')">
-              </v-text-field>
-              <v-text-field
-                      ref="bet_amount"
-                      v-if="toggle_slip_type == 2"
-                      align="center"
-                      hide-details
-                      single-line
-                      height="24px"
-                      @change="update_system_format()"
-                      @keyup="update_values()"
-                      v-model="slipInfo.amount_system"
-                      :disabled="is_updating_page"
-                      class="ma-0 pa-0"
-                      :rules="[v => !!v || $t('AccountPage.required')]" required
-                      :label="$t('Betting.bet_amount')">
-              </v-text-field>
-            </v-flex>
-          </v-card>
-          <v-divider></v-divider>
-          <v-layout column justify-center class="ma-0">
-
-            <v-flex class="ma-0" v-if="toggle_slip_type==0">
-              <v-card class="pa-2 px-3" color="black">
-                <span style="font-weight:500;font-size:1.1rem;">{{$t('Betting.amount')}}:</span>
-                <span style="float: right;font-weight:500;font-size:1.2rem;">{{ amount_single }}</span>
-              </v-card>
-              <v-divider></v-divider>
-              <v-card class="pa-2 px-3" color="black">
-                <span style="font-weight:500;font-size:1.1rem;">{{$t('Betting.total_rate')}}:</span>
-                <span style="float: right;font-weight:500;font-size:1.2rem;">{{ totalRate_single }}</span>
-              </v-card>
-              <v-divider></v-divider>
-              <v-card class="pa-2 px-3" color="black">
-                <span style="font-weight:500;font-size:1.1rem;">{{$t('Betting.potential_returns')}}:</span>
-                <span style="float: right;font-weight:500;font-size:1.2rem;">{{ potentialReturns_single }}</span>
-              </v-card>
-              <v-divider></v-divider>
-            </v-flex>
+                  <v-card class="pa-2 px-3" color="black">
+                    <span style="font-weight:500;font-size:1.1rem;">{{$t('Betting.total_rate')}}:</span>
+                    <span style="float: right;font-weight:500;font-size:1.2rem;">{{ totalRate_single }}</span>
+                  </v-card>
+                  <v-divider></v-divider>
+                  <v-card class="pa-2 px-3" color="black">
+                    <span style="font-weight:500;font-size:1.1rem;">{{$t('Betting.potential_returns')}}:</span>
+                    <span style="float: right;font-weight:500;font-size:1.2rem;">{{ potentialReturns_single }}</span>
+                  </v-card>
+                  <v-divider></v-divider>
+                </v-flex>
 
 
-            <v-flex class="pa-0" v-if="toggle_slip_type==1">
-              <v-card class="pa-2 px-3" color="black">
-                <span style="font-weight:500;font-size:1.1rem;">{{$t('Betting.amount')}}:</span>
-                <span style="float: right;font-weight:500;font-size:1.2rem;">{{ amount_multi }}</span>
-              </v-card>
-              <v-divider></v-divider>
-              <v-card class="pa-2 px-3" color="black">
-                <span style="font-weight:500;font-size:1.1rem;">{{$t('Betting.total_rate')}}:</span>
-                <span style="float: right;font-weight:500;font-size:1.2rem;">{{ totalRate_multi }}</span>
-                <!-- <span style="float: right;">{{ potentialReturns_multi }}</span> -->
-              </v-card>
-              <v-divider></v-divider>
-              <v-card class="pa-2 px-3" color="black">
-                <span style="font-weight:500;font-size:1.1rem;">{{$t('Betting.potential_returns')}}:</span>
-                <span style="float: right;font-weight:500;font-size:1.2rem;">{{ potentialReturns_multi }}</span>
-                <!-- <span style="float: right;">{{ totalRate_multi }}</span> -->
-              </v-card>
-              <v-divider></v-divider>
-            </v-flex>
+                <v-flex class="pa-0" v-if="toggle_slip_type==1">
+                  <v-card class="pa-2 px-3" color="black">
+                    <span style="font-weight:500;font-size:1.1rem;">{{$t('Betting.amount')}}:</span>
+                    <span style="float: right;font-weight:500;font-size:1.2rem;">{{ amount_multi }}</span>
+                  </v-card>
+                  <v-divider></v-divider>
+                  <v-card class="pa-2 px-3" color="black">
+                    <span style="font-weight:500;font-size:1.1rem;">{{$t('Betting.total_rate')}}:</span>
+                    <span style="float: right;font-weight:500;font-size:1.2rem;">{{ totalRate_multi }}</span>
+                    <!-- <span style="float: right;">{{ potentialReturns_multi }}</span> -->
+                  </v-card>
+                  <v-divider></v-divider>
+                  <v-card class="pa-2 px-3" color="black">
+                    <span style="font-weight:500;font-size:1.1rem;">{{$t('Betting.potential_returns')}}:</span>
+                    <span style="float: right;font-weight:500;font-size:1.2rem;">{{ potentialReturns_multi }}</span>
+                    <!-- <span style="float: right;">{{ totalRate_multi }}</span> -->
+                  </v-card>
+                  <v-divider></v-divider>
+                </v-flex>
 
 
-            <v-flex class="pa-0" v-if="toggle_slip_type==2">
-              <v-card class="pa-2 px-3" color="black">
-                <span style="font-weight:500;font-size:1.1rem;">{{$t('Betting.amount')}}:</span>
-                <span style="float: right;font-weight:500;font-size:1.2rem;">{{ amount_system }}</span>
-              </v-card>
-              <v-divider></v-divider>
-              <v-card class="pa-2 px-3" color="black">
-                <span style="font-weight:500;font-size:1.1rem;">{{$t('Betting.total_rate')}}:</span>
-                <span style="float: right;font-weight:500;font-size:1.2rem;">{{ totalRate_system }}</span>
-              </v-card>
-              <v-divider></v-divider>
-              <v-card class="pa-2 px-3" color="black">
-                <span style="font-weight:500;font-size:1.1rem;">{{$t('Betting.total_stake')}}:</span>
-                <!-- <span style="float: right;">{{ totalStake_system }}</span> -->
-                <span style="float: right;font-weight:500;font-size:1.2rem;">{{ potentialReturns_system }}</span>
-              </v-card>
-              <v-divider></v-divider>
-              <v-card class="pa-2 px-3" color="black">
-                <span style="font-weight:500;font-size:1.1rem;">{{$t('Betting.potential_returns')}}:</span>
-                <!-- <span style="float: right;">{{ potentialReturns_system }}</span> -->
-                <span style="float: right;font-weight:500;font-size:1.2rem;">{{ totalStake_system }}</span>
-              </v-card>
-              <v-divider></v-divider>
-            </v-flex>
+                <v-flex class="pa-0" v-if="toggle_slip_type==2">
+                  <v-card class="pa-2 px-3" color="black">
+                    <span style="font-weight:500;font-size:1.1rem;">{{$t('Betting.amount')}}:</span>
+                    <span style="float: right;font-weight:500;font-size:1.2rem;">{{ amount_system }}</span>
+                  </v-card>
+                  <v-divider></v-divider>
+                  <v-card class="pa-2 px-3" color="black">
+                    <span style="font-weight:500;font-size:1.1rem;">{{$t('Betting.total_rate')}}:</span>
+                    <span style="float: right;font-weight:500;font-size:1.2rem;">{{ totalRate_system }}</span>
+                  </v-card>
+                  <v-divider></v-divider>
+                  <v-card class="pa-2 px-3" color="black">
+                    <span style="font-weight:500;font-size:1.1rem;">{{$t('Betting.total_stake')}}:</span>
+                    <!-- <span style="float: right;">{{ totalStake_system }}</span> -->
+                    <span style="float: right;font-weight:500;font-size:1.2rem;">{{ potentialReturns_system }}</span>
+                  </v-card>
+                  <v-divider></v-divider>
+                  <v-card class="pa-2 px-3" color="black">
+                    <span style="font-weight:500;font-size:1.1rem;">{{$t('Betting.potential_returns')}}:</span>
+                    <!-- <span style="float: right;">{{ potentialReturns_system }}</span> -->
+                    <span style="float: right;font-weight:500;font-size:1.2rem;">{{ totalStake_system }}</span>
+                  </v-card>
+                  <v-divider></v-divider>
+                </v-flex>
 
-            <v-flex class="pa-0 pl-2 pr-2 tertiary">
-              <v-layout row mt-4 mb-2>
-                <v-btn
-                  style="border: 1px solid red;"
-                  outlined
-                  @click="reset_bets"
-                  >{{$t('Betting.reset')}}
-                </v-btn>
-                <v-spacer></v-spacer>
-                <v-btn
-                    :loading="is_updating_page"
-                    :disabled="is_updating_page"
-                    outlined color="primary"
-                    @click="send_coupon">
-                  <template v-if="is_updating_page == true">
-                    <v-icon>mdi-loading</v-icon>
-                  </template>
-                  {{hasChanged == true?$t('Betting.accept_changes'):$t('Betting.save_slip')}}
-                </v-btn>
+                <v-flex class="pa-0 pl-2 pr-2 tertiary">
+                  <v-layout row mt-4 mb-2>
+                    <v-btn
+                      style="border: 1px solid red;"
+                      outlined
+                      @click="reset_bets"
+                      >{{$t('Betting.reset')}}
+                    </v-btn>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                        :loading="is_updating_page"
+                        :disabled="is_updating_page"
+                        outlined color="primary"
+                        @click="send_coupon">
+                      <template v-if="is_updating_page == true">
+                        <v-icon>mdi-loading</v-icon>
+                      </template>
+                      {{hasChanged == true?$t('Betting.accept_changes'):$t('Betting.save_slip')}}
+                    </v-btn>
+                  </v-layout>
+                </v-flex>
               </v-layout>
             </v-flex>
           </v-layout>
-        </v-flex>
-      </v-layout>
+        </v-card-text>
+      </v-card>
     </v-container>
     <v-snackbar
       :color="color_type"
@@ -975,7 +982,7 @@ import { constants } from 'crypto';
     overflow-y: hidden;
   }
   .num{
-    color:#cccccc;
+    color:#505050;
     font-weight:bold;
     font-size:14px;
     text-align: center;
@@ -984,12 +991,12 @@ import { constants } from 'crypto';
   }
   .odd-info{
     padding-left: 30px;
-    color:#b6b9bf;
+    color:black;
     font-size:12px;
   }
 
   .evname{
-    color: #b6b9bf;
+    color: #606060;
     width: 100%;
     align-self: center;
     font-weight: 500;
@@ -1000,7 +1007,7 @@ import { constants } from 'crypto';
   }
   .coef{
     float: right;
-    color: #fff;
+    color: #323232;
     font-size:1.15rem;
     font-weight: bold;
     line-height: 3rem;
@@ -1032,23 +1039,24 @@ import { constants } from 'crypto';
     line-height: 2.08rem !important;
     max-height: 100% !important;
     width: 100%;
-    background-color: #171717;
+    background-color: #c5c5c5;
     border: 1px solid #303030;
     padding: 0 4px !important;
     margin:0 !important;
     text-align: right;
-    color: #fff !important;
+    color: black !important;
   }
   .bet-amount{
     height: 2.08rem !important;
     line-height: 2.08rem!important;
     width: 6.25rem;
-    background-color: #101010;
+    background-color: #c5c5c5;
     border: 1px solid #101010;
+    border-top: 0px !important;
     padding: 0 4px !important;
     text-align: right;
     float: right;
-    color: #fff;
+    color: black;
   }
   #bet_menu .v-toolbar__content{
     padding:0;
@@ -1066,7 +1074,7 @@ import { constants } from 'crypto';
     background-color:grey;
   }
   .combination_btn.v-btn--active{
-    background-color:green;
+    background-color:#e09007;
     
   }
 </style>

@@ -14,7 +14,7 @@ import colors from 'vuetify/es5/util/colors'
 export default {
   primary: '#e09007',
   secondary: colors.shades.black,
-  tertiary: '#000',
+  tertiary: '#141414',
   tertiary1: '#1a1a1a',
   tertiary2: '#323232',
   tertiary3: '#727272',

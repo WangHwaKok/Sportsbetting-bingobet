@@ -1,361 +1,254 @@
 <template>
-  <v-container id="p_mybets" fluid class="ma-0">
-    <v-layout row class="mb-4 mt-2">
-      <v-flex xs3 class="mr-5">
-        <v-layout row class="pb-2" style="border-bottom: 4px solid lawngreen">
-          <v-flex xs8 class="text-xs-center">{{$t('AccountPage.winner_coupons')}}</v-flex>
-          <v-flex xs4 class="text-xs-center">{{winner_coupons}}</v-flex>
+  <v-card id="p_mybets" class="ma-0 pa-0 card-account">
+    <v-card-title>
+      <div class="subheading font-weight-medium">
+        {{$t('AccountPage.my_bets')}}
+      </div>
+    </v-card-title>
+    <v-card-text>
+      <v-layout column>
+        <div class="body-2" style="color:#e09007">{{$t('AccountPage.please_select_a_date_range')}}</div>
+        <v-layout row>
+          <v-flex v-if="this.$store.getters.getRole == 'supplier'">
+            <v-autocomplete
+              v-model="filter_userid"
+              :search-input.sync="filter_username_input"
+              :items="items_filter_username"
+              item-text="username"
+              item-value="userID"
+              :loading="isLoadingUserFilter"
+              :label='$t("AccountPage.user_name")'
+            ></v-autocomplete>
+          </v-flex>
+          <v-flex class="pl-2 pr-2">
+            <v-menu
+              ref="menu1"
+              v-model="menu1"
+              :close-on-content-click="false"
+              :nudge-right="40"
+              lazy
+              transition="scale-transition"
+              offset-y
+            >
+              <template v-slot:activator="{ on }">
+                <v-text-field
+                  v-model="computedStartDateFormatted"
+                  :label='$t("AccountPage.starting_date")'
+                  prepend-icon="mdi-calendar"
+                  readonly
+                  v-on="on"
+                ></v-text-field>
+              </template>
+              <v-date-picker light v-model="start_date" no-title @input="menu1 = false" :locale="calendarLanguage" ></v-date-picker>
+            </v-menu>
+          </v-flex>
+          <v-flex class="pl-2 pr-2">
+            <v-menu
+              ref="menu2"
+              v-model="menu2"
+              :close-on-content-click="false"
+              :nudge-right="40"
+              lazy
+              transition="scale-transition"
+              offset-y
+            >
+              <template v-slot:activator="{ on }">
+                <v-text-field
+                  v-model="computedEndDateFormatted"
+                  :label='$t("AccountPage.date_of_completion")'
+                  prepend-icon="mdi-calendar"
+                  readonly
+                  v-on="on"
+                ></v-text-field>
+              </template>
+              <v-date-picker light v-model="end_date" no-title @input="menu2 = false" :locale="calendarLanguage"></v-date-picker>
+            </v-menu>
+          </v-flex>
+          <v-flex class="pr-2">
+            <v-autocomplete
+              v-model="couponType"
+              :items="items_couponType"
+              item-text = 'text'
+              item-value="value"
+              autocomplete
+              :label='$t("AccountPage.coupon_type")'
+            ></v-autocomplete>
+          </v-flex>
+          <v-flex class="pr-2">
+            <v-autocomplete
+              v-model="couponResult"
+              :items="items_couponResult"
+              item-text = 'text'
+              item-value="value"
+              autocomplete
+              :label='$t("AccountPage.coupon_result")'
+            ></v-autocomplete>
+          </v-flex>
+          <v-flex class="pr-3">
+          <v-btn light small @click="getBetsHistory(1)">{{$t('AccountPage.show')}}</v-btn>
+          </v-flex>
         </v-layout>
-      </v-flex>
-      <v-flex xs3 class="mr-5">
-        <v-layout row class="pb-2" style="border-bottom: 4px solid red">
-          <v-flex xs8 class="text-xs-center">{{$t('AccountPage.losing_coupons')}}</v-flex>
-          <v-flex xs4 class="text-xs-center">{{losing_coupons}}</v-flex>
-        </v-layout>
-      </v-flex>
-      <v-flex xs3 class="mr-5">
-        <v-layout row class="pb-2" style="border-bottom: 4px solid yellow">
-          <v-flex xs8 class="text-xs-center">{{$t('AccountPage.pending_coupons')}}</v-flex>
-          <v-flex xs4 class="text-xs-center">{{pending_coupons}}</v-flex>
-        </v-layout>
-      </v-flex>
-      <v-flex xs3 class="pr-3">
-        <v-layout row class="pb-2" style="border-bottom: 4px solid blue">
-          <v-flex xs8 class="text-xs-center">{{$t('AccountPage.returned_coupons')}}</v-flex>
-          <v-flex xs4 class="text-xs-center">{{returned_coupons}}</v-flex>
-        </v-layout>
-      </v-flex>
-    </v-layout>
-    <v-layout row>
-      <v-flex v-if="this.$store.getters.getRole == 'supplier'">
-        <v-autocomplete
-          v-model="filter_userid"
-          :search-input.sync="filter_username_input"
-          :items="items_filter_username"
-          item-text="username"
-          item-value="userID"
-          :loading="isLoadingUserFilter"
-          :label='$t("AccountPage.user_name")'
-        ></v-autocomplete>
-      </v-flex>
-      <v-flex class="pl-2 pr-2">
-        <v-menu
-          ref="menu1"
-          v-model="menu1"
-          :close-on-content-click="false"
-          :nudge-right="40"
-          lazy
-          transition="scale-transition"
-          offset-y
-        >
-          <template v-slot:activator="{ on }">
-            <v-text-field
-              v-model="computedStartDateFormatted"
-              :label='$t("AccountPage.starting_date")'
-              prepend-icon="mdi-calendar"
-              readonly
-              v-on="on"
-            ></v-text-field>
-          </template>
-          <v-date-picker v-model="start_date" @input="menu1 = false" :locale="calendarLanguage" ></v-date-picker>
-        </v-menu>
-      </v-flex>
-      <v-flex class="pl-2 pr-2">
-        <v-menu
-          ref="menu2"
-          v-model="menu2"
-          :close-on-content-click="false"
-          :nudge-right="40"
-          lazy
-          transition="scale-transition"
-          offset-y
-        >
-          <template v-slot:activator="{ on }">
-            <v-text-field
-              v-model="computedEndDateFormatted"
-              :label='$t("AccountPage.date_of_completion")'
-              prepend-icon="mdi-calendar"
-              readonly
-              v-on="on"
-            ></v-text-field>
-          </template>
-          <v-date-picker v-model="end_date" @input="menu2 = false" :locale="calendarLanguage"></v-date-picker>
-        </v-menu>
-      </v-flex>
-      <v-flex class="pr-2">
-        <v-autocomplete
-          v-model="couponType"
-          :items="items_couponType"
-          item-text = 'text'
-          item-value="value"
-          autocomplete
-          :label='$t("AccountPage.coupon_type")'
-        ></v-autocomplete>
-      </v-flex>
-      <v-flex class="pr-2">
-        <v-text-field :label='$t("AccountPage.coupon_id")' v-model="couponID"></v-text-field>
-      </v-flex>
-      <v-flex class="pr-2">
-        <v-autocomplete
-          v-model="couponResult"
-          :items="items_couponResult"
-          item-text = 'text'
-          item-value="value"
-          autocomplete
-          :label='$t("AccountPage.coupon_result")'
-        ></v-autocomplete>
-      </v-flex>
-      <v-flex class="pr-2">
-        <v-autocomplete
-          v-model="bulletin_type"
-          :items="items_bulletin_type"
-          item-text = 'text'
-          item-value="value"
-          autocomplete
-          :label='$t("AccountPage.bulletin_type")'
-        ></v-autocomplete>
-      </v-flex>
-      <v-flex class="pr-3">
-      <v-btn color="primary" @click="getBetsHistory(1)">Get List</v-btn>
-      </v-flex>
-    </v-layout>
-    <v-layout row class=" scroll-y fill-height account-table" id="main-scroll">
-      <v-flex v-scroll:#main-scroll="onMainScrollPos">
-        <v-data-table
-          :headers="headers"
-          :items="couponList"
-          :loading="is_updating_page"
-          class="table-mybets"
-          style="width: 100%;"
-          hide-actions
-        >
-          <v-progress-linear v-slot:progress color="green" indeterminate></v-progress-linear>
-          <template slot="headers" slot-scope="props">
-            <tr>
-              <th
-                v-for="(header, id) in props.headers"
-                :key="id"
-                :class="`text-xs-${header.align}`"
-                :width="header.width">
-                {{header.text}}
-              </th>
-            </tr>
-          </template>
-          <template v-slot:items="props">
-            <tr :style="'color:'+trColors[props.item.couponResultAlias][1]+';background:#'+trColors[props.item.couponResultAlias][0]">
-              <td style="text-align:center">{{ props.item.couponID }}</td>
-              <td>{{ props.item.username }}</td>
-              <td>{{ props.item.created_at | moment("DD/MM/YYYY HH:mm") }}</td>
-              <td>{{ props.item.complete }}</td>
-              <td>{{ props.item.amount }}</td>
-              <td>{{ props.item.totalRate }}</td>
-              <td>{{ props.item.potentialReturns }}</td>
-              <td>{{ props.item.type }}</td>
-              <td>
-                <v-chip label v-if="props.item.couponResultAlias == 'W'" color="green">{{ props.item.couponResult }}</v-chip>
-                <v-chip label v-else-if="props.item.couponResultAlias == 'L'" color="red">{{ props.item.couponResult }}</v-chip>
-                <v-chip label v-else-if="props.item.couponResultAlias == 'P'" color="grey" style="color:black">{{ props.item.couponResult }}</v-chip>
-                <v-chip label v-else-if="props.item.couponResultAlias == 'C'" color="grey">{{ props.item.couponResult }}</v-chip>
-              </td>
-              <td>
-                <v-layout justify-center align-center v-if="props.item.couponResultAlias == 'P'">
-                  <v-btn flat icon class="ma-0" style="padding:0px;color:black;">
-                    <v-icon medium @click="show_detail(props.item.couponID)">mdi-magnify</v-icon>
-                  </v-btn>
-                  <v-btn flat icon class="ma-0" style="padding:0px;color:black;">
-                    <v-icon medium>mdi-printer-settings</v-icon>
-                  </v-btn>
-                  <v-btn style="padding:0px;color:black;"
-                    v-if="props.item.isCancelable != undefined && props.item.isCancelable == true"
-                    flat
-                    icon
-                    color="error"
-                    class="ma-0"
-                    @click.stop="DeleteDlg(props.item.username, props.item.couponID)"
-                  >
-                    <v-icon medium>mdi-close</v-icon>
-                  </v-btn>
-                </v-layout>
-                <v-layout justify-center align-center v-else>
-                  <v-btn flat icon class="ma-0" style="padding:0px;">
-                    <v-icon medium @click="show_detail(props.item.couponID)">mdi-magnify</v-icon>
-                  </v-btn>
-                  <v-btn flat icon class="ma-0" style="padding:0px;">
-                    <v-icon medium>mdi-printer-settings</v-icon>
-                  </v-btn>
-                  <v-btn style="padding:0px;"
-                    v-if="props.item.isCancelable != undefined && props.item.isCancelable == true"
-                    flat
-                    icon
-                    color="error"
-                    class="ma-0"
-                    @click.stop="DeleteDlg(props.item.username, props.item.couponID)"
-                  >
-                    <v-icon medium>mdi-close</v-icon>
-                  </v-btn>
-                </v-layout>
-              </td>
-            </tr>
-          </template>
-        </v-data-table>
-      </v-flex>
-    </v-layout>
-    <v-dialog v-model="showDialog">
-      <v-card>
-        <v-card-title class="headline">
-          <div class="subheading mr-4">{{$t('AccountPage.coupon_code')}}: {{bet_detail.couponID}}</div>
-          <div class="subheading mr-4">{{$t('AccountPage.amount')}}: {{bet_detail.amount}}</div>
-          <div class="subheading mr-4">{{$t('AccountPage.possible_winnings')}}: {{bet_detail.potentialReturns}}</div>
-          <div class="subheading mr-4">{{$t('AccountPage.winnings')}}: {{bet_detail.earnedAmount}}</div>
-          <div class="subheading">{{$t('AccountPage.type')}}: {{bet_detail.type}}({{getCombinationString(bet_detail.selectedCombinations)}})</div>
-          <v-spacer></v-spacer>
-          <v-btn icon dark @click="showDialog = false">
-            <v-icon>mdi-close</v-icon>
-          </v-btn>
-        </v-card-title>
-        <v-card-text>
-          <v-data-table
-            :headers="combinationHeaders"
-            :items="bet_detail.combinations"
-            class="elevation-1"
-            :expand="true"
-            item-key="combinationID"
-            hide-actions
-          >
-            <template v-slot:items="props">
-              <tr>
-                <td>{{props.item.complete}}</td>
-                <td>{{ props.item.amount }}</td>
-                <td>{{ props.item.rate }}</td>
-                <td>{{ props.item.gain }}</td>
-                <td class="text-xs-center">{{ props.item.combinationResult }}</td>
-                <td class="text-xs-center">
-                  <v-btn color="primary" @click="props.expanded = !props.expanded">
-                    <v-icon color="white">mdi-eye</v-icon>
-                  </v-btn>
-                </td>
-              </tr>
-
-            </template>
-            <template v-slot:expand="props1">
-              <v-card style="border-radius:0px;">
+        <v-card>
+          <v-card-title style="background:#101010" class="pa-2">
+            <div class="subheading" style="color:#e09007">{{start_date}} - {{end_date}} {{$t('AccountPage.bets_in_between')}}</div>
+          </v-card-title>
+          <v-card-text style="background:#101010" class="pa-2">
+            <v-layout row class=" scroll-y fill-height account-table" id="main-scroll" style="height:calc(100vh - 425px);">
+              <v-flex v-scroll:#main-scroll="onMainScrollPos">
                 <v-data-table
-                  :headers="detailHeaders"
-                  :items="props1.item.odds"
-                  class="elevation-1"
+                  light
+                  :headers="headers"
+                  :items="couponList"
+                  :loading="is_updating_page"
+                  class="table-mybets"
+                  style="width: 100%;"
                   hide-actions
+                  item-key="couponID"
                 >
+                  <v-progress-linear v-slot:progress color="green" indeterminate></v-progress-linear>
                   <template slot="headers" slot-scope="props">
-                    <tr style="background:#171717">
+                    <tr style="background:#e09007;height:3.5rem;border:solid 1px #e09007;border-radius:3px !important;">
                       <th
                         v-for="(header, id) in props.headers"
                         :key="id"
                         :class="`text-xs-${header.align}`"
-                      >
-                      {{header.text}}
+                        :width="header.width">
+                        <div class="body-2 font-weight-medium" style="color:black">{{header.text}}</div>
                       </th>
                     </tr>
                   </template>
                   <template v-slot:items="props">
-                    <tr style="background:green">
+                    <tr @click="show_detail(props.item.couponID, props.expanded = !props.expanded)" style="cursor:pointer;">
+                      <td>{{ props.item.username }}</td>
+                      <td>{{ props.item.created_at | moment("DD/MM/YYYY HH:mm") }}</td>
+                      <td style="text-align:center">{{ props.item.couponID }}</td>
+                      <td>{{ props.item.complete }}</td>
+                      <td>{{ props.item.amount }}</td>
+                      <td>{{ props.item.potentialReturns }}</td>
                       <td>
-                        <v-layout>
-                        <div v-if="props.item.eventState != undefined && props.item.eventState == 'live'" class="coupon-live" style="position: relative;">{{$t('Betting.live')}}</div>
-                        {{ props.item.league }}
-                        </v-layout>
+                        <div v-if="props.item.couponResultAlias == 'W'" style="color:green">{{ props.item.couponResult }}</div>
+                        <div v-else-if="props.item.couponResultAlias == 'L'" style="color:red">{{ props.item.couponResult }}</div>
+                        <div v-else-if="props.item.couponResultAlias == 'P'" style="color:blue">{{ props.item.couponResult }}</div>
+                        <div v-else-if="props.item.couponResultAlias == 'C'" style="color:grey">{{ props.item.couponResult }}</div>
                       </td>
-                      <td>{{ props.item.eventDate }}</td>
-                      <td>{{ props.item.liveGamePeriod}} {{props.item.liveMinute}}</td>
-                      <td>{{ props.item.homeTeam }} - {{props.item.awayTeam}}</td>
-                      <td>{{ props.item.liveScoreHome }} : {{props.item.liveScoreAway}}</td>
-                      <td>{{ props.item.oddValue }}</td>
-                      <td>{{ props.item.oddTypeName }}</td>
-                      <td>{{ props.item.oddName }}</td>
                       <td>
-                        <div v-if="props.item.oddResultAlias == 'W'">{{ props.item.finalScoreHome }} - {{props.item.finalScoreAway}}/{{ props.item.oddResult }}</div>
-                        <div v-else-if="props.item.oddResultAlias == 'L'">{{ props.item.finalScoreHome }} - {{props.item.finalScoreAway}}/{{ props.item.oddResult }}</div>
-                        <div v-else-if="props.item.oddResultAlias == 'P'">{{ props.item.finalScoreHome }} - {{props.item.finalScoreAway}}/{{ props.item.oddResult }}</div>
-                        <div v-else-if="props.item.oddResultAlias == 'C'">{{ props.item.finalScoreHome }} - {{props.item.finalScoreAway}}/{{ props.item.oddResult }}</div>
+                        <v-btn flat class="ma-0" style="padding:0px;color:yellow;">
+                          <!-- <v-icon medium>mdi-printer-settings</v-icon> -->
+                          <div style="color:#f8b103">{{$t('AccountPage.print')}}</div>
+                        </v-btn>
+                        <v-btn style="padding:0px;color:red;"
+                          v-if="props.item.isCancelable != undefined && props.item.isCancelable == true"
+                          flat
+                          icon
+                          color="error"
+                          class="ma-0"
+                          @click.stop="DeleteDlg(props.item.username, props.item.couponID)"
+                        >
+                          <v-icon medium>mdi-close</v-icon>
+                        </v-btn>
                       </td>
                     </tr>
                   </template>
-                </v-data-table>
-              </v-card>
-            </template>
-          </v-data-table>
-          <!-- <v-data-table
-            :headers="detailHeaders"
-            :items="bet_detail.combinations"
-            class="elevation-1"
-            hide-actions
-          >
-            <template v-slot:items="props">
-              <template v-for="odd in props.item.odds">
-                <tr>
-                  <td>
-                    <v-layout>
-                    <div v-if="odd.eventState != undefined && odd.eventState == 'live'" class="coupon-live" style="position: relative;">{{$t('Betting.live')}}</div>
-                    {{ odd.league }}
-                    </v-layout>
-                  </td>
-                  <td>{{ odd.eventDate }}</td>
-                  <td>{{ odd.liveGamePeriod}} {{odd.liveMinute}}</td>
-                  <td>{{ odd.homeTeam }} - {{odd.awayTeam}}</td>
-                  <td>{{ odd.liveScoreHome }} : {{odd.liveScoreAway}}</td>
-                  <td>{{ odd.oddValue }}</td>
-                  <td>{{ odd.oddTypeName }}</td>
-                  <td>{{ odd.oddName }}</td>
-                  <td>
-                    <div v-if="odd.oddResultAlias == 'W'" style="color:lawngreen">{{ odd.finalScoreHome }} - {{odd.finalScoreAway}}/{{ odd.oddResult }}</div>
-                    <div v-else-if="odd.oddResultAlias == 'L'" style="color:red">{{ odd.finalScoreHome }} - {{odd.finalScoreAway}}/{{ odd.oddResult }}</div>
-                    <div v-else-if="odd.oddResultAlias == 'P'" style="color:yellow">{{ odd.finalScoreHome }} - {{odd.finalScoreAway}}/{{ odd.oddResult }}</div>
-                    <div v-else-if="odd.oddResultAlias == 'C'" style="color:blue">{{ odd.finalScoreHome }} - {{odd.finalScoreAway}}/{{ odd.oddResult }}</div>
-                  </td>
-                </tr>
-              </template>
+                  <template v-slot:expand="props">
+                    <table class="table-detail">
+                      <tr style="background:black;">
+                        <th width="20%" class="text-xs-left">
+                          {{$t('AccountPage.amount')}}
+                        </th>
+                        <th width="20%" class="text-xs-left">
+                          {{$t('AccountPage.rate')}}
+                        </th>
+                        <th width="20%" class="text-xs-left">
+                          {{$t('AccountPage.possible_winnings')}}
+                        </th>
+                        <th width="20%" class="text-xs-left">
+                          {{$t('AccountPage.winnings')}}
+                        </th>
+                        <th width="*" class="text-xs-left">
+                          {{$t('AccountPage.status')}}
+                        </th>
+                      </tr>
+                      <tr>
+                        <td>
+                          {{props.item.amount}}
+                        </td>
+                        <td>
+                          {{props.item.rate}}
+                        </td>
+                        <td>
+                          {{props.item.potentialReturns}}
+                        </td>
+                        <td>
+                        </td>
+                        <td>
+                          <div v-if="props.item.couponResultAlias == 'W'" style="color:green">{{ props.item.couponResult }}</div>
+                          <div v-else-if="props.item.couponResultAlias == 'L'" style="color:red">{{ props.item.couponResult }}</div>
+                          <div v-else-if="props.item.couponResultAlias == 'P'" style="color:blue">{{ props.item.couponResult }}</div>
+                          <div v-else-if="props.item.couponResultAlias == 'C'" style="color:grey">{{ props.item.couponResult }}</div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td colspan="5" style="padding: 5px !important;">
+                          <v-data-table
+                            v-if="bet_detail != undefined && bet_detail.combinations != undefined && bet_detail.combinations.length > 0"
+                            light 
+                            :headers="detailHeaders"
+                            :items="bet_detail.combinations"
+                            :loading="is_updating_page"
+                            class="table-mybets"
+                            style="width: 100%;"
+                            hide-actions
+                          >
+                            <template slot="headers" slot-scope="props">
+                              <tr style="background:green;height:3.5rem;border:solid 1px #e09007;border-radius:3px !important;">
+                                <th
+                                  v-for="(header, id) in props.headers"
+                                  :key="id"
+                                  :class="`text-xs-${header.align}`"
+                                  :width="header.width">
+                                  <div class="body-2 font-weight-medium" style="color:white">{{header.text}}</div>
+                                </th>
+                              </tr>
+                            </template>
+                            <template v-slot:items="props">
+                              <template v-for="(odd, oddIdx) in props.item.odds">
+                                <tr>
+                                  <td>
+                                    <v-layout>
+                                    <div v-if="odd.eventState != undefined && odd.eventState == 'live'" class="coupon-live" style="position: relative;">{{$t('Betting.live')}}</div>
+                                    {{ odd.league }}
+                                    </v-layout>
+                                  </td>
+                                  <td>{{ odd.eventDate }}</td>
+                                  <td>{{ odd.liveGamePeriod}} {{odd.liveMinute}}</td>
+                                  <td>{{ odd.homeTeam }} - {{odd.awayTeam}}</td>
+                                  <td>{{ odd.liveScoreHome }} : {{odd.liveScoreAway}}</td>
+                                  <td>{{ odd.oddValue }}</td>
+                                  <td>{{ odd.oddTypeName }}</td>
+                                  <td>{{ odd.oddName }}</td>
+                                  <td>
+                                    <div v-if="odd.oddResultAlias == 'W'">{{ odd.finalScoreHome }} - {{odd.finalScoreAway}}/{{ odd.oddResult }}</div>
+                                    <div v-else-if="odd.oddResultAlias == 'L'">{{ odd.finalScoreHome }} - {{odd.finalScoreAway}}/{{ odd.oddResult }}</div>
+                                    <div v-else-if="odd.oddResultAlias == 'P'">{{ odd.finalScoreHome }} - {{odd.finalScoreAway}}/{{ odd.oddResult }}</div>
+                                    <div v-else-if="odd.oddResultAlias == 'C'">{{ odd.finalScoreHome }} - {{odd.finalScoreAway}}/{{ odd.oddResult }}</div>
+                                  </td>
+                                </tr>
+                              </template>
 
-            </template>
-          </v-data-table> -->
-        </v-card-text>
-      </v-card>
-    </v-dialog>
-    <v-dialog v-model="dialog_delete_coupon" persistent max-width="290">
-      <v-card>
-        <v-card-title class="headline">{{$t('Betting.cancel_coupon')}}</v-card-title>
-        <v-card-text>The user <strong class="title error--text">{{current_username}}</strong>'s coupon {{current_couponID}} will be cancelled.</v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="green darken-1" flat @click.stop="dialog_delete_coupon = false">{{$t('Common.no')}}</v-btn>
-          <v-btn color="green darken-1" flat
-                  :disabled="is_processing"
-                  @click.stop="cancel_coupon">{{$t('Common.yes')}}</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-    <v-snackbar
-      :color="color_type"
-      :bottom=false
-      :top=true
-      :left=false
-      :right=true
-      v-model="snackbar"
-      dark
-    >
-      <!-- <v-icon
-        color="white"
-        class="mr-3"
-      >
-        mdi-bell-plus
-      </v-icon> -->
-      <div>{{alertMessage}}</div>
-      <v-icon
-        size="16"
-        @click="snackbar = false"
-      >
-        mdi-close-circle
-      </v-icon>
-    </v-snackbar>
-  </v-container>
+                            </template>
+                          </v-data-table>
+                        </td>
+                      </tr>
+                    </table>
+                  </template>
+                </v-data-table>
+              </v-flex>
+            </v-layout>
+          </v-card-text>
+        </v-card>
+      </v-layout>
+    </v-card-text>
+  </v-card>
 </template>
 
 <script>
@@ -368,16 +261,14 @@ export default {
       menu2: false,
       items: [],
       headers: [
+        { text: this.$t('AccountPage.user_name'), value: 'user_name', align: 'left', width:'*' },
+        { text: this.$t('AccountPage.date_time'), value: 'date_time', align: 'left', width:'20%' },
         { text: this.$t('AccountPage.coupon_code'), value: 'coupon_code', align: 'center', width:'10%' },
-        { text: this.$t('AccountPage.user_name'), value: 'user_name', align: 'left', width:'10%' },
-        { text: this.$t('AccountPage.date_time'), value: 'date_time', align: 'left', width:'10%' },
         { text: this.$t('AccountPage.complete'), value: 'complete', align: 'left', width:'10%' },
-        { text: this.$t('Betting.amount'), value: 'amount', align: 'left', width:'5%' },
-        { text: this.$t('Betting.rate'), value: 'rate', align: 'left', width:'5%' },
+        { text: this.$t('Betting.amount'), value: 'amount', align: 'left', width:'10%' },
         { text: this.$t('Betting.potential_returns'), value: 'potential_returns', align: 'left', width:'10%' },
-        { text: this.$t('AccountPage.type'), value: 'type', align: 'left', width:'10%' },
         { text: this.$t('AccountPage.status'), value: 'status', align: 'left', width:'10%' },
-        { text: this.$t('AccountPage.action'), value: 'action', align: 'center', width:'*' }
+        { text: this.$t('AccountPage.action'), value: 'action', align: 'center', width:'10%' }
       ],
       combinationHeaders:[
         { text: this.$t('AccountPage.combination'), value: 'combination', align: 'left' },

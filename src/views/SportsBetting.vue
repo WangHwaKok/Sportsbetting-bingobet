@@ -162,7 +162,7 @@
 
                             <td class="text-xs-left">
                               <v-layout row align-center justify-center>
-                                <v-chip label small color="#171717" class="chip-table mx-0">
+                                <v-chip label small color="#171717" class="chip-table mx-0" @click="gotoEventView(props.item.eventID, eventDetailDialog=true)">
                                   <v-icon color="white" style="cursor:pointer;">mdi-plus</v-icon>
                                 </v-chip>
                                 <v-chip label small color="#171717" class="chip-table" style="margin-left:2px;" @click="gotoEventView(props.item.eventID, props.expanded = !props.expanded)">
@@ -202,11 +202,11 @@
                                     {{props.item.homeTeam}} - {{props.item.awayTeam}}
                                   </div>
                                   <v-spacer></v-spacer>
-                                  <v-btn light small style="margin:0px; margin-right:3px;height:unset; padding:0px;border:1px solid black;background-image:linear-gradient(#eadfd0, #dbccb8)">
+                                  <v-btn light small style="margin:0px; margin-right:3px;height:unset; padding:0px;border:1px solid black;background-image:linear-gradient(#eadfd0, #dbccb8)" @click="expandEventDetail(true)">
                                     <v-icon>mdi-arrow-down-drop-circle-outline</v-icon>
                                     {{$t('Betting.expand')}}
                                   </v-btn>
-                                  <v-btn light small style="margin:0px; height:unset; padding:0px;border:1px solid black;background-image:linear-gradient(#eadfd0, #dbccb8)">
+                                  <v-btn light small style="margin:0px; height:unset; padding:0px;border:1px solid black;background-image:linear-gradient(#eadfd0, #dbccb8)" @click="expandEventDetail(false)">
                                     <v-icon>mdi-arrow-up-drop-circle-outline</v-icon>
                                     {{$t('Betting.collapse')}}
                                   </v-btn>
@@ -214,8 +214,39 @@
                                     <v-icon>mdi-close</v-icon>
                                   </v-btn>
                                 </v-card-title>
-                                <v-card-text style="background:black">
-
+                                <v-card-text style="background:black;">
+                                  <v-expansion-panel v-model="eventDetailPanel" expand light>
+                                    <v-expansion-panel-content v-for="(oddType, oddTypeIdx) in oddTypeList" :key="oddTypeIdx" class="event-detail-panel eventview" >
+                                      <template v-slot:actions>
+                                        <v-icon color="primary">$vuetify.icons.expand</v-icon>
+                                      </template>
+                                      <template v-slot:header>
+                                        <div class="d-flex justify-start align-center pl-2">
+                                          <div class="body-2 font-weight-bold" style="width:100%;color:#e09007">{{ oddType.name }}</div>
+                                        </div>
+                                      </template>
+                                      <v-flex
+                                          v-if="oddType.lines != null"
+                                          v-for="(line,index) in oddType.lines"
+                                          :key="index"
+                                      >
+                                        <v-layout xs12 row>
+                                          <v-flex
+                                                  v-for="(item, idx) in line"
+                                                  :key="idx"
+                                                  :class="`xs${12/line.length} ma-1 event-detail-cell ${is_betslip_odd(eventViewData.eventID, oddType.oddTypeID, item.oddID)?'active':''}`"
+                                                  @click="update_betslip('prematch', eventViewData.eventID, eventViewData.homeTeam, eventViewData.awayTeam, oddType.oddTypeID, oddType.name,
+                                              item.oddID, item.value, item.name, item.special, item.isSuspended==undefined?0:item.isSuspended)"
+                                          >
+                                            <p class="body-2 font-weight-medium pa-1 ma-0 market-odd-name" v-if="item.special != undefined && item.special!= 0">{{item.name}}({{item.special}})</p>
+                                            <p class="body-2 font-weight-medium pa-1 ma-0 market-odd-name" v-else>{{item.name}}</p>
+                                            <span class="body-2 font-weight-medium pa-1 market-odd-score" v-if="item.isSuspended == 1"><v-icon color="yellow">mdi-lock-outline</v-icon></span>
+                                            <span class="body-2 font-weight-medium pa-1 market-odd-score" v-else>{{item.value}}</span>
+                                          </v-flex>
+                                        </v-layout>
+                                      </v-flex>
+                                    </v-expansion-panel-content>
+                                  </v-expansion-panel>
                                 </v-card-text>
                               </template>
                             </v-card>
@@ -248,11 +279,82 @@
         <core-footer/>
       </div>
     </v-content>
+    <v-dialog v-model="eventDetailDialog" scrollable max-width="1100px">
+      <v-layout v-if="is_waiting_page" justify-center align-center>
+        <FadeLoader
+            class="fade-loader"
+            :loading="is_waiting_page"
+            color="#e09007"
+            :height=20
+            :width=10
+            :radius=20
+            margin="2px"
+            sizeUnit="px"
+        />
+      </v-layout>
+      <v-card v-else color="black" class="pa-1">
+        <v-card-title style="background-image:linear-gradient(#39434c, #29333c, #39434c)" class="pa-1">
+          <v-layout justify-start align-start fill-height>
+            <div style="background:#596167;color:white;margin-right:30px;margin-left:30px;border:1px; border-radius:3px;" class="body-1 font-weight-medium pa-1">
+              {{eventViewData.homeTeam}} - {{eventViewData.awayTeam}}
+            </div>
+            <div style="color:white;" class="body-2 font-weight-medium pa-1">
+              {{eventViewData.eventDate | moment("DD/MM")}}-{{eventViewData.eventDate | moment("HH:mm")}}
+            </div>
+            <v-spacer></v-spacer>
+            <v-chip label small color="#cfd1d2" class="chip-event-detail ma-0" @click="expandEventDetail(true)">
+              <v-icon color="#303030" style="cursor:pointer;">mdi-plus</v-icon>
+            </v-chip>
+            <v-chip label small color="#cfd1d2" class="chip-event-detail ma-0" @click="expandEventDetail(false)">
+              <v-icon color="#303030" style="cursor:pointer;">mdi-minus</v-icon>
+            </v-chip>
+            <v-chip label small color="#cfd1d2" class="chip-event-detail ma-0" @click="eventViewData = false">
+              <v-icon color="#303030" style="cursor:pointer;">mdi-close</v-icon>
+            </v-chip>
+          </v-layout>
+        </v-card-title>
+        <v-card-text style="background:#171717">
+          <v-expansion-panel v-model="eventDetailPanel" expand light>
+            <v-expansion-panel-content v-for="(oddType, oddTypeIdx) in oddTypeList" :key="oddTypeIdx" class="event-detail-dialog-panel eventview" >
+              <template v-slot:actions>
+                <v-icon color="primary">$vuetify.icons.expand</v-icon>
+              </template>
+              <template v-slot:header>
+                <div class="d-flex justify-start align-center pl-2">
+                  <div class="body-2 font-weight-bold" style="width:100%;color:#e09007">{{ oddType.name }}</div>
+                </div>
+              </template>
+              <v-flex
+                  v-if="oddType.lines != null"
+                  v-for="(line,index) in oddType.lines"
+                  :key="index"
+              >
+                <v-layout xs12 row>
+                  <v-flex
+                          v-for="(item, idx) in line"
+                          :key="idx"
+                          :class="`xs${12/line.length} ma-1 event-detail-cell ${is_betslip_odd(eventViewData.eventID, oddType.oddTypeID, item.oddID)?'active':''}`"
+                          @click="update_betslip('prematch', eventViewData.eventID, eventViewData.homeTeam, eventViewData.awayTeam, oddType.oddTypeID, oddType.name,
+                      item.oddID, item.value, item.name, item.special, item.isSuspended==undefined?0:item.isSuspended)"
+                  >
+                    <p class="body-2 font-weight-medium pa-1 ma-0 market-odd-name" v-if="item.special != undefined && item.special!= 0">{{item.name}}({{item.special}})</p>
+                    <p class="body-2 font-weight-medium pa-1 ma-0 market-odd-name" v-else>{{item.name}}</p>
+                    <span class="body-2 font-weight-medium pa-1 market-odd-score" v-if="item.isSuspended == 1"><v-icon color="yellow">mdi-lock-outline</v-icon></span>
+                    <span class="body-2 font-weight-medium pa-1 market-odd-score" v-else>{{item.value}}</span>
+                  </v-flex>
+                </v-layout>
+              </v-flex>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </v-app>
 </template>
 
 <script>
-  import { constants } from 'crypto';
+import moment from 'moment-timezone'
+import { constants } from 'crypto';
 import { parse } from 'path';
   export default {
     data() {
@@ -260,8 +362,6 @@ import { parse } from 'path';
         topLeagues: [],
         leaguePanel: [],
         prematchListTable: [],
-        topMenuSportList: [],
-        prematchData: [],
         liveListTable: [],
         pagination: {
           rowsPerPage: -1
@@ -274,22 +374,13 @@ import { parse } from 'path';
         timeFilter: "",
         searchPrematchStr: "",
         times: 0,
-        ticksLabels: ["All", "6h", "12h", "24h", "48h"],
         eventViewFlag: 0,
-        eventViewLayoutCount: 2,
         eventViewData: [],
         toggle_kinds: 0,
         oddGroups: [],
         oddTypeList: [],
         rowOddCount: 0,
-        breadcrumbs: [],
-        socketOverviewLan: '',
         prematchOddTypeRules: {
-          lineRules:{},
-          oddNames:{},
-          oddRules:{},
-        },
-        liveOddTypeRules: {
           lineRules:{},
           oddNames:{},
           oddRules:{},
@@ -308,6 +399,8 @@ import { parse } from 'path';
         closingMinuteBetting: '',
         hasSize:0,
         timeFilterModel: '',
+        eventDetailPanel:[],
+        eventDetailDialog: false,
       };
     },
     methods: {
@@ -444,306 +537,6 @@ import { parse } from 'path';
         //           console.log(e);
         //         });
       },
-      setLiveTime(){
-        if(this.liveListTable[0] != undefined && this.liveListTable[0].data != undefined && Object.keys(this.liveListTable[0].data).length > 0){
-          var self = this
-          var date = ''
-          var minute = ''
-          var second = ''
-          Object.keys(this.liveListTable[0].data).forEach(leagueID => {
-            if(self.liveListTable[0].data[leagueID].dataList != undefined && Object.keys(self.liveListTable[0].data[leagueID].dataList).length > 0){
-              Object.keys(self.liveListTable[0].data[leagueID].dataList).forEach(eventID => {
-                if(self.liveListTable[0].data[leagueID].dataList[eventID].liveGamePeriod != undefined && (self.liveListTable[0].data[leagueID].dataList[eventID].liveGamePeriod.toLowerCase() == "ht" || self.liveListTable[0].data[leagueID].dataList[eventID].liveGamePeriod.toLowerCase() == "live")){
-                  self.liveListTable[0].data[leagueID].dataList[eventID].liveMinute = self.liveListTable[0].data[leagueID].dataList[eventID].liveGamePeriod
-                }
-                else if(self.liveListTable[0].data[leagueID].sportAlias == 'soccer'){
-                  if(self.liveListTable[0].data[leagueID].dataList[eventID].liveTime == undefined){
-                    var parseTime = self.liveListTable[0].data[leagueID].dataList[eventID].liveMinute.split(':'); // split it at the colons
-                    if(parseTime == null && parseTime.length == 0)
-                      return
-                    // minutes are worth 60 seconds. Hours are worth 60 minutes.
-                    var seconds = (+parseTime[0]) *60 + (+parseTime[1]); 
-                    self.liveListTable[0].data[leagueID].dataList[eventID].liveTime = seconds
-                  }
-                  else{
-                    self.liveListTable[0].data[leagueID].dataList[eventID].liveTime = self.liveListTable[0].data[leagueID].dataList[eventID].liveTime + 1
-                  }
-                  minute = ('0' + Math.trunc(self.liveListTable[0].data[leagueID].dataList[eventID].liveTime/60)).substr(-2)
-                  second = ('0' + self.liveListTable[0].data[leagueID].dataList[eventID].liveTime%60).substr(-2)
-                  self.liveListTable[0].data[leagueID].dataList[eventID].liveMinute = minute + ':' + second
-                }
-                else if(self.liveListTable[0].data[leagueID].dataList[eventID].liveClockTimestamp != undefined && self.liveListTable[0].data[leagueID].dataList[eventID].liveMinute != undefined
-                        && self.liveListTable[0].data[leagueID].dataList[eventID].liveClockStartSeconds != undefined && self.liveListTable[0].data[leagueID].dataList[eventID].liveClockIsStopped == false){    //run count
-                  if(self.liveListTable[0].data[leagueID].dataList[eventID].liveTime == undefined){
-                    self.liveListTable[0].data[leagueID].dataList[eventID].liveTime = Math.round(new Date().getTime()/1000) - self.liveListTable[0].data[leagueID].dataList[eventID].liveClockTimestamp + self.liveListTable[0].data[leagueID].dataList[eventID].liveClockStartSeconds
-                  }
-                  else{
-                    if(self.liveListTable[0].data[leagueID].dataList[eventID].liveClockIsCountDown == true){    //count down
-                      self.liveListTable[0].data[leagueID].dataList[eventID].liveTime = self.liveListTable[0].data[leagueID].dataList[eventID].liveTime - 1
-                    }
-                    else if(self.liveListTable[0].data[leagueID].dataList[eventID].liveClockIsCountDown == false){  //count up
-                      self.liveListTable[0].data[leagueID].dataList[eventID].liveTime = self.liveListTable[0].data[leagueID].dataList[eventID].liveTime + 1
-                    }
-                  }
-                  minute = ('0' + Math.trunc(self.liveListTable[0].data[leagueID].dataList[eventID].liveTime/60)).substr(-2)
-                  second = ('0' + self.liveListTable[0].data[leagueID].dataList[eventID].liveTime%60).substr(-2)
-                  self.liveListTable[0].data[leagueID].dataList[eventID].liveMinute = minute + ':' + second
-                }
-                else if(self.liveListTable[0].data[leagueID].dataList[eventID].liveClockIsStopped == true && self.liveListTable[0].data[leagueID].dataList[eventID].liveGamePeriod != undefined){
-                  self.liveListTable[0].data[leagueID].dataList[eventID].liveMinute = self.liveListTable[0].data[leagueID].dataList[eventID].liveGamePeriod
-                }
-              })
-            }
-          })
-        }
-
-      },
-      setLiveList(apiData="", updateOddsData="", insertOddTypeData="", removeOddTypeData="", updateEventData="", removeEventData="", insertEventData="") {
-        if(this.liveOddTypeRules.oddRules.length == 0)
-          return
-        if(apiData != ""){
-          this.liveListTable = [{headers:[], data:[]}]
-          if(apiData.leagues.length == 0)
-            return
-          var headers = [
-            {
-              sportID: apiData.leagues[0].sportID,
-              width: "10%",
-              align: "center"
-            },
-            {
-              text: apiData.leagues[0].sportName,
-              align: "left",
-              width: "*"
-            },
-            { text: "", align: "center", width: "8%" }
-          ];
-
-          if(this.liveOddTypeRules.oddRules[apiData.leagues[0].sportAlias] != undefined){
-            var self = this
-            this.liveOddTypeRules.oddRules[apiData.leagues[0].sportAlias].oddTypes.forEach(function(oddType, oddIndex, Object){
-              var partHeader = {}
-              partHeader.text = self.liveOddTypeRules.oddNames[oddType]
-              partHeader.align = "center"
-              var specialCell = self.liveOddTypeRules.oddRules[apiData.leagues[0].sportAlias].hasSpecial[oddIndex] ? 1 : 0
-              partHeader.specialCell = specialCell
-              partHeader.cellCount = self.liveOddTypeRules.lineRules[oddType].length + specialCell
-              partHeader.width = (partHeader.cellCount)*5 + "%"
-              partHeader.cell = self.liveOddTypeRules.lineRules[oddType]
-              partHeader.order = oddIndex
-              headers.push(partHeader)
-            });
-          }
-
-          headers.push({
-            text: "+",
-            align: "center",
-            width: "5%"
-          });
-          headers.push({
-            text: "",
-            align: "center",
-            width: "5%"
-          });
-
-          this.liveListTable[0].headers = headers
-
-          var data = []
-          var count = 0
-          apiData.leagues.forEach(league => {
-
-            var leaguePartTable = {
-              leagueID: league.leagueID,
-              sportID: league.sportID,
-              sportAlias: league.sportAlias,
-              categoryAlias: league.categoryAlias,
-              categoryName: league.categoryName,
-              leagueName: league.leagueName,
-              dataList: {}
-            };
-            if(league.events != undefined && league.events.length > 0){
-              for(var i = 0; i < league.events.length; i ++){
-                // if(count == 10){
-                //   break
-                // }
-                var event = league.events[i]
-                var dataItem = {
-
-                  eventID: event.eventID,
-                  eventDate: event.eventDate,
-                  marketCount: event.marketCount,
-                  homeTeam: event.homeTeam,
-                  awayTeam: event.awayTeam,
-                  liveScoreHome: event.liveScoreHome,
-                  liveScoreAway: event.liveScoreAway,
-                  liveMinute: event.liveMinute,
-                  liveClockTimestamp: event.liveClockTimestamp != undefined ? event.liveClockTimestamp : undefined,
-                  liveGamePeriod: event.liveGamePeriod != undefined ? event.liveGamePeriod : undefined,
-                  liveClockStartSeconds: event.liveClockStartSeconds != undefined ? event.liveClockStartSeconds : undefined,
-                  liveClockIsStopped: event.liveClockIsStopped != undefined ? event.liveClockIsStopped : undefined,
-                  liveClockIsCountDown: event.liveClockIsCountDown != undefined ? event.liveClockIsCountDown : undefined,
-                  oddTypes: {},
-                }
-                event.oddTypes.forEach(oddType => {
-                  dataItem.oddTypes[oddType.alias] = oddType
-                })
-                leaguePartTable.dataList[event.eventID] = dataItem
-                // data.push(dataItem)
-                // count ++;
-              }
-            }
-            this.liveListTable[0].data[league.leagueID] = leaguePartTable
-          })
-          this.liveListTable[0].data = this.liveListTable[0].data.concat(data)
-          // console.log('apiData',this.liveListTable[0])
-        }
-        else if (updateOddsData != "" && updateOddsData.odds != undefined && updateOddsData.odds.length > 0){
-          var index = -1;
-          if(this.liveListTable[0].data[updateOddsData.leagueID] != undefined && this.liveListTable[0].data[updateOddsData.leagueID].dataList[updateOddsData.eventID] != undefined
-                  && this.liveListTable[0].data[updateOddsData.leagueID].dataList[updateOddsData.eventID].oddTypes != undefined
-                  && this.liveListTable[0].data[updateOddsData.leagueID].dataList[updateOddsData.eventID].oddTypes[updateOddsData.oddTypeAlias] != undefined){
-
-            var self = this;
-            this.liveListTable[0].data[updateOddsData.leagueID].dataList[updateOddsData.eventID].oddTypes[updateOddsData.oddTypeAlias].lines[0].forEach(function(line, line_index){
-              var upt_line_index = -1;
-              var filteredLine = updateOddsData.odds.find(function(updateOdd, upt_odd_index){
-                if(updateOdd.oddID == line.oddID)
-                {
-                  upt_line_index = upt_odd_index;
-                  return upt_odd_index;
-                }
-              });
-              if(upt_line_index != -1){
-                if(updateOddsData.odds[upt_line_index].value != undefined)
-                {
-
-                  var orgVal = self.liveListTable[0].data[updateOddsData.leagueID].dataList[updateOddsData.eventID].oddTypes[updateOddsData.oddTypeAlias].lines[0][line_index].value;
-
-                  // self.liveListTable[0].data[updateOddsData.leagueID].dataList[updateOddsData.eventID].oddTypes[index].lines[0][line_index].changes = "";
-
-                  // var changes = "";
-
-                  if( orgVal > updateOddsData.odds[upt_line_index].value)
-                  {
-                    if(self.liveListTable[0].data[updateOddsData.leagueID].dataList[updateOddsData.eventID].oddTypes[updateOddsData.oddTypeAlias].lines[0][line_index].changes == undefined)
-                      self.liveListTable[0].data[updateOddsData.leagueID].dataList[updateOddsData.eventID].oddTypes[updateOddsData.oddTypeAlias].lines[0][line_index].changes = 'decrease1'
-                    else if(self.liveListTable[0].data[updateOddsData.leagueID].dataList[updateOddsData.eventID].oddTypes[updateOddsData.oddTypeAlias].lines[0][line_index].changes == 'decrease1'){
-                      self.liveListTable[0].data[updateOddsData.leagueID].dataList[updateOddsData.eventID].oddTypes[updateOddsData.oddTypeAlias].lines[0][line_index].changes = 'decrease2'
-                    }
-                    else if(self.liveListTable[0].data[updateOddsData.leagueID].dataList[updateOddsData.eventID].oddTypes[updateOddsData.oddTypeAlias].lines[0][line_index].changes == 'decrease2'){
-                      self.liveListTable[0].data[updateOddsData.leagueID].dataList[updateOddsData.eventID].oddTypes[updateOddsData.oddTypeAlias].lines[0][line_index].changes = 'decrease1'
-                    }
-                  }
-                  else if(orgVal < updateOddsData.odds[upt_line_index].value){
-                    if(self.liveListTable[0].data[updateOddsData.leagueID].dataList[updateOddsData.eventID].oddTypes[updateOddsData.oddTypeAlias].lines[0][line_index].changes == undefined)
-                      self.liveListTable[0].data[updateOddsData.leagueID].dataList[updateOddsData.eventID].oddTypes[updateOddsData.oddTypeAlias].lines[0][line_index].changes = 'increase1'
-                    else if(self.liveListTable[0].data[updateOddsData.leagueID].dataList[updateOddsData.eventID].oddTypes[updateOddsData.oddTypeAlias].lines[0][line_index].changes == 'increase1'){
-                      self.liveListTable[0].data[updateOddsData.leagueID].dataList[updateOddsData.eventID].oddTypes[updateOddsData.oddTypeAlias].lines[0][line_index].changes = 'increase2'
-                    }
-                    else if(self.liveListTable[0].data[updateOddsData.leagueID].dataList[updateOddsData.eventID].oddTypes[updateOddsData.oddTypeAlias].lines[0][line_index].changes == 'increase2'){
-                      self.liveListTable[0].data[updateOddsData.leagueID].dataList[updateOddsData.eventID].oddTypes[updateOddsData.oddTypeAlias].lines[0][line_index].changes = 'increase1'
-                    }
-                  }
-
-                  // self.liveListTable[0].data[updateOddsData.leagueID].dataList[updateOddsData.eventID].oddTypes[updateOddsData.oddTypeAlias].lines[0][line_index].changes = changes;
-
-                  self.liveListTable[0].data[updateOddsData.leagueID].dataList[updateOddsData.eventID].oddTypes[updateOddsData.oddTypeAlias].lines[0][line_index].value = updateOddsData.odds[upt_line_index].value;
-                }
-
-                if(updateOddsData.odds[upt_line_index].isSuspended != undefined)
-                  self.liveListTable[0].data[updateOddsData.leagueID].dataList[updateOddsData.eventID].oddTypes[updateOddsData.oddTypeAlias].lines[0][line_index].isSuspended = updateOddsData.odds[upt_line_index].isSuspended;
-              }
-            })
-          }
-          // this.$forceUpdate()
-          // console.log('updateOdds',this.liveListTable[0])
-        }
-        else if(insertOddTypeData != "" && insertOddTypeData.leagueID != undefined && insertOddTypeData.eventID != undefined && insertOddTypeData.alias != undefined){
-          if(insertOddTypeData.lines != undefined && insertOddTypeData.lines[0] != undefined && insertOddTypeData.lines[0].length > 0 && this.liveListTable[0].data[insertOddTypeData.leagueID] != undefined
-                  && this.liveListTable[0].data[insertOddTypeData.leagueID]['dataList'][insertOddTypeData.eventID] != undefined){
-
-            if(this.liveListTable[0].data[insertOddTypeData.leagueID]['dataList'][insertOddTypeData.eventID].oddTypes != undefined
-                    && this.liveListTable[0].data[insertOddTypeData.leagueID]['dataList'][insertOddTypeData.eventID].oddTypes[insertOddTypeData.alias] != undefined)  //update
-            {
-              this.liveListTable[0]['data'][insertOddTypeData.leagueID]['dataList'][insertOddTypeData.eventID]['oddTypes'][insertOddTypeData.alias] = insertOddTypeData;
-            }
-            else{   //insert
-              if(this.liveListTable[0]['data'][insertOddTypeData.leagueID]['dataList'][insertOddTypeData.eventID].oddTypes == undefined)
-                this.liveListTable[0]['data'][insertOddTypeData.leagueID]['dataList'][insertOddTypeData.eventID].oddTypes = {}
-              this.liveListTable[0]['data'][insertOddTypeData.leagueID]['dataList'][insertOddTypeData.eventID]['oddTypes'][insertOddTypeData.alias] = insertOddTypeData;
-            }
-
-            // this.$forceUpdate()
-            // console.log('insertOddType',this.liveListTable[0])
-          }
-        }
-        else if(removeOddTypeData != "" && removeOddTypeData.leagueID != undefined && removeOddTypeData.eventID != undefined && removeOddTypeData.oddTypeAlias != undefined){
-          if(this.liveListTable[0].data[removeOddTypeData.leagueID] != undefined && this.liveListTable[0].data[removeOddTypeData.leagueID]['dataList'][removeOddTypeData.eventID] != undefined
-                  && this.liveListTable[0].data[removeOddTypeData.leagueID]['dataList'][removeOddTypeData.eventID].oddTypes != undefined
-                  && this.liveListTable[0].data[removeOddTypeData.leagueID]['dataList'][removeOddTypeData.eventID].oddTypes[removeOddTypeData.oddTypeAlias] != undefined){
-
-            delete this.liveListTable[0].data[removeOddTypeData.leagueID]['dataList'][removeOddTypeData.eventID].oddTypes[removeOddTypeData.oddTypeAlias]
-            // this.liveListTable[0].data[removeOddTypeData.leagueID]['dataList'][removeOddTypeData.eventID].oddTypes.splice(rmv_oddtype_index, 1);
-            // this.$forceUpdate()
-            // console.log('removeOddType',this.liveListTable[0])
-          }
-        }
-        else if(updateEventData != "" && updateEventData.eventID != undefined && updateEventData.leagueID != undefined){
-          if(this.liveListTable[0].data[updateEventData.leagueID] != undefined && this.liveListTable[0].data[updateEventData.leagueID]['dataList'][updateEventData.eventID] != undefined){
-            var self = this
-            Object.keys(updateEventData).forEach(key => {
-              if(key != "method" && key != "eventID" && key != "leagueID" && key != "oddTypes")
-                self.liveListTable[0].data[updateEventData.leagueID]['dataList'][updateEventData.eventID][key] = updateEventData[key]
-            })
-            // this.$forceUpdate()
-            // console.log('updateEvent',this.liveListTable[0])
-          }
-        }
-        else if(removeEventData != "" && removeEventData.eventID != undefined && removeEventData.leagueID != undefined){
-          if(this.liveListTable[0].data[removeEventData.leagueID] != undefined && this.liveListTable[0].data[removeEventData.leagueID]['dataList'][removeEventData.eventID] != undefined){
-            delete this.liveListTable[0].data[removeEventData.leagueID]['dataList'][removeEventData.eventID]
-            // this.$forceUpdate()
-            // console.log('removeEvent',this.liveListTable[0])
-          }
-        }
-        else if(insertEventData != "" && insertEventData.eventID != undefined && insertEventData.leagueID != undefined){
-
-          if(this.liveListTable[0].data[insertEventData.leagueID] == undefined){
-            this.liveListTable[0].data[insertEventData.leagueID] = {
-              leagueID: insertEventData.leagueID,
-              sportID: insertEventData.sportID,
-              sportAlias: insertEventData.sportAlias,
-              categoryAlias: insertEventData.categoryAlias,
-              categoryName: insertEventData.categoryName,
-              leagueName: insertEventData.leagueName,
-              dataList: {}
-            }
-          }
-
-          var dataItem = {
-            eventID: insertEventData.eventID,
-            liveMinute: insertEventData.liveMinute != undefined ? insertEventData.liveMinute : undefined,
-            liveClockTimestamp: insertEventData.liveClockTimestamp != undefined ? insertEventData.liveClockTimestamp : undefined,
-            liveGamePeriod: insertEventData.liveGamePeriod != undefined ? insertEventData.liveGamePeriod : undefined,
-            liveClockStartSeconds: insertEventData.liveClockStartSeconds != undefined ? insertEventData.liveClockStartSeconds : undefined,
-            liveClockIsStopped: insertEventData.liveClockIsStopped != undefined ? insertEventData.liveClockIsStopped : undefined,
-            liveClockIsCountDown: insertEventData.liveClockIsCountDown != undefined ? insertEventData.liveClockIsCountDown : undefined,
-            liveScoreHome: insertEventData.liveScoreHome,
-            liveScoreAway: insertEventData.liveScoreAway,
-            homeTeam: insertEventData.homeTeam,
-            awayTeam: insertEventData.awayTeam,
-            oddTypes: {}
-          }
-          if(insertEventData.oddTypes != undefined && insertEventData.oddTypes.length > 0){
-            insertEventData.oddTypes.forEach(oddType => {
-              dataItem.oddTypes[oddType.alias] = oddType
-            })
-          }
-          this.liveListTable[0].data[insertEventData.leagueID]['dataList'][insertEventData.eventID] = dataItem
-          // this.$forceUpdate()
-          // console.log('insertEvent',this.liveListTable[0])
-        }
-      },
       getLiveList() {
 
         this.axios
@@ -868,6 +661,7 @@ import { parse } from 'path';
                 // if (this.oddTypeList != null && this.oddTypeList.length > 0)
                 //   this.rowOddCount = Math.round(this.oddTypeList.length / this.marketRow);
                 // console.log(this.oddTypeList)
+                this.eventDetailPanel = [...this.oddTypeList].map(_ => true)
               }
 
               this.is_waiting_page = false
@@ -1026,16 +820,12 @@ import { parse } from 'path';
                   console.log(e);
                 });
       },
-      selectBreadcrumb(sportID, categoryID, eventID) {
-        this.topLeagueSelected(sportID, categoryID, eventID)
-      },
       backToPremath() {
         this.eventViewFlag = 0;
         this.toggle_kinds = 0
         this.mainPanel = [true, true]
       },
       topMenuSelected(sportID) {
-        this.closeOverviewSocket();
         this.clearSportItems()
 
         this.sportID = sportID;
@@ -1052,69 +842,9 @@ import { parse } from 'path';
 
 
       },
-      connectOverviewSocket() {
-        // console.log(this.sportID)
-        var lan = this.$store.getters.getLanguage ? this.$store.getters.getLanguage : 'en'
-        localStorage.socketChannelOverview = "live.sport." + this.sportID + "."+lan
-        window.Echo.private(localStorage.socketChannelOverview).listen(
-                "LiveSportDetailSent",
-                e => {
-                  // console.log("LiveSportDetailSent");
-                  // console.log(e.message.method, e);
-                  if(this.liveListTable[0] != undefined && this.liveListTable[0].data != undefined){
-                    switch (e.message.method) {
-                      case "insertOddType": {
-                        this.setLiveList("", "", e.message.data)
-                        break;
-                      }
-                      case "updateOdds": {
-                        this.setLiveList("", e.message)
-                        break;
-                      }
-                      case "removeOddType": {
-                        this.setLiveList("", "", "", e.message)
-                        break;
-                      }
-                      case "updateEvent": {
-                        this.setLiveList("", "", "", "", e.message)
-                        break;
-                      }
-                      case "removeEvent": {
-                        this.setLiveList("", "", "", "", "", e.message)
-                        break;
-                      }
-                      case "insertEvent": {
-                        this.setLiveList("", "", "", "", "", "", e.message)
-                        break;
-                      }
-                    }
-
-                  }
-                }
-        );
-      },
       getLanguage(){
         return  this.$store.getters.getLanguage ? this.$store.getters.getLanguage : 'en'
 
-      },
-      closeOverviewSocket() {
-        if (localStorage.socketChannelOverview == undefined || localStorage.socketChannelOverview == '')
-          return;
-        // console.log("closeOverviewSocket", localStorage.socketChannelOverview)
-        window.Echo.leave(localStorage.socketChannelOverview)
-        localStorage.socketChannelOverview = "";
-        // var langs = ["en", "tr", "sy", "iq"];
-        // var i = 41;
-        // var j = 0;
-        // for (j = 0; j < langs.length; j++) {
-        //   window.Echo.leave("live.sport.all." + langs[j]);
-        //   console.log("live.sport.all." + langs[j])
-        //   for (i = 41; i < 60; i++) {
-
-        //     window.Echo.leave("live.sport." + i + "." + langs[j]);
-        //     console.log("live.sport." + i + "." + langs[j])
-        //   }
-        // }
       },
       updatePrematchOddTypeRules(){
 
@@ -1331,39 +1061,6 @@ import { parse } from 'path';
             this.rowOddCount = Math.round(this.oddTypeList.length / this.marketRow);
         }
       },
-      isClosedTime(liveMinute, sportAlias){
-        if(sportAlias != "soccer")
-          return true
-        if(liveMinute.toLowerCase().includes(':')){
-          var res = liveMinute.split(":", 1)
-          if(res <= this.closingMinuteBetting)
-            return true
-        }
-        else if(liveMinute.toLowerCase().includes('1h')){
-          var res = liveMinute.split(" ", 2)
-          if(parseInt(res[1]) <= this.closingMinuteBetting)
-            return true
-        }
-        else if(liveMinute.toLowerCase().includes('ht')){
-          return true
-        }
-        else if(liveMinute.toLowerCase().includes('2h')){
-          var res = liveMinute.split(" ", 2)
-          if(parseInt(res[1] + 45) <= this.closingMinuteBetting)
-            return true
-        }
-        else if(liveMinute.toLowerCase().includes('et1')){
-          var res = liveMinute.split("et1", 2)
-          if(parseInt(res[1] + 90) <= this.closingMinuteBetting)
-            return true
-        }
-        else if(liveMinute.toLowerCase().includes('et2')){
-          var res = liveMinute.split("et2", 2)
-          if(parseInt(res[1] + 90 + 15) <= this.closingMinuteBetting)
-            return true
-        }
-        return false
-      },
       setHasSize(){
         if (window.innerWidth >= 1450) {
           this.hasSize = 0
@@ -1405,6 +1102,12 @@ import { parse } from 'path';
           }
         }
         return ''
+      },
+      expandEventDetail(flag){
+        if(flag)
+          this.eventDetailPanel = [...this.oddTypeList].map(_ => true)
+        else
+          this.eventDetailPanel = [...this.oddTypeList].map(_ => false)
       }
     },
     watch: {
@@ -1483,9 +1186,6 @@ import { parse } from 'path';
       });
       this.$root.$on("prematchFavouriteSelected", function(){
         self.getPrematchFavourites()
-      })
-      this.$root.$on('liveTime', function(){
-        self.setLiveTime()
       })
       this.$root.$on('resizeEvent', payload=>{
         this.hasSize = payload.hasSize

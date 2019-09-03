@@ -1,6 +1,6 @@
 {
     "account_management":"Hesap Yönetimi",
-    "my_bets":"Bahislerim",
+    "my_bets":"Bahis Geçmişi",
     "account_activities":"Hesap Etkinlikleri",
     "user_list":"Kullanıcı Listesi",
     "user_balance":"Kullanıcı Bakiyesi",
@@ -87,5 +87,16 @@
     "combination_status": "Kombinasyon durumu",
     "possible_winnings": "Muhtemel Kazançlar",
     "winnings": "kazanç",
-    "show_system_columns": "Sistem Sütunlarını Göster"
+    "show_system_columns": "Sistem Sütunlarını Göster",
+    "account_menu": "Hesap Menüsü",
+    "account_activity":"Hesap haraketliliği",
+    "user_actions": "Kullanıcı İşlemleri",
+    "please_select_a_date_range": "Lütfen bir aralık seçin",
+    "bets_in_between": "Arasında Bahisler",
+    "show": "Göstermek",
+    "print": "baskı",
+    "transactions_in_between": "Arasındaki İşlemler",
+    "financial_transactions": "Finansal işlemler",
+    "accounts": "Hesaplar",
+    "graphical_analysis_of_slip": "Kaymanın Grafiksel Analizi"
 }

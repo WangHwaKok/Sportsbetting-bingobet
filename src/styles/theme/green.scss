@@ -48,30 +48,76 @@
 
 /* ==================================================== Account Management ==================================================== */
 .account-view {
+  margin-left:10rem;
+  margin-right:10rem;
+  border:1px solid black;
+  box-shadow: 0px 0px 1.5rem black;
+  .account-menu{
+    .title{
+      .v-list__tile{
+        background: black;
+      }  
+    }
+    .v-list__tile{
+      height: 3rem;
+      background: #212121;
+      border: 1px solid #141414;
+      border-radius: 3px;
+      padding-left: 8px;
+    }
+    .v-list__tile__action{
+      min-width: 2.5rem;
+    }
+  }
   .panel {
     width: calc(100% - 100px);
     &.expand {
       width: 100%;
     }
-    height: calc(100% - 120px);
+  }
+  .card-account{
+    height: calc(100vh - 200px);
+    .v-card__title{
+      background: black;
+    }
+    .v-card__text{
+      background: #212121;
+    }
   }
   aside {
     height: auto !important;
   }
-  .pop {
-    position: absolute;
-    transform: translateX(0px);
-    top: 24px;
-    height: calc(100% - 24px) !important;
-  }
-  @media only screen and (max-width: 959px) {
-    .pop{
-      top: 16px;
-      height: calc(100% - 16px) !important;
-    }
-  }
   .account-table{
-    height:calc(100vh - 350px);
+    .table-mybets{
+      .v-table{
+        border-collapse: collapse;
+      }
+      tr{
+        border-bottom: unset !important;
+      }
+      .v-table th{
+        padding: 0rem 1rem !important;
+        border: solid 1px rgba(255, 255, 255, 0.1);
+      }
+      .v-table td{
+        padding: 0rem 1rem !important;
+        font-weight: bold;
+        border: solid 1px #d6d6d6;
+      }
+    }
+    .table-detail{
+      width:100%;
+      margin:10px 0px;
+      border-collapse:collapse;
+      th{
+        color:#e09007;
+        border:1px solid #909090;
+      }
+      td{
+        font-weight:bold;
+        border:1px solid #909090;
+      }
+    }
   }
 }
 /* ==================================================== Sports Betting ==================================================== */
@@ -229,30 +275,33 @@
     cursor: pointer;
   }
 
-  .active{
-    background-color:green;
-    border-radius: 3px;
-    cursor: pointer;
-  }
+  // .active{
+  //   background-color:green;
+  //   border-radius: 3px;
+  //   cursor: pointer;
+  // }
   .tableCell{
     position: relative;
     border:solid 1px black;
     border-radius: 3px;
     background: #c5c5c5;
+    &.active{
+      background-color: #f7b003;
+    }
   }
 
-  .tableCell::before,
-  .tableCell::after {
-    content: '';
-    position: absolute;
-    right: 0;
-    border-color: transparent;
-    border-style: solid;
-    opacity:0;
-  }
-  .tableCell::before {
-    border-width: 1rem;
-  }
+  // .tableCell::before,
+  // .tableCell::after {
+  //   content: '';
+  //   position: absolute;
+  //   right: 0;
+  //   border-color: transparent;
+  //   border-style: solid;
+  //   opacity:0;
+  // }
+  // .tableCell::before {
+  //   border-width: 1rem;
+  // }
 
   table.v-table {
     thead {
@@ -308,6 +357,16 @@
     background-color: #323232 !important;
     border: solid 1px #323232;
     border-radius: 3px;
+  }
+
+  .event-detail-panel {
+    .v-expansion-panel__header {
+      background-color: #202020;
+    }
+    .v-expansion-panel__body {
+      margin: 0px;
+      // margin-bottom: 2px;
+    }
   }
 }
 
@@ -385,19 +444,27 @@
     cursor: pointer;
   }
   .tableCell:hover{
-    background-color:#303030;
-    border-radius: 3px;
+    // background-color:#303030;
+    background-image: linear-gradient(#636363, #8d8d8d);
+    // border-radius: 3px;
     cursor: pointer;
   }
 
+  // .active{
+  //   background-color:green;
+  //   border-radius: 3px;
+  //   cursor: pointer;
+  // }
   .tableCell{
     position: relative;
-  }
-  .active{
-    background-color:green;
+    border:solid 1px black;
     border-radius: 3px;
-    cursor: pointer;
+    background: #c5c5c5;
+    &.active{
+      background-color: #f7b003;
+    }
   }
+
   .tableCell::before,
   .tableCell::after {
     content: '';
@@ -409,6 +476,18 @@
   }
   .tableCell::before {
     border-width: 1rem;
+  }
+  .specialCell{
+    position: relative;
+    border:solid 1px black;
+    border-radius: 3px;
+    background: #313131;
+  }
+  .lockCell{
+    position: relative;
+    border:solid 1px black;
+    border-radius: 3px;
+    background: #c5c5c5;
   }
 }
 .eventview {
@@ -466,15 +545,15 @@
   }
   .event-detail-cell{
     border-radius: 3px;
-    background-color: #323131;
+    background-color: #cccccc;
   }
   .event-detail-cell.active{
-    background-color:green;
+    background-color: #f7b003;
     border-radius: 3px;
     cursor: pointer;
   }
   .event-detail-cell:hover{
-    background-color: grey;
+    background-image: linear-gradient(#636363, #8d8d8d);
     cursor: pointer;
   }
 
@@ -514,9 +593,12 @@
   }
 
   .event-detail-cell.increase1::after {
-    border-width: 0.3rem;
-    border-right-color: #4caf50;
-    border-top-color: #4caf50;
+    // border-width: 0.3rem;
+    // border-right-color: #4caf50;
+    // border-top-color: #4caf50;
+    background: #007b27;
+    width: 100%;
+    height: 100%;
 
     -webkit-animation-name: inc_dec1;
     -moz-animation-name: inc_dec1;
@@ -534,9 +616,12 @@
     animation-iteration-count: 4;
   }
   .event-detail-cell.increase2::after {
-    border-width: 0.3rem;
-    border-right-color: #4caf50;
-    border-top-color: #4caf50;
+    // border-width: 0.3rem;
+    // border-right-color: #4caf50;
+    // border-top-color: #4caf50;
+    background: #007b27;
+    width: 100%;
+    height: 100%;
 
     -webkit-animation-name: inc_dec2;
     -moz-animation-name: inc_dec2;
@@ -555,9 +640,12 @@
   }
 
   .event-detail-cell.decrease1::after {
-    border-width: 0.3rem;
-    border-right-color: #ff1100;
-    border-bottom-color: #ff1100;
+    // border-width: 0.3rem;
+    // border-right-color: #ff1100;
+    // border-bottom-color: #ff1100;
+    background: #ff1100;
+    width: 100%;
+    height: 100%;
 
     -webkit-animation-name: inc_dec1;
     -moz-animation-name: inc_dec1;
@@ -575,9 +663,12 @@
     animation-iteration-count: 4;
   }
   .event-detail-cell.decrease2::after {
-    border-width: 0.3rem;
-    border-right-color: #ff1100;
-    border-bottom-color: #ff1100;
+    // border-width: 0.3rem;
+    // border-right-color: #ff1100;
+    // border-bottom-color: #ff1100;
+    background: #ff1100;
+    width: 100%;
+    height: 100%;
 
     -webkit-animation-name: inc_dec2;
     -moz-animation-name: inc_dec2;
@@ -1089,7 +1180,7 @@
   text-align: center;
   line-height: 14px;
   transform: rotate(-90deg);
-  background-color: #008b27;
+  background-color: #e09007;
   color: #fff;
   letter-spacing: 0.8px;
   text-transform: uppercase;
@@ -1219,30 +1310,36 @@
   animation-iteration-count: 4;
 }
 
-.tableCell.decrease1::before,
+  .tableCell.decrease1::before,
   .tableCell.decrease1::after{
-    bottom: 0;
+    // bottom: 0;
+    border: unset;
   }
   .tableCell.decrease2::before,
   .tableCell.decrease2::after{
-    bottom: 0;
+    // bottom: 0;
+    border: unset;
   }
 
   .tableCell.increase1::before,
   .tableCell.increase1::after{
-    top: 0;
+    // top: 0;
+    border: unset;
   }
   .tableCell.increase2::before,
   .tableCell.increase2::after{
-    top: 0;
+    // top: 0;
+    border: unset;
   }
 
 
   .tableCell.increase1::after {
-    border-width: 0.2rem;
-    border-right-color: #4caf50;
-    border-top-color: #4caf50;
-
+    // border-width: 0.2rem;
+    // border-right-color: #4caf50;
+    // border-top-color: #4caf50;
+    background: #007b27;
+    width: 100%;
+    height: 100%;
     -webkit-animation-name: inc_dec1;
     -moz-animation-name: inc_dec1;
     -o-animation-name: inc_dec1;
@@ -1253,16 +1350,18 @@
     -o-animation-duration: 2s;
     animation-duration: 2s;
 
-    -webkit-animation-iteration-count: 4;
-    -moz-animation-iteration-count: 4;
-    -o-animation-iteration-count: 4;
-    animation-iteration-count: 4;
+    -webkit-animation-iteration-count: 2;
+    -moz-animation-iteration-count: 2;
+    -o-animation-iteration-count: 2;
+    animation-iteration-count: 2;
   }
   .tableCell.increase2::after {
-    border-width: 0.2rem;
-    border-right-color: #4caf50;
-    border-top-color: #4caf50;
-
+    // border-width: 0.2rem;
+    // border-right-color: #4caf50;
+    // border-top-color: #4caf50;
+    background: #007b27;
+    width: 100%;
+    height: 100%;
     -webkit-animation-name: inc_dec2;
     -moz-animation-name: inc_dec2;
     -o-animation-name: inc_dec2;
@@ -1273,17 +1372,19 @@
     -o-animation-duration: 2s;
     animation-duration: 2s;
 
-    -webkit-animation-iteration-count: 4;
-    -moz-animation-iteration-count: 4;
-    -o-animation-iteration-count: 4;
-    animation-iteration-count: 4;
+    -webkit-animation-iteration-count: 2;
+    -moz-animation-iteration-count: 2;
+    -o-animation-iteration-count: 2;
+    animation-iteration-count: 2;
   }
 
   .tableCell.decrease1::after {
-    border-width: 0.2rem;
-    border-right-color: #ff1100;
-    border-bottom-color: #ff1100;
-
+    // border-width: 0.2rem;
+    // border-right-color: #ff1100;
+    // border-bottom-color: #ff1100;
+    background: #ff1100;
+    width: 100%;
+    height: 100%;
     -webkit-animation-name: inc_dec1;
     -moz-animation-name: inc_dec1;
     -o-animation-name: inc_dec1;
@@ -1294,16 +1395,18 @@
     -o-animation-duration: 2s;
     animation-duration: 2s;
 
-    -webkit-animation-iteration-count: 4;
-    -moz-animation-iteration-count: 4;
-    -o-animation-iteration-count: 4;
-    animation-iteration-count: 4;
+    -webkit-animation-iteration-count: 2;
+    -moz-animation-iteration-count: 2;
+    -o-animation-iteration-count: 2;
+    animation-iteration-count: 2;
   }
   .tableCell.decrease2::after {
-    border-width: 0.2rem;
-    border-right-color: #ff1100;
-    border-bottom-color: #ff1100;
-
+    // border-width: 0.2rem;
+    // border-right-color: #ff1100;
+    // border-bottom-color: #ff1100;
+    background: #ff1100;
+    width: 100%;
+    height: 100%;
     -webkit-animation-name: inc_dec2;
     -moz-animation-name: inc_dec2;
     -o-animation-name: inc_dec2;
@@ -1314,10 +1417,10 @@
     -o-animation-duration: 2s;
     animation-duration: 2s;
 
-    -webkit-animation-iteration-count: 4;
-    -moz-animation-iteration-count: 4;
-    -o-animation-iteration-count: 4;
-    animation-iteration-count: 4;
+    -webkit-animation-iteration-count: 2;
+    -moz-animation-iteration-count: 2;
+    -o-animation-iteration-count: 2;
+    animation-iteration-count: 2;
   }
   .scale-loader{
     text-align:center;
@@ -1366,11 +1469,11 @@
   .odd-type-text{
     color:white;
   }
-  .odd-price-text{
-    color:white;
-  }
+  // .odd-price-text{
+  //   color:white;
+  // }
   .betslip-closeicon:hover{
-    color:lawngreen;
+    color: #e09007;
   }
   .betslip-closeicon{
     color:white;
@@ -1378,20 +1481,12 @@
   .betslip-btntoggle{
     // width:100%;
     height:3rem;
-    background: black;
-    border-bottom: 3px solid lawngreen;
+    background: #b0b0b0;
+    border-bottom: 3px solid #e09007;
     // .v-btn--active {
     //   // background-color: #141414;
     //   border-bottom: 3px solid lawngreen;
     // } 
-  }
-  .table-mybets{
-    table.v-table th{
-      padding: 0rem .1rem !important;
-    }
-    table.v-table td{
-      padding: 0rem .1rem !important;
-    }
   }
   .coupon-live{
     position: absolute;
@@ -1457,6 +1552,73 @@
   .chip-table{
     cursor: pointer;
     .v-chip__content{
+      padding: 0px;
+    }
+  }
+  .chip-event-detail{
+    cursor: pointer;
+    .v-chip__content{
+      border:1px solid black;
+      border-radius: 3px;
+      padding: 0px;
+      height: unset;
+    }
+  }
+
+  .event-detail-panel.v-expansion-panel__container{
+    background-color: #202020 !important;
+    border: solid 1px #202020;
+    border-radius: 3px;
+    margin-bottom: 5px;
+  }
+
+  .event-detail-dialog-panel {
+    .v-expansion-panel__header {
+      background-color: #3c3c3c;
+    }
+    .v-expansion-panel__body {
+      margin: 0px;
+      // margin-bottom: 2px;
+    }
+  }
+  .event-detail-dialog-panel.v-expansion-panel__container{
+    background-color: #3c3c3c !important;
+    border: solid 1px #3c3c3c;
+    border-radius: 3px;
+    margin-bottom: 5px;
+  }
+  .sport-menu-list{
+    .v-tabs__item{
+      border-right: 1px solid #333333;
+    }
+    .v-tabs__item--active{
+      background: #303030;
+    }
+  }
+  .live-table{
+    .v-table{
+      background: #272827;
+      color: #fff;
+      border-radius: unset;
+    }
+    tr:not(:last-child){
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    }
+    tr:hover{
+      background: #272827 !important;
+    }
+    td{
+      padding: 0 6px !important;
+      color: white !important;
+    }
+  }
+  .bet-slip-card{
+    border-radius: 3px;
+    .v-card__title{
+      background: #e09007;
+      height: 3.5rem;
+    }
+    .v-card__text{
       padding: 0px;
     }
   }

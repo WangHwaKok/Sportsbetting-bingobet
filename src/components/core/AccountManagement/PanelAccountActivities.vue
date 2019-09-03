@@ -1,125 +1,153 @@
 <template>
-  <v-container id="p_activities" row fluid class="ma-0">
-    <v-layout row>
-      <v-flex xs2>
-        <v-autocomplete
-          v-model="filter_userid"
-          :search-input.sync="filter_username_input"
-          :items="items_filter_username"
-          item-text="username"
-          item-value="userID"
-          :loading="isLoadingUserFilter"
-          :label='$t("AccountPage.user_name")'
-          return-object
-        ></v-autocomplete>
-      </v-flex>
-      <v-flex xs2 class="pl-2 pr-2">
-        <v-menu
-          v-model="menu1"
-          ref="menu1"
-          :close-on-content-click="false"
-          :nudge-right="40"
-          lazy
-          transition="scale-transition"
-          offset-y
-          full-width
-          min-width="290px"
-        >
-          <template v-slot:activator="{ on }">
-            <v-text-field
-              v-model="computedStartDateFormatted"
-              :label='$t("AccountPage.starting_date")'
-              prepend-icon="mdi-calendar"
-              readonly
-              v-on="on"
-            ></v-text-field>
-          </template>
-          <v-date-picker v-model="start_date" @input="menu1 = false" :locale="calendarLanguage"></v-date-picker>
-        </v-menu>
-      </v-flex>
-      <v-flex xs2 class="pl-2 pr-2">
-        <v-menu
-          v-model="menu2"
-          ref="menu2"
-          :close-on-content-click="false"
-          :nudge-right="40"
-          lazy
-          transition="scale-transition"
-          offset-y
-        >
-          <template v-slot:activator="{ on }">
-            <v-text-field
-              v-model="computedEndDateFormatted"
-              :label='$t("AccountPage.date_of_completion")'
-              prepend-icon="mdi-calendar"
-              readonly
-              v-on="on"
-            ></v-text-field>
-          </template>
-          <v-date-picker v-model="end_date" @input="menu2 = false" :locale="calendarLanguage"></v-date-picker>
-        </v-menu>
-      </v-flex>
-      <v-flex xs2>
-        <v-autocomplete
-          v-model="transaction_type"
-          :items="items_transaction_type"
-          item-text = 'text'
-          item-value="value"
-          autocomplete
-          :label='$t("AccountPage.transaction")'
-        ></v-autocomplete>
-      </v-flex>
-      <v-flex xs2 class="pl-3 pr-3">
-        <v-btn color="primary" @click="getAccountActivityList(1)">Account History</v-btn>
-      </v-flex>
-    </v-layout>
-    <v-layout row class="scroll-y account-table" id="main-scroll">
-      <v-flex v-scroll:#main-scroll="onMainScrollPos">
-        <v-data-table
-          :headers="headers"
-          :items="accountActivityList"
-          :loading="is_updating_page"
-          class="elevation-1"
-          style="width: 100%;"
-          hide-actions
-        >
-          <v-progress-linear v-slot:progress color="green" indeterminate></v-progress-linear>
-          <template v-slot:items="props">
-            <td>{{ props.item.created_at | moment("DD/MM/YYYY HH:mm") }}</td>
-            <td class="text-xs-left">{{ props.item.userName }}</td>
-            <td class="text-xs-left">{{ props.item.balance }} {{props.item.currency}}</td>
-            <td class="text-xs-left">{{ props.item.previousBalance }} {{props.item.currency}}</td>
-            <td class="text-xs-left">{{ props.item.amount }} {{props.item.currency}}</td>
-            <td class="text-xs-left">{{ props.item.description }}</td>
-            <td class="text-xs-left">{{props.item.isSystemTransaction==true?'(System)':''}}{{ props.item.transaction }}</td>
-          </template>
-        </v-data-table>
-      </v-flex>
-    </v-layout>
-    <v-snackbar
-      :color="color_type"
-      :bottom=false
-      :top=true
-      :left=false
-      :right=true
-      v-model="snackbar"
-      dark
-    >
-      <!-- <v-icon
-        color="white"
-        class="mr-3"
+  <v-card id="p_mybets" class="ma-0 pa-0 card-account">
+    <v-card-title>
+      <div class="subheading font-weight-medium">
+        {{$t('AccountPage.financial_transactions')}}
+      </div>
+    </v-card-title>
+    <v-card-text>
+      <v-layout column>
+        <v-layout row>
+          <v-flex xs2>
+            <v-autocomplete
+              v-model="filter_userid"
+              :search-input.sync="filter_username_input"
+              :items="items_filter_username"
+              item-text="username"
+              item-value="userID"
+              :loading="isLoadingUserFilter"
+              :label='$t("AccountPage.user_name")'
+              return-object
+            ></v-autocomplete>
+          </v-flex>
+          <v-flex xs2 class="pl-2 pr-2">
+            <v-menu
+              v-model="menu1"
+              ref="menu1"
+              :close-on-content-click="false"
+              :nudge-right="40"
+              lazy
+              transition="scale-transition"
+              offset-y
+              full-width
+              min-width="290px"
+            >
+              <template v-slot:activator="{ on }">
+                <v-text-field
+                  v-model="computedStartDateFormatted"
+                  :label='$t("AccountPage.starting_date")'
+                  prepend-icon="mdi-calendar"
+                  readonly
+                  v-on="on"
+                ></v-text-field>
+              </template>
+              <v-date-picker v-model="start_date" light no-title @input="menu1 = false" :locale="calendarLanguage"></v-date-picker>
+            </v-menu>
+          </v-flex>
+          <v-flex xs2 class="pl-2 pr-2">
+            <v-menu
+              v-model="menu2"
+              ref="menu2"
+              :close-on-content-click="false"
+              :nudge-right="40"
+              lazy
+              transition="scale-transition"
+              offset-y
+            >
+              <template v-slot:activator="{ on }">
+                <v-text-field
+                  v-model="computedEndDateFormatted"
+                  :label='$t("AccountPage.date_of_completion")'
+                  prepend-icon="mdi-calendar"
+                  readonly
+                  v-on="on"
+                ></v-text-field>
+              </template>
+              <v-date-picker v-model="end_date" light no-title @input="menu2 = false" :locale="calendarLanguage"></v-date-picker>
+            </v-menu>
+          </v-flex>
+          <v-flex xs2>
+            <v-autocomplete
+              v-model="transaction_type"
+              :items="items_transaction_type"
+              item-text = 'text'
+              item-value="value"
+              autocomplete
+              :label='$t("AccountPage.transaction")'
+            ></v-autocomplete>
+          </v-flex>
+          <v-flex xs2 class="pl-3 pr-3">
+            <v-btn color="primary" @click="getAccountActivityList(1)">{{$t('AccountPage.show')}}</v-btn>
+          </v-flex>
+        </v-layout>
+        <v-card>
+          <v-card-title style="background:#101010" class="pa-2">
+            <div class="subheading" style="color:#e09007">{{start_date}} - {{end_date}} {{$t('AccountPage.transactions_in_between')}}</div>
+          </v-card-title>
+          <v-card-text style="background:#101010" class="pa-2">
+            <v-layout row class="scroll-y account-table fill-height " id="main-scroll" style="height:calc(100vh - 425px);">
+              <v-flex v-scroll:#main-scroll="onMainScrollPos">
+                <v-data-table
+                  light
+                  :headers="headers"
+                  :items="accountActivityList"
+                  :loading="is_updating_page"
+                  class="table-mybets"
+                  style="width: 100%;"
+                  hide-actions
+                >
+                  <v-progress-linear v-slot:progress color="green" indeterminate></v-progress-linear>
+                  <template slot="headers" slot-scope="props">
+                    <tr style="background:#e09007;height:3.5rem;border:solid 1px #e09007;border-radius:3px !important;">
+                      <th
+                        v-for="(header, id) in props.headers"
+                        :key="id"
+                        :class="`text-xs-${header.align}`"
+                        :width="header.width">
+                        <div class="body-2 font-weight-medium" style="color:black">{{header.text}}</div>
+                      </th>
+                    </tr>
+                  </template>
+                  <template v-slot:items="props">
+                    <td>{{ props.item.created_at | moment("DD/MM/YYYY HH:mm") }}</td>
+                    <td class="text-xs-left">{{ props.item.userName }}</td>
+                    <td class="text-xs-left">{{ props.item.balance }} {{props.item.currency}}</td>
+                    <td class="text-xs-left">{{ props.item.previousBalance }} {{props.item.currency}}</td>
+                    <td class="text-xs-left">{{ props.item.amount }} {{props.item.currency}}</td>
+                    <td class="text-xs-left">{{ props.item.description }}</td>
+                    <td class="text-xs-left">{{props.item.isSystemTransaction==true?'(System)':''}}{{ props.item.transaction }}</td>
+                  </template>
+                </v-data-table>
+              </v-flex>
+            </v-layout>
+          </v-card-text>
+        </v-card>
+      </v-layout>
+      <v-snackbar
+        :color="color_type"
+        :bottom=false
+        :top=true
+        :left=false
+        :right=true
+        v-model="snackbar"
+        dark
       >
-        mdi-bell-plus
-      </v-icon> -->
-      <div>{{alertMessage}}</div>
-      <v-icon
-        size="16"
-        @click="snackbar = false"
-      >
-        mdi-close-circle
-      </v-icon>
-    </v-snackbar>
-  </v-container>
+        <!-- <v-icon
+          color="white"
+          class="mr-3"
+        >
+          mdi-bell-plus
+        </v-icon> -->
+        <div>{{alertMessage}}</div>
+        <v-icon
+          size="16"
+          @click="snackbar = false"
+        >
+          mdi-close-circle
+        </v-icon>
+      </v-snackbar>
+    </v-card-text>
+  </v-card>
 </template>
 
 <script>

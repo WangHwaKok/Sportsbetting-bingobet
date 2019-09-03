@@ -1,165 +1,191 @@
 <template>
-  <v-container id="p_mybets" fluid class="pr-0 ma-0">
-    <v-layout row class="mb-4 mt-2">
-      <v-flex xs3 class="mr-5">
-        <v-layout row class="pb-2 mb-2" style="border-bottom: 4px solid blue"
-        >
-          <v-flex xs8 class="text-xs-center">{{$t('AccountPage.amount_played')}}</v-flex>
-          <v-flex xs4 class="text-xs-center">{{amount_played}}</v-flex>
+  <v-card id="p_mybets" class="ma-0 pa-0 card-account">
+    <v-card-title>
+      <div class="subheading font-weight-medium">
+        {{$t('AccountPage.income_expense')}}
+      </div>
+    </v-card-title>
+    <v-card-text>
+      <v-layout column>
+        <!-- <v-layout row class="mb-4 mt-2">
+          <v-flex xs3 class="mr-5">
+            <v-layout row class="pb-2 mb-2" style="border-bottom: 4px solid blue"
+            >
+              <v-flex xs8 class="text-xs-center">{{$t('AccountPage.amount_played')}}</v-flex>
+              <v-flex xs4 class="text-xs-center">{{amount_played}}</v-flex>
+            </v-layout>
+          </v-flex>
+          <v-flex xs3 class="mr-5">
+            <v-layout row class="pb-2 mb-2" style="border-bottom: 4px solid lawngreen">
+              <v-flex xs8 class="text-xs-center">{{$t('AccountPage.winner_amount')}}</v-flex>
+              <v-flex xs4 class="text-xs-center">{{winner_amount}}</v-flex>
+            </v-layout>
+          </v-flex>
+          <v-flex xs3 class="mr-5">
+            <v-layout row class="pb-2 mb-2" style="border-bottom: 4px solid red">
+              <v-flex xs8 class="text-xs-center">{{$t('AccountPage.losing_amount')}}</v-flex>
+              <v-flex xs4 class="text-xs-center">{{losing_amount}}</v-flex>
+            </v-layout>
+          </v-flex>
+          <v-flex xs3 class="mr-5">
+            <v-layout row class="pb-2 mb-2" style="border-bottom: 4px solid yellow">
+              <v-flex xs8 class="text-xs-center">{{$t('AccountPage.pending_amount')}}</v-flex>
+              <v-flex xs4 class="text-xs-center">{{pending_amount}}</v-flex>
+            </v-layout>
+          </v-flex>
+          <v-flex xs3 class="mr-5">
+            <v-layout row class="pb-2 mb-2" style="border-bottom: 4px solid #00ffdc">
+              <v-flex xs8 class="text-xs-center">{{$t('AccountPage.difference_amount')}}</v-flex>
+              <v-flex xs4 class="text-xs-center">{{difference_amount}}</v-flex>
+            </v-layout>
+          </v-flex>
+          <v-flex xs3 class="mr-5">
+            <v-layout row class="pb-2 mb-2" style="border-bottom: 4px solid #ff9900">
+              <v-flex xs8 class="text-xs-center">{{$t('AccountPage.commission_amount')}}</v-flex>
+              <v-flex xs4 class="text-xs-center">{{commission_amount}}</v-flex>
+            </v-layout>
+          </v-flex>
+        </v-layout> -->
+        <v-layout row>
+          <v-flex xs2>
+            <v-autocomplete
+              v-model="filter_userid"
+              :items="items_filter_username"
+              autocomplete
+              :label='$t("AccountPage.user_name")'
+            ></v-autocomplete>
+          </v-flex>
+          <v-flex xs2 class="pl-2 pr-2">
+            <v-menu
+              v-model="menu1"
+              ref="menu1"
+              :close-on-content-click="false"
+              :nudge-right="40"
+              lazy
+              transition="scale-transition"
+              offset-y
+            >
+              <template v-slot:activator="{ on }">
+                <v-text-field
+                  v-model="computedStartDateFormatted"
+                  :label='$t("AccountPage.starting_date")'
+                  prepend-icon="mdi-calendar"
+                  readonly
+                  v-on="on"
+                ></v-text-field>
+              </template>
+              <v-date-picker light no-title v-model="start_date" @input="menu1 = false" :locale="calendarLanguage"></v-date-picker>
+            </v-menu>
+          </v-flex>
+          <v-flex xs2 class="pl-2 pr-2">
+            <v-menu
+              v-model="menu2"
+              ref="menu2"
+              :close-on-content-click="false"
+              :nudge-right="40"
+              lazy
+              transition="scale-transition"
+              offset-y
+            >
+              <template v-slot:activator="{ on }">
+                <v-text-field
+                  v-model="computedEndDateFormatted"
+                  :label='$t("AccountPage.date_of_completion")'
+                  prepend-icon="mdi-calendar"
+                  readonly
+                  v-on="on"
+                ></v-text-field>
+              </template>
+              <v-date-picker v-model="end_date" light no-title @input="menu2 = false" :locale="calendarLanguage"></v-date-picker>
+            </v-menu>
+          </v-flex>
+          <v-btn light @click="getIncomeOutcomeList">{{$t('AccountPage.accounts')}}</v-btn>
         </v-layout>
-      </v-flex>
-      <v-flex xs3 class="mr-5">
-        <v-layout row class="pb-2 mb-2" style="border-bottom: 4px solid lawngreen">
-          <v-flex xs8 class="text-xs-center">{{$t('AccountPage.winner_amount')}}</v-flex>
-          <v-flex xs4 class="text-xs-center">{{winner_amount}}</v-flex>
-        </v-layout>
-      </v-flex>
-      <v-flex xs3 class="mr-5">
-        <v-layout row class="pb-2 mb-2" style="border-bottom: 4px solid red">
-          <v-flex xs8 class="text-xs-center">{{$t('AccountPage.losing_amount')}}</v-flex>
-          <v-flex xs4 class="text-xs-center">{{losing_amount}}</v-flex>
-        </v-layout>
-      </v-flex>
-      <v-flex xs3 class="mr-5">
-        <v-layout row class="pb-2 mb-2" style="border-bottom: 4px solid yellow">
-          <v-flex xs8 class="text-xs-center">{{$t('AccountPage.pending_amount')}}</v-flex>
-          <v-flex xs4 class="text-xs-center">{{pending_amount}}</v-flex>
-        </v-layout>
-      </v-flex>
-      <v-flex xs3 class="mr-5">
-        <v-layout row class="pb-2 mb-2" style="border-bottom: 4px solid #00ffdc">
-          <v-flex xs8 class="text-xs-center">{{$t('AccountPage.difference_amount')}}</v-flex>
-          <v-flex xs4 class="text-xs-center">{{difference_amount}}</v-flex>
-        </v-layout>
-      </v-flex>
-      <v-flex xs3 class="mr-5">
-        <v-layout row class="pb-2 mb-2" style="border-bottom: 4px solid #ff9900">
-          <v-flex xs8 class="text-xs-center">{{$t('AccountPage.commission_amount')}}</v-flex>
-          <v-flex xs4 class="text-xs-center">{{commission_amount}}</v-flex>
-        </v-layout>
-      </v-flex>
-    </v-layout>
-    <v-layout row>
-      <v-flex xs3>
-        <v-autocomplete
-          v-model="filter_userid"
-          :items="items_filter_username"
-          autocomplete
-          :label='$t("AccountPage.user_name")'
-        ></v-autocomplete>
-      </v-flex>
-      <v-flex xs2 class="pl-2 pr-2">
-        <v-menu
-          v-model="menu1"
-          ref="menu1"
-          :close-on-content-click="false"
-          :nudge-right="40"
-          lazy
-          transition="scale-transition"
-          offset-y
-        >
-          <template v-slot:activator="{ on }">
-            <v-text-field
-              v-model="computedStartDateFormatted"
-              :label='$t("AccountPage.starting_date")'
-              prepend-icon="mdi-calendar"
-              readonly
-              v-on="on"
-            ></v-text-field>
-          </template>
-          <v-date-picker v-model="start_date" @input="menu1 = false" :locale="calendarLanguage"></v-date-picker>
-        </v-menu>
-      </v-flex>
-      <v-flex xs2 class="pl-2 pr-2">
-        <v-menu
-          v-model="menu2"
-          ref="menu2"
-          :close-on-content-click="false"
-          :nudge-right="40"
-          lazy
-          transition="scale-transition"
-          offset-y
-        >
-          <template v-slot:activator="{ on }">
-            <v-text-field
-              v-model="computedEndDateFormatted"
-              :label='$t("AccountPage.date_of_completion")'
-              prepend-icon="mdi-calendar"
-              readonly
-              v-on="on"
-            ></v-text-field>
-          </template>
-          <v-date-picker v-model="end_date" @input="menu2 = false" :locale="calendarLanguage"></v-date-picker>
-        </v-menu>
-      </v-flex>
-      <v-flex xs3>
-        <v-autocomplete
-          v-model="bulletin_type"
-          :items="items_bulletin_type"
-          autocomplete
-          :label='$t("AccountPage.bulletin_type")'
-        ></v-autocomplete>
-      </v-flex>
-      <v-flex xs2 class="pl-3 pr-4">
-        <v-btn color="primary" style="width: 100%" @click="getIncomeOutcomeList">{{$t('AccountPage.get_list')}}</v-btn>
-      </v-flex>
-    </v-layout>
-    <v-layout row class="pr-3">
-      <v-data-table
-        :headers="headers"
-        :items="incomeOutcomeList"
-        :loading="is_updating_page"
-        class="elevation-1"
-        style="width: 100%;"
+        <v-card>
+          <v-card-title style="background:#101010" class="pa-2">
+            <div class="subheading" style="color:#e09007">{{start_date}} - {{end_date}}</div>
+          </v-card-title>
+          <v-card-text style="background:#101010;height:calc(100vh - 425px);" class="scroll-y fill-height pa-2">
+            <v-layout column v-scroll:#main-scroll="onMainScrollPos" class="account-table">
+              <v-data-table
+                light
+                :headers="headers"
+                :items="incomeOutcomeList"
+                :loading="is_updating_page"
+                class="table-mybets"
+                style="width: 100%;"
+              >
+              <v-progress-linear v-slot:progress color="green" indeterminate></v-progress-linear>
+              <template slot="headers" slot-scope="props">
+                <tr style="background:#e09007;height:3.5rem;border:solid 1px #e09007;border-radius:3px !important;">
+                  <th
+                    v-for="(header, id) in props.headers"
+                    :key="id"
+                    :class="`text-xs-${header.align}`"
+                    :width="header.width">
+                    <div class="body-2 font-weight-medium" style="color:black">{{header.text}}</div>
+                  </th>
+                </tr>
+              </template>
+                <template v-slot:items="props">
+                  <td>{{ props.item.username }}</td>
+                  <td>
+                    <span style="color: blue">{{ props.item.played }}</span>
+                  </td>
+                  <td>
+                    <span style="color: lawngreen">{{ props.item.won }}</span>
+                  </td>
+                  <td>
+                    <span style="color: red">{{ props.item.lost }}</span>
+                  </td>
+                  <td>
+                    <span style="color: yellow">{{ props.item.pending }}</span>
+                  </td>
+                  <td>
+                    <span style="color: #00ffdc">{{ props.item.difference }}</span>
+                  </td>
+                  <td>
+                    <span style="color: #ff9900">{{ props.item.commission }}</span>
+                  </td>
+                </template>
+              </v-data-table>
+              <v-card class="mt-4">
+                <v-card-title style="background:#e09007" class="pa-2">
+                  <div class="subheading font-weight-medium" style="color:black">{{$t('AccountPage.graphical_analysis_of_slip')}}</div>
+                </v-card-title>
+                <v-card-text style="background:white">
+
+                </v-card-text>
+              </v-card>
+            </v-layout>
+          </v-card-text>
+        </v-card>
+      </v-layout>
+      <v-snackbar
+        :color="color_type"
+        :bottom=false
+        :top=true
+        :left=false
+        :right=true
+        v-model="snackbar"
+        dark
       >
-      <v-progress-linear v-slot:progress color="green" indeterminate></v-progress-linear>
-        <template v-slot:items="props">
-          <td>{{ props.item.username }}</td>
-          <td>
-            <span style="color: blue">{{ props.item.played }}</span>
-          </td>
-          <td>
-            <span style="color: lawngreen">{{ props.item.won }}</span>
-          </td>
-          <td>
-            <span style="color: red">{{ props.item.lost }}</span>
-          </td>
-          <td>
-            <span style="color: yellow">{{ props.item.pending }}</span>
-          </td>
-          <td>
-            <span style="color: #00ffdc">{{ props.item.difference }}</span>
-          </td>
-          <td>
-            <span style="color: #ff9900">{{ props.item.commission }}</span>
-          </td>
-        </template>
-      </v-data-table>
-    </v-layout>
-    <v-snackbar
-      :color="color_type"
-      :bottom=false
-      :top=true
-      :left=false
-      :right=true
-      v-model="snackbar"
-      dark
-    >
-      <!-- <v-icon
-        color="white"
-        class="mr-3"
-      >
-        mdi-bell-plus
-      </v-icon> -->
-      <div>{{alertMessage}}</div>
-      <v-icon
-        size="16"
-        @click="snackbar = false"
-      >
-        mdi-close-circle
-      </v-icon>
-    </v-snackbar>
-  </v-container>
+        <!-- <v-icon
+          color="white"
+          class="mr-3"
+        >
+          mdi-bell-plus
+        </v-icon> -->
+        <div>{{alertMessage}}</div>
+        <v-icon
+          size="16"
+          @click="snackbar = false"
+        >
+          mdi-close-circle
+        </v-icon>
+      </v-snackbar>
+    </v-card-text>
+  </v-card>
 </template>
 
 <script>

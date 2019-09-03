@@ -46,5 +46,9 @@
     "another": "Another",
     "min": "Min",
     "expand": "Expand",
-    "collapse": "Collapse"
+    "collapse": "Collapse",
+    "live_now": "Live Now",
+    "matches_list": "Matches List",
+    "scope": "Scope",
+    "bets": "Bets"
 }
