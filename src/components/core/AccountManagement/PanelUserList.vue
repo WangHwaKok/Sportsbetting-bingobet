@@ -1,5 +1,5 @@
 <template>
-  <v-card id="p_users" class="ma-0 pa-0 card-account">
+  <v-card dark id="p_users" class="ma-0 pa-0 card-account">
     <v-card-title>
       <div class="subheading font-weight-medium">
         {{$t('AccountPage.change_password')}}
@@ -16,15 +16,15 @@
             </v-btn>
           </v-flex>
         </v-layout>
-        <v-layout row class="pr-3 scroll-y account-table" id="main-scroll" fill-height>
+        <v-layout row class="pr-3 scroll-y account-table" id="main-scroll" fill-height style="height:calc(100vh - 350px);">
           <v-flex v-scroll:#main-scroll="onMainScrollPos">
             <v-data-table
-                    :headers="headers"
-                    :items="filter_users"
-                    class="elevation-1"
-                    style="width: 100%;"
-                    hide-headers
-                    hide-actions
+              :headers="headers"
+              :items="filter_users"
+              class="elevation-1"
+              style="width: 100%;"
+              hide-headers
+              hide-actions
             >
               <template v-slot:items="props">
                 <td width="80%">

@@ -1,5 +1,5 @@
 <template>
-  <v-app dark style="min-width:1280px;background: url('/img/bingo_bet.jpg'); background-size: 100% 100%;">
+  <v-app style="min-width:1280px;background: url('/img/bingo_bet.jpg'); background-size: 100% 100%;">
     <!-- <core-filter /> -->
     <v-content class="account-view">
       <core-header />
@@ -8,7 +8,7 @@
       <v-fade-transition mode="out-in">
         <v-container fluid row style="height: calc(100vh - 175px);">
           <v-layout>
-            <v-card style="border-radius:3px;background:unset;border:unset;box-shadow:unset;width:17rem;" class="mr-2">
+            <v-card dark style="border-radius:3px;background:unset;border:unset;box-shadow:unset;width:17rem;" class="mr-2">
               <v-card-title style="background:#e09007;height:3.5rem;" class="pa-0 px-2">
                 <div class="subheading font-weight-medium" style="color:black;">{{$t('AccountPage.account_menu')}}</div>
               </v-card-title>

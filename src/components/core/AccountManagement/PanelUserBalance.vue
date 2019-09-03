@@ -1,5 +1,5 @@
 <template>
-  <v-card id="p_chpwd" class="ma-0 pa-0 card-account">
+  <v-card dark id="p_chpwd" class="ma-0 pa-0 card-account">
     <v-card-title>
       <div class="subheading font-weight-medium">
         {{$t('AccountPage.user_balance')}}
@@ -11,7 +11,7 @@
           <v-text-field :label='$t("AccountPage.enter_user_name")' v-model="filter_user_name"></v-text-field>
         </v-flex>
       </v-layout>
-      <v-layout row class="pr-3 scroll-y account-table" id="main-scroll" fill-height>
+      <v-layout row class="pr-3 scroll-y account-table" id="main-scroll" fill-height style="height:calc(100vh - 350px);">
         <v-flex v-scroll:#main-scroll="onMainScrollPos">
           <v-data-table
             :headers="headers"

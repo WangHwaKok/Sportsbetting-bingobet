@@ -1,5 +1,5 @@
 <template>
-  <v-card id="p_mybets" class="ma-0 pa-0 card-account">
+  <v-card dark id="p_mybets" class="ma-0 pa-0 card-account">
     <v-card-title>
       <div class="subheading font-weight-medium">
         {{$t('AccountPage.my_bets')}}

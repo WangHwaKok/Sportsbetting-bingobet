@@ -75,7 +75,6 @@
                           :items="table.data"
                           class="elevation-1"
                           :pagination.sync="pagination"
-                          :expand="true"
                           item-key="eventID"
                           hide-actions
                         >
@@ -624,7 +623,10 @@ import { parse } from 'path';
         this.mainPanel = [true, true]
         this.getUpcomingResult()
       },
-      gotoEventView(eventID) {
+      gotoEventView(eventID, expand) {
+        if(expand == false){
+          return;
+        }
           this.is_waiting_page = true
           this.oddTypeList = [];
           this.oddGroups = [];

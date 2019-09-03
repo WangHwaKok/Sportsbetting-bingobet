@@ -1,11 +1,11 @@
 <template>
-  <v-card id="p_printer" class="ma-0 pa-0 card-account">
+  <v-card dark id="p_printer" class="ma-0 pa-0 card-account">
     <v-card-title>
       <div class="subheading font-weight-medium">
         {{$t('AccountPage.printer_settings')}}
       </div>
     </v-card-title>
-    <v-card-text>
+    <v-card-text style="height:calc(100vh - 270px);" class="scroll-y">
       <v-form v-model="valid">
         <v-container class="ma-0" style="max-width: 800px;">
           <v-layout>

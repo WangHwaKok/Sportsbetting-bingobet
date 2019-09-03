@@ -101,7 +101,7 @@ export default {
         {name: this.$t('AccountPage.income_expense'), value: '4'},
         {name: this.$t('AccountPage.user_list'), value: '6'},
         {name: this.$t('AccountPage.user_balance'), value: '7'},
-        {name: this.$t('AccountPage.printer_setting'), value: '8'},
+        {name: this.$t('AccountPage.printer_settings'), value: '8'},
         {name: this.$t('AccountPage.change_password'), value: '9'},
       ],
       balanceInfo: "1",

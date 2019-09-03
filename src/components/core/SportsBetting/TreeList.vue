@@ -1,6 +1,6 @@
 <template>
   <v-layout>
-    <v-expansion-panel dark v-model="categoryPanel" expand>
+    <v-expansion-panel dark expand>
       <v-expansion-panel-content class=""
         v-for="(sport,i) in sportCategories"
         :key="i"
@@ -102,6 +102,12 @@ export default {
       })
     },
   },
+  // watch:{
+  //   categoryPanel(){
+  //     console.log(this.categoryPanel);
+  //   }
+
+  // },
   mounted() {
     this.getSportCategories();
   }
