@@ -139,7 +139,7 @@
                     <span style="color: red">{{ props.item.lost }}</span>
                   </td>
                   <td>
-                    <span style="color: yellow">{{ props.item.pending }}</span>
+                    <span style="color: #bbbb02">{{ props.item.pending }}</span>
                   </td>
                   <td>
                     <span style="color: #00ffdc">{{ props.item.difference }}</span>
@@ -154,7 +154,8 @@
                   <div class="subheading font-weight-medium" style="color:black">{{$t('AccountPage.graphical_analysis_of_slip')}}</div>
                 </v-card-title>
                 <v-card-text style="background:white">
-
+                  <material-chart v-if="chartLoad" :chartdata="chartData"></material-chart>
+                  <!-- <material-chart></material-chart> -->
                 </v-card-text>
               </v-card>
             </v-layout>
@@ -230,6 +231,8 @@ export default {
         'tr': 'tr-TR',
       },
       calendarLanguage: 'en-US',
+      chartData: {},
+      chartLoad: false,
     }
   },
   methods:{
@@ -241,7 +244,7 @@ export default {
     },
     getIncomeOutcomeList(){
         this.is_updating_page = true;
-
+        this.chartLoad = false;
         this.axios.post("zt_income_outcome",
             {
                 startDate: this.computedStartDateFormatted,
@@ -294,9 +297,35 @@ export default {
             this.pending_amount = response.data.success.data.total.pending;
             this.difference_amount = response.data.success.data.total.difference;
             this.commission_amount = response.data.success.data.total.commission;
+            
+            this.amount_played = parseFloat(this.amount_played.replace(' TRY', ''))
+            this.winner_amount = parseFloat(this.winner_amount.replace(' TRY', ''))
+            this.losing_amount = parseFloat(this.losing_amount.replace(' TRY', ''))
+            this.pending_amount = parseFloat(this.pending_amount.replace(' TRY', ''))
+            this.difference_amount = parseFloat(this.difference_amount.replace(' TRY', ''))
+            this.commission_amount = parseFloat(this.commission_amount.replace(' TRY', ''))
 
-
+            this.chartData.datasets = []
+            this.chartData.labels = []
+            this.chartData.labels = [
+              this.$t('AccountPage.amount_played'),
+              this.$t('AccountPage.winner_amount'),
+              this.$t('AccountPage.losing_amount'),
+              this.$t('AccountPage.pending_amount'),
+              this.$t('AccountPage.difference_amount'),
+              this.$t('AccountPage.commission_amount'),
+            ]
+            this.chartData.datasets = [{
+              label: 'Amount',
+              backgroundColor: ["#0000FF", "#7CFC00", "#FF0000", "#FFFF00", "#00FFDC", "#FF9900"],
+              // backgroundColor: ["#7367F0", "#28C76F", "#EA5455", "#FF9F43", "#1E1E1E"],
+              data: [this.amount_played, this.winner_amount, this.losing_amount, this.pending_amount, this.difference_amount, this.commission_amount]
+              // data:[1, 2, 3, 4, 5, 6]
+              // data: [2478, 5267, 734, 784, 433, 4563]
+            }]
+            // console.log(this.chartData)
             this.is_updating_page = false;
+            this.chartLoad = true;
         }).catch(e => {
             console.log(e);
             this.showNotify('error', this.$t('AccountPage.server_is_unavailable_now'))

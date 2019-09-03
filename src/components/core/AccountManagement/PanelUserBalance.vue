@@ -1,309 +1,316 @@
 <template>
-  <v-container id="p_mybets" fluid class="pr-0 ma-0">
-    <v-layout row>
-      <v-flex xs2>
-        <v-text-field :label='$t("AccountPage.enter_user_name")' v-model="filter_user_name"></v-text-field>
-      </v-flex>
-    </v-layout>
-    <v-layout row class="pr-3 scroll-y account-table" id="main-scroll" fill-height>
-      <v-flex v-scroll:#main-scroll="onMainScrollPos">
-        <v-data-table
-          :headers="headers"
-          :items="filter_users"
-          class="elevation-1"
-          style="width: 100%;"
-          hide-headers
-          hide-actions
-        >
-          <template v-slot:items="props">
-            <td width="100%">
-              <v-layout row>
-                <v-flex style="max-width: 60px;">
-                  <v-layout
-                    justify-center
-                    align-center
-                    fill-height
-                    class="tertiary"
-                  >
-                    <v-img
-                      v-if="!!props.item.avatar"
-                      :src="props.item.avatar"
-                    ></v-img>
-                    <v-icon v-if="!props.item.avatar" x-large>mdi-account</v-icon>
-                  </v-layout>
-                </v-flex>
-                <v-flex>
-                  <v-layout class="pl-3">
-                    <template v-if="props.item.email != undefined && props.item.email != ''">
-                      <v-flex xs12>{{ props.item.username }} ({{ props.item.email }})</v-flex>
-                    </template>
-                    <template v-else>
-                      <v-flex xs12>{{ props.item.username }}</v-flex>
-                    </template>
-                  </v-layout>
-                  <v-layout row>
-                    <template v-if="props.item.isCombined">
-                      <v-flex xs1>
-                        <v-subheader class="justify-end">{{$t('AccountPage.balance')}}:</v-subheader>
-                      </v-flex>
-                      <v-flex
-                        xs2
-                        style="justify-content: start; align-items: center; display: flex;"
-                      >
-                        <!-- <v-chip label color="warning">{{props.item.balance}} {{props.item.currency}}</v-chip> -->
+  <v-card id="p_chpwd" class="ma-0 pa-0 card-account">
+    <v-card-title>
+      <div class="subheading font-weight-medium">
+        {{$t('AccountPage.user_balance')}}
+      </div>
+    </v-card-title>
+    <v-card-text>
+      <v-layout row>
+        <v-flex xs2>
+          <v-text-field :label='$t("AccountPage.enter_user_name")' v-model="filter_user_name"></v-text-field>
+        </v-flex>
+      </v-layout>
+      <v-layout row class="pr-3 scroll-y account-table" id="main-scroll" fill-height>
+        <v-flex v-scroll:#main-scroll="onMainScrollPos">
+          <v-data-table
+            :headers="headers"
+            :items="filter_users"
+            class="elevation-1"
+            style="width: 100%;"
+            hide-headers
+            hide-actions
+          >
+            <template v-slot:items="props">
+              <td width="100%">
+                <v-layout row>
+                  <v-flex style="max-width: 60px;">
+                    <v-layout
+                      justify-center
+                      align-center
+                      fill-height
+                      class="tertiary"
+                    >
+                      <v-img
+                        v-if="!!props.item.avatar"
+                        :src="props.item.avatar"
+                      ></v-img>
+                      <v-icon v-if="!props.item.avatar" x-large>mdi-account</v-icon>
+                    </v-layout>
+                  </v-flex>
+                  <v-flex>
+                    <v-layout class="pl-3">
+                      <template v-if="props.item.email != undefined && props.item.email != ''">
+                        <v-flex xs12>{{ props.item.username }} ({{ props.item.email }})</v-flex>
+                      </template>
+                      <template v-else>
+                        <v-flex xs12>{{ props.item.username }}</v-flex>
+                      </template>
+                    </v-layout>
+                    <v-layout row>
+                      <template v-if="props.item.isCombined">
+                        <v-flex xs1>
+                          <v-subheader class="justify-end">{{$t('AccountPage.balance')}}:</v-subheader>
+                        </v-flex>
+                        <v-flex
+                          xs2
+                          style="justify-content: start; align-items: center; display: flex;"
+                        >
+                          <!-- <v-chip label color="warning">{{props.item.balance}} {{props.item.currency}}</v-chip> -->
+                          <v-layout column>
+                            <v-btn
+                              color="green"
+                              round
+                              small 
+                              class="user-balance-btn"
+                              @click="BalanceDlg(balanceActions[0].name, props.item.userID, 'balance', props.item.currency)"
+                            >
+                              {{balanceActions[0].text}}
+                            </v-btn>
+                            <v-btn
+                                color="warning"
+                                round
+                                small 
+                                class="user-balance-btn"
+                                @click="BalanceDlg(balanceActions[1].name, props.item.userID, 'balance', props.item.currency)"
+                              >
+                                {{balanceActions[1].text}}
+                            </v-btn>
+                          </v-layout>
+                          <!-- <v-menu offset-y>
+                            <template v-slot:activator="{ on }">
+                              <v-btn
+                                color="warning"
+                                dark
+                                v-on="on"
+                              >
+                                {{props.item.balance}} {{props.item.currency}}
+                              </v-btn>
+                            </template>
+                            <v-list>
+                              <v-list-tile
+                                v-for="(item, index) in balanceActions"
+                                :key="index"
+                                @click="BalanceDlg(item.name, props.item.userID, 'balance', props.item.currency)"
+                              >
+                                <v-list-tile-title>{{ item.text }}</v-list-tile-title>
+                              </v-list-tile>
+                            </v-list>
+                          </v-menu> -->
+                        </v-flex>
+                      </template>
+                      <template v-else>
+                        <v-flex>
+                          <v-subheader class="justify-end">{{$t('AccountPage.sports')}}: {{props.item.sportBalance}} {{props.item.currency}}</v-subheader>
+                        </v-flex>
+                        <v-flex
+                          style="justify-content: start; align-items: center; display: flex;"
+                        >
                         <v-layout column>
                           <v-btn
-                            color="green"
-                            round
-                            small 
-                            class="user-balance-btn"
-                            @click="BalanceDlg(balanceActions[0].name, props.item.userID, 'balance', props.item.currency)"
-                          >
-                            {{balanceActions[0].text}}
+                              color="green"
+                              round
+                              small 
+                              class="user-balance-btn"
+                              @click="BalanceDlg(balanceActions[0].name, props.item.userID, 'sportBalance', props.item.currency)"
+                            >
+                              {{balanceActions[0].text}}
                           </v-btn>
                           <v-btn
                               color="warning"
                               round
                               small 
                               class="user-balance-btn"
-                              @click="BalanceDlg(balanceActions[1].name, props.item.userID, 'balance', props.item.currency)"
+                              @click="BalanceDlg(balanceActions[1].name, props.item.userID, 'sportBalance', props.item.currency)"
                             >
                               {{balanceActions[1].text}}
                           </v-btn>
+                          <!-- <v-chip label color="warning">{{props.item.sportBalance}} {{props.item.currency}}</v-chip> -->
+                          <!-- <v-menu offset-y>
+                            <template v-slot:activator="{ on }">
+                              <v-btn
+                                color="warning"
+                                dark
+                                v-on="on"
+                              >
+                                {{props.item.sportBalance}} {{props.item.currency}}
+                              </v-btn>
+                            </template>
+                            <v-list>
+                              <v-list-tile
+                                v-for="(item, index) in balanceActions"
+                                :key="index"
+                                @click="BalanceDlg(item.name, props.item.userID, 'sportBalance', props.item.currency)"
+                              >
+                                <v-list-tile-title>{{ item.text }}</v-list-tile-title>
+                              </v-list-tile>
+                            </v-list>
+                          </v-menu> -->
                         </v-layout>
-                        <!-- <v-menu offset-y>
-                          <template v-slot:activator="{ on }">
-                            <v-btn
+                        </v-flex>
+                        <v-flex>
+                          <v-subheader style="justify-content: flex-end;"
+                            >{{$t('AccountPage.casino')}}: {{props.item.casinoBalance}} {{props.item.currency}}</v-subheader>
+                        </v-flex>
+                        <v-flex
+                          style="justify-content: start; align-items: center; display: flex;"
+                        >
+                        <v-layout column>
+                          <v-btn
+                              color="green"
+                              round
+                              small
+                              class="user-balance-btn"
+                              @click="BalanceDlg(balanceActions[0].name, props.item.userID, 'casinoBalance', props.item.currency)"
+                            >
+                              {{balanceActions[0].text}}
+                          </v-btn>
+                          <v-btn
                               color="warning"
-                              dark
-                              v-on="on"
+                              round
+                              small 
+                              class="user-balance-btn"
+                              @click="BalanceDlg(balanceActions[1].name, props.item.userID, 'casinoBalance', props.item.currency)"
                             >
-                              {{props.item.balance}} {{props.item.currency}}
-                            </v-btn>
-                          </template>
-                          <v-list>
-                            <v-list-tile
-                              v-for="(item, index) in balanceActions"
-                              :key="index"
-                              @click="BalanceDlg(item.name, props.item.userID, 'balance', props.item.currency)"
+                              {{balanceActions[1].text}}
+                          </v-btn>
+                          <!-- <v-chip label color="warning">
+                            {{props.item.casinoBalance}} {{props.item.currency}}
+                          </v-chip> -->
+                          <!-- <v-menu offset-y>
+                            <template v-slot:activator="{ on }">
+                              <v-btn
+                                color="warning"
+                                dark
+                                v-on="on"
+                              >
+                                {{props.item.casinoBalance}} {{props.item.currency}}
+                              </v-btn>
+                            </template>
+                            <v-list>
+                              <v-list-tile
+                                v-for="(item, index) in balanceActions"
+                                :key="index"
+                                @click="BalanceDlg(item.name, props.item.userID, 'casinoBalance', props.item.currency)"
+                              >
+                                <v-list-tile-title>{{ item.text }}</v-list-tile-title>
+                              </v-list-tile>
+                            </v-list>
+                          </v-menu> -->
+                        </v-layout>
+                        </v-flex>
+                        <v-flex>
+                          <v-subheader style="justify-content: flex-end;"
+                            >{{$t('AccountPage.poker')}}: {{props.item.pokerBalance}} {{props.item.currency}}</v-subheader>
+                        </v-flex>
+                        <v-flex
+                          style="justify-content: start; align-items: center; display: flex;"
+                        >
+                        <v-layout column>
+                          <v-btn
+                              color="green"
+                              round
+                              small 
+                              class="user-balance-btn"
+                              @click="BalanceDlg(balanceActions[0].name, props.item.userID, 'pokerBalance', props.item.currency)"
                             >
-                              <v-list-tile-title>{{ item.text }}</v-list-tile-title>
-                            </v-list-tile>
-                          </v-list>
-                        </v-menu> -->
-                      </v-flex>
-                    </template>
-                    <template v-else>
-                      <v-flex>
-                        <v-subheader class="justify-end">{{$t('AccountPage.sports')}}: {{props.item.sportBalance}} {{props.item.currency}}</v-subheader>
-                      </v-flex>
-                      <v-flex
-                        style="justify-content: start; align-items: center; display: flex;"
-                      >
-                      <v-layout column>
-                        <v-btn
-                            color="green"
-                            round
-                            small 
-                            class="user-balance-btn"
-                            @click="BalanceDlg(balanceActions[0].name, props.item.userID, 'sportBalance', props.item.currency)"
-                          >
-                            {{balanceActions[0].text}}
-                        </v-btn>
-                        <v-btn
-                            color="warning"
-                            round
-                            small 
-                            class="user-balance-btn"
-                            @click="BalanceDlg(balanceActions[1].name, props.item.userID, 'sportBalance', props.item.currency)"
-                          >
-                            {{balanceActions[1].text}}
-                        </v-btn>
-                        <!-- <v-chip label color="warning">{{props.item.sportBalance}} {{props.item.currency}}</v-chip> -->
-                        <!-- <v-menu offset-y>
-                          <template v-slot:activator="{ on }">
-                            <v-btn
+                              {{balanceActions[0].text}}
+                          </v-btn>
+                          <v-btn
                               color="warning"
-                              dark
-                              v-on="on"
+                              round
+                              small 
+                              class="user-balance-btn"
+                              @click="BalanceDlg(balanceActions[1].name, props.item.userID, 'pokerBalance', props.item.currency)"
                             >
-                              {{props.item.sportBalance}} {{props.item.currency}}
-                            </v-btn>
-                          </template>
-                          <v-list>
-                            <v-list-tile
-                              v-for="(item, index) in balanceActions"
-                              :key="index"
-                              @click="BalanceDlg(item.name, props.item.userID, 'sportBalance', props.item.currency)"
+                              {{balanceActions[1].text}}
+                          </v-btn>
+                          <!-- <v-chip label color="warning">
+                            {{props.item.pokerBalance}} {{props.item.currency}}
+                          </v-chip> -->
+                          <!-- <v-menu offset-y>
+                            <template v-slot:activator="{ on }">
+                              <v-btn
+                                color="warning"
+                                dark
+                                v-on="on"
+                              >
+                                {{props.item.pokerBalance}} {{props.item.currency}}
+                              </v-btn>
+                            </template>
+                            <v-list>
+                              <v-list-tile
+                                v-for="(item, index) in balanceActions"
+                                :key="index"
+                                @click="BalanceDlg(item.name, props.item.userID, 'pokerBalance', props.item.currency)"
+                              >
+                                <v-list-tile-title>{{ item.text }}</v-list-tile-title>
+                              </v-list-tile>
+                            </v-list>
+                          </v-menu> -->
+                        </v-layout>
+                        </v-flex>
+                        <v-flex>
+                          <v-subheader style="justify-content: flex-end;"
+                            >{{$t('AccountPage.tombala')}}: {{props.item.tombalaBalance}} {{props.item.currency}}</v-subheader>
+                        </v-flex>
+                        <v-flex
+                          style="justify-content: start; align-items: center; display: flex;"
+                        >
+                        <v-layout column>
+                          <v-btn
+                              color="green"
+                              round
+                              small 
+                              class="user-balance-btn"
+                              @click="BalanceDlg(balanceActions[0].name, props.item.userID, 'tombalaBalance', props.item.currency)"
                             >
-                              <v-list-tile-title>{{ item.text }}</v-list-tile-title>
-                            </v-list-tile>
-                          </v-list>
-                        </v-menu> -->
-                      </v-layout>
-                      </v-flex>
-                      <v-flex>
-                        <v-subheader style="justify-content: flex-end;"
-                          >{{$t('AccountPage.casino')}}: {{props.item.casinoBalance}} {{props.item.currency}}</v-subheader>
-                      </v-flex>
-                      <v-flex
-                        style="justify-content: start; align-items: center; display: flex;"
-                      >
-                      <v-layout column>
-                        <v-btn
-                            color="green"
-                            round
-                            small
-                            class="user-balance-btn"
-                            @click="BalanceDlg(balanceActions[0].name, props.item.userID, 'casinoBalance', props.item.currency)"
-                          >
-                            {{balanceActions[0].text}}
-                        </v-btn>
-                        <v-btn
-                            color="warning"
-                            round
-                            small 
-                            class="user-balance-btn"
-                            @click="BalanceDlg(balanceActions[1].name, props.item.userID, 'casinoBalance', props.item.currency)"
-                          >
-                            {{balanceActions[1].text}}
-                        </v-btn>
-                        <!-- <v-chip label color="warning">
-                          {{props.item.casinoBalance}} {{props.item.currency}}
-                        </v-chip> -->
-                        <!-- <v-menu offset-y>
-                          <template v-slot:activator="{ on }">
-                            <v-btn
+                              {{balanceActions[0].text}}
+                          </v-btn>
+                          <v-btn
                               color="warning"
-                              dark
-                              v-on="on"
+                              round
+                              small 
+                              class="user-balance-btn"
+                              @click="BalanceDlg(balanceActions[1].name, props.item.userID, 'tombalaBalance', props.item.currency)"
                             >
-                              {{props.item.casinoBalance}} {{props.item.currency}}
-                            </v-btn>
-                          </template>
-                          <v-list>
-                            <v-list-tile
-                              v-for="(item, index) in balanceActions"
-                              :key="index"
-                              @click="BalanceDlg(item.name, props.item.userID, 'casinoBalance', props.item.currency)"
-                            >
-                              <v-list-tile-title>{{ item.text }}</v-list-tile-title>
-                            </v-list-tile>
-                          </v-list>
-                        </v-menu> -->
-                      </v-layout>
-                      </v-flex>
-                      <v-flex>
-                        <v-subheader style="justify-content: flex-end;"
-                          >{{$t('AccountPage.poker')}}: {{props.item.pokerBalance}} {{props.item.currency}}</v-subheader>
-                      </v-flex>
-                      <v-flex
-                        style="justify-content: start; align-items: center; display: flex;"
-                      >
-                      <v-layout column>
-                        <v-btn
-                            color="green"
-                            round
-                            small 
-                            class="user-balance-btn"
-                            @click="BalanceDlg(balanceActions[0].name, props.item.userID, 'pokerBalance', props.item.currency)"
-                          >
-                            {{balanceActions[0].text}}
-                        </v-btn>
-                        <v-btn
-                            color="warning"
-                            round
-                            small 
-                            class="user-balance-btn"
-                            @click="BalanceDlg(balanceActions[1].name, props.item.userID, 'pokerBalance', props.item.currency)"
-                          >
-                            {{balanceActions[1].text}}
-                        </v-btn>
-                        <!-- <v-chip label color="warning">
-                          {{props.item.pokerBalance}} {{props.item.currency}}
-                        </v-chip> -->
-                        <!-- <v-menu offset-y>
-                          <template v-slot:activator="{ on }">
-                            <v-btn
-                              color="warning"
-                              dark
-                              v-on="on"
-                            >
-                              {{props.item.pokerBalance}} {{props.item.currency}}
-                            </v-btn>
-                          </template>
-                          <v-list>
-                            <v-list-tile
-                              v-for="(item, index) in balanceActions"
-                              :key="index"
-                              @click="BalanceDlg(item.name, props.item.userID, 'pokerBalance', props.item.currency)"
-                            >
-                              <v-list-tile-title>{{ item.text }}</v-list-tile-title>
-                            </v-list-tile>
-                          </v-list>
-                        </v-menu> -->
-                      </v-layout>
-                      </v-flex>
-                      <v-flex>
-                        <v-subheader style="justify-content: flex-end;"
-                          >{{$t('AccountPage.tombala')}}: {{props.item.tombalaBalance}} {{props.item.currency}}</v-subheader>
-                      </v-flex>
-                      <v-flex
-                        style="justify-content: start; align-items: center; display: flex;"
-                      >
-                      <v-layout column>
-                        <v-btn
-                            color="green"
-                            round
-                            small 
-                            class="user-balance-btn"
-                            @click="BalanceDlg(balanceActions[0].name, props.item.userID, 'tombalaBalance', props.item.currency)"
-                          >
-                            {{balanceActions[0].text}}
-                        </v-btn>
-                        <v-btn
-                            color="warning"
-                            round
-                            small 
-                            class="user-balance-btn"
-                            @click="BalanceDlg(balanceActions[1].name, props.item.userID, 'tombalaBalance', props.item.currency)"
-                          >
-                            {{balanceActions[1].text}}
-                        </v-btn>
-                        <!-- <v-chip label color="warning">
-                          {{props.item.tombalaBalance}} {{props.item.currency}}
-                        </v-chip> -->
-                        <!-- <v-menu offset-y>
-                          <template v-slot:activator="{ on }">
-                            <v-btn
-                              color="warning"
-                              dark
-                              v-on="on"
-                            >
-                              {{props.item.tombalaBalance}} {{props.item.currency}}
-                            </v-btn>
-                          </template>
-                          <v-list>
-                            <v-list-tile
-                              v-for="(item, index) in balanceActions"
-                              :key="index"
-                              @click="BalanceDlg(item.name, props.item.userID, 'tombalaBalance', props.item.currency)"
-                            >
-                              <v-list-tile-title>{{ item.text }}</v-list-tile-title>
-                            </v-list-tile>
-                          </v-list>
-                        </v-menu> -->
-                      </v-layout>
-                      </v-flex>
-                    </template>
-                  </v-layout>
-                </v-flex>
-              </v-layout>
-            </td>
-          </template>
-        </v-data-table>
-      </v-flex>
-    </v-layout>
+                              {{balanceActions[1].text}}
+                          </v-btn>
+                          <!-- <v-chip label color="warning">
+                            {{props.item.tombalaBalance}} {{props.item.currency}}
+                          </v-chip> -->
+                          <!-- <v-menu offset-y>
+                            <template v-slot:activator="{ on }">
+                              <v-btn
+                                color="warning"
+                                dark
+                                v-on="on"
+                              >
+                                {{props.item.tombalaBalance}} {{props.item.currency}}
+                              </v-btn>
+                            </template>
+                            <v-list>
+                              <v-list-tile
+                                v-for="(item, index) in balanceActions"
+                                :key="index"
+                                @click="BalanceDlg(item.name, props.item.userID, 'tombalaBalance', props.item.currency)"
+                              >
+                                <v-list-tile-title>{{ item.text }}</v-list-tile-title>
+                              </v-list-tile>
+                            </v-list>
+                          </v-menu> -->
+                        </v-layout>
+                        </v-flex>
+                      </template>
+                    </v-layout>
+                  </v-flex>
+                </v-layout>
+              </td>
+            </template>
+          </v-data-table>
+        </v-flex>
+      </v-layout>
+    </v-card-text>
     <v-dialog v-model="dialog_balance_setting" persistent max-width="300px">
       <v-form v-model="valid">
         <v-card>
@@ -361,7 +368,7 @@
         mdi-close-circle
       </v-icon>
     </v-snackbar>
-  </v-container>
+  </v-card>
 </template>
 
 <script>

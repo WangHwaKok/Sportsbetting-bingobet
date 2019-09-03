@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@saeris/vue-spinners": "^1.0.8",
+    "chart.js": "^2.8.0",
     "chartist": "0.11.0",
     "laravel-echo": "^1.5.3",
     "moment-timezone": "^0.5.25",
@@ -19,6 +20,7 @@
     "vue": "^2.5.17",
     "vue-axios": "^2.1.4",
     "vue-chartist": "^2.1.2",
+    "vue-chartjs": "^3.4.2",
     "vue-country-flag": "^1.1.1",
     "vue-flag-icon": "^1.0.6",
     "vue-meta": "^1.5.2",

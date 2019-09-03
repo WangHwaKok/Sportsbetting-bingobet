@@ -29,5 +29,6 @@
   "yes": "Evet",
   "save": "Kaydet",
   "deposit": "Para Yatırma",
-  "withdraw": "Para Çekme"
+  "withdraw": "Para Çekme",
+  "remove_user": "Kullanıcıyı Kaldır"
 }

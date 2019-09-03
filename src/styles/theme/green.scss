@@ -58,6 +58,15 @@
         background: black;
       }  
     }
+    .selected{
+      .v-list__tile{
+        height: 3rem;
+        background: #606060;
+        border: 1px solid #141414;
+        border-radius: 3px;
+        padding-left: 8px;
+      }
+    }
     .v-list__tile{
       height: 3rem;
       background: #212121;
@@ -70,13 +79,13 @@
     }
   }
   .panel {
-    width: calc(100% - 100px);
+    width: calc(100% - 150px);
     &.expand {
       width: 100%;
     }
   }
   .card-account{
-    height: calc(100vh - 200px);
+    // height: calc(100vh - 200px);
     .v-card__title{
       background: black;
     }

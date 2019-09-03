@@ -31,11 +31,11 @@
                     <v-list-tile
                       v-else
                       :key="i"
-                      :class="currentPanel == i ? 'tertiary2' : ''"
+                      :class="currentPanel == i ? 'selected' : ''"
                       @click="drawerClick(i)"
                     >
                       <v-list-tile-content>
-                        <div class="body-2" style="color:#c0c0c0">{{ panel.text }}</div>
+                        <div class="body-2" :style="`color:${currentPanel == i ? 'white': '#c0c0c0'}`">{{ panel.text }}</div>
                       </v-list-tile-content>
                     </v-list-tile>
                   </template>
@@ -56,11 +56,11 @@
                     <v-list-tile
                       v-else
                       :key="i"
-                      :class="currentPanel == i ? 'tertiary2' : ''"
+                      :class="currentPanel == i ? 'selected' : ''"
                       @click="drawerClick(i)"
                     >
                       <v-list-tile-content>
-                        <div class="body-2" style="color:#c0c0c0">{{ panel.text }}</div>
+                        <div class="body-2" :style="`color:${currentPanel == i ? 'white': '#c0c0c0'}`">{{ panel.text }}</div>
                       </v-list-tile-content>
                     </v-list-tile>
                   </template>
@@ -121,7 +121,7 @@ export default {
           name: 'core-account-management-panel-account-activities',
           id: '#p_activities',
           icon: 'mdi-account',
-          text: this.$t('AccountPage.account_activities'),
+          text: this.$t('AccountPage.financial_transactions'),
           role:'user',
         },
         {
@@ -182,7 +182,7 @@ export default {
           name: 'core-account-management-panel-account-activities',
           id: '#p_activities',
           icon: 'mdi-account',
-          text: this.$t('AccountPage.account_activities'),
+          text: this.$t('AccountPage.financial_transactions'),
           role:'user',
         },
         {

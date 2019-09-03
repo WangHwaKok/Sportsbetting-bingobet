@@ -1,129 +1,135 @@
 <template>
-  <v-container id="p_users" fluid class="pr-0 ma-0">
-    <v-layout row justify-space-between>
-      <v-flex xs2>
-        <v-text-field :label='$t("AccountPage.enter_user_name")' v-model="filter_user_name"></v-text-field>
-      </v-flex>
-      <v-flex xs2 class="pr-3">
-        <v-btn block color="primary" @click.stop="AddDlg">
-          <v-icon>mdi-plus</v-icon>&nbsp;{{$t('AccountPage.add_new_user')}}
-        </v-btn>
-      </v-flex>
-    </v-layout>
-    <v-layout row class="pr-3 scroll-y account-table" id="main-scroll" fill-height>
-      <v-flex v-scroll:#main-scroll="onMainScrollPos">
-        <v-data-table
-                :headers="headers"
-                :items="filter_users"
-                class="elevation-1"
-                style="width: 100%;"
-                hide-headers
-                hide-actions
-        >
-          <template v-slot:items="props">
-            <td width="80%">
-              <v-layout row>
-                <v-flex style="max-width: 60px;">
-                  <v-layout
-                          justify-center
-                          align-center
-                          fill-height
-                          class="tertiary"
-                  >
-                    <v-img
-                            v-if="!!props.item.avatar"
-                            :src="props.item.avatar"
-                    ></v-img>
-                    <v-icon v-if="!props.item.avatar" x-large>mdi-account</v-icon>
-                  </v-layout>
-                </v-flex>
-                <v-flex>
-                  <v-layout class="pl-3">
-                    <v-flex xs12>{{ props.item.username }}</v-flex>
-                  </v-layout>
+  <v-card id="p_users" class="ma-0 pa-0 card-account">
+    <v-card-title>
+      <div class="subheading font-weight-medium">
+        {{$t('AccountPage.change_password')}}
+      </div>
+    </v-card-title>
+    <v-card-text>
+        <v-layout row justify-space-between>
+          <v-flex xs2>
+            <v-text-field :label='$t("AccountPage.enter_user_name")' v-model="filter_user_name"></v-text-field>
+          </v-flex>
+          <v-flex xs2 class="pr-3">
+            <v-btn block color="primary" @click.stop="AddDlg">
+              <v-icon>mdi-plus</v-icon>&nbsp;{{$t('AccountPage.add_new_user')}}
+            </v-btn>
+          </v-flex>
+        </v-layout>
+        <v-layout row class="pr-3 scroll-y account-table" id="main-scroll" fill-height>
+          <v-flex v-scroll:#main-scroll="onMainScrollPos">
+            <v-data-table
+                    :headers="headers"
+                    :items="filter_users"
+                    class="elevation-1"
+                    style="width: 100%;"
+                    hide-headers
+                    hide-actions
+            >
+              <template v-slot:items="props">
+                <td width="80%">
                   <v-layout row>
-                    <template v-if="props.item.isCombined">
-                      <v-flex xs1>
-                        <v-subheader class="justify-end">{{$t('AccountPage.balance')}}:</v-subheader>
-                      </v-flex>
-                      <v-flex
-                              xs2
-                              style="justify-content: start; align-items: center; display: flex;"
+                    <v-flex style="max-width: 60px;">
+                      <v-layout
+                              justify-center
+                              align-center
+                              fill-height
+                              class="tertiary"
                       >
-                        <v-chip label color="warning">{{props.item.balance}} {{props.item.currency}}</v-chip>
-                      </v-flex>
-                    </template>
-                    <template v-else>
-                      <v-flex xs1>
-                        <v-subheader class="justify-end">{{$t('AccountPage.sports')}}:</v-subheader>
-                      </v-flex>
-                      <v-flex
-                              xs2
-                              style="justify-content: start; align-items: center; display: flex;"
-                      >
-                        <v-chip label color="warning">{{
-                          props.item.sportBalance
-                          }} {{props.item.currency}}</v-chip>
-                      </v-flex>
-                      <v-flex xs1>
-                        <v-subheader style="justify-content: flex-end;"
-                        >{{$t('AccountPage.casino')}}:</v-subheader
-                        >
-                      </v-flex>
-                      <v-flex
-                              xs2
-                              style="justify-content: start; align-items: center; display: flex;"
-                      >
-                        <v-chip label color="warning">
-                          {{props.item.casinoBalance}} {{props.item.currency}}
-                        </v-chip>
-                      </v-flex>
-                      <v-flex xs1>
-                        <v-subheader style="justify-content: flex-end;"
-                        >{{$t('AccountPage.poker')}}:</v-subheader
-                        >
-                      </v-flex>
-                      <v-flex
-                              xs2
-                              style="justify-content: start; align-items: center; display: flex;"
-                      >
-                        <v-chip label color="warning">
-                          {{props.item.pokerBalance}} {{props.item.currency}}
-                        </v-chip>
-                      </v-flex>
-                      <v-flex xs1>
-                        <v-subheader style="justify-content: flex-end;"
-                        >{{$t('AccountPage.tombala')}}:</v-subheader
-                        >
-                      </v-flex>
-                      <v-flex
-                              xs2
-                              style="justify-content: start; align-items: center; display: flex;"
-                      >
-                        <v-chip label color="warning">
-                          {{props.item.tombalaBalance}} {{props.item.currency}}
-                        </v-chip>
-                      </v-flex>
-                    </template>
+                        <v-img
+                                v-if="!!props.item.avatar"
+                                :src="props.item.avatar"
+                        ></v-img>
+                        <v-icon v-if="!props.item.avatar" x-large>mdi-account</v-icon>
+                      </v-layout>
+                    </v-flex>
+                    <v-flex>
+                      <v-layout class="pl-3">
+                        <v-flex xs12>{{ props.item.username }}</v-flex>
+                      </v-layout>
+                      <v-layout row>
+                        <template v-if="props.item.isCombined">
+                          <v-flex xs1>
+                            <v-subheader class="justify-end">{{$t('AccountPage.balance')}}:</v-subheader>
+                          </v-flex>
+                          <v-flex
+                                  xs2
+                                  style="justify-content: start; align-items: center; display: flex;"
+                          >
+                            <v-chip label color="warning">{{props.item.balance}} {{props.item.currency}}</v-chip>
+                          </v-flex>
+                        </template>
+                        <template v-else>
+                          <v-flex xs1>
+                            <v-subheader class="justify-end">{{$t('AccountPage.sports')}}:</v-subheader>
+                          </v-flex>
+                          <v-flex
+                                  xs2
+                                  style="justify-content: start; align-items: center; display: flex;"
+                          >
+                            <v-chip label color="warning">{{
+                              props.item.sportBalance
+                              }} {{props.item.currency}}</v-chip>
+                          </v-flex>
+                          <v-flex xs1>
+                            <v-subheader style="justify-content: flex-end;"
+                            >{{$t('AccountPage.casino')}}:</v-subheader
+                            >
+                          </v-flex>
+                          <v-flex
+                                  xs2
+                                  style="justify-content: start; align-items: center; display: flex;"
+                          >
+                            <v-chip label color="warning">
+                              {{props.item.casinoBalance}} {{props.item.currency}}
+                            </v-chip>
+                          </v-flex>
+                          <v-flex xs1>
+                            <v-subheader style="justify-content: flex-end;"
+                            >{{$t('AccountPage.poker')}}:</v-subheader
+                            >
+                          </v-flex>
+                          <v-flex
+                                  xs2
+                                  style="justify-content: start; align-items: center; display: flex;"
+                          >
+                            <v-chip label color="warning">
+                              {{props.item.pokerBalance}} {{props.item.currency}}
+                            </v-chip>
+                          </v-flex>
+                          <v-flex xs1>
+                            <v-subheader style="justify-content: flex-end;"
+                            >{{$t('AccountPage.tombala')}}:</v-subheader
+                            >
+                          </v-flex>
+                          <v-flex
+                                  xs2
+                                  style="justify-content: start; align-items: center; display: flex;"
+                          >
+                            <v-chip label color="warning">
+                              {{props.item.tombalaBalance}} {{props.item.currency}}
+                            </v-chip>
+                          </v-flex>
+                        </template>
+                      </v-layout>
+                    </v-flex>
                   </v-layout>
-                </v-flex>
-              </v-layout>
-            </td>
-            <td width="20%">
-              <v-layout justify-end>
-                <v-btn small icon @click.stop="ModifyDlg(props.item.userID, props.item.username, props.item.status, props.item.isLiveActive, props.item.isSystemPlay, '')">
-                  <v-icon>mdi-pencil</v-icon>
-                </v-btn>
-                <v-btn small icon @click.stop="DeleteDlg(props.item.userID, props.item.username)">
-                  <v-icon>mdi-delete</v-icon>
-                </v-btn>
-              </v-layout>
-            </td>
-          </template>
-        </v-data-table>
-      </v-flex>
-    </v-layout>
-
+                </td>
+                <td width="20%">
+                  <v-layout justify-end>
+                    <v-btn small icon @click.stop="ModifyDlg(props.item.userID, props.item.username, props.item.status, props.item.isLiveActive, props.item.isSystemPlay, '')">
+                      <v-icon>mdi-pencil</v-icon>
+                    </v-btn>
+                    <v-btn small icon @click.stop="DeleteDlg(props.item.userID, props.item.username)">
+                      <v-icon>mdi-delete</v-icon>
+                    </v-btn>
+                  </v-layout>
+                </td>
+              </template>
+            </v-data-table>
+          </v-flex>
+        </v-layout>
+    </v-card-text>
     <v-dialog v-model="dialog_add_user" persistent max-width="300px">
       <v-card>
         <v-card-title>
@@ -288,7 +294,7 @@
         mdi-close-circle
       </v-icon>
     </v-snackbar>
-  </v-container>
+  </v-card>
 </template>
 
 <script>

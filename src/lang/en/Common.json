@@ -33,5 +33,6 @@
   "yes": "Yes",
   "save": "Save",
   "deposit": "Deposit",
-  "withdraw": "Withdraw"
+  "withdraw": "Withdraw",
+  "remove_user": "Remove User"
 }

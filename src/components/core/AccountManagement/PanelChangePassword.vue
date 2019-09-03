@@ -1,50 +1,57 @@
 <template>
-  <v-container id="p_chpwd" fluid class="pr-0 ma-0">
-    <v-form v-model="valid">
-      <v-container class="ma-0" style="max-width: 800px;">
-        <v-layout>
-          <v-flex xs12>
-            <v-text-field v-model="old_password"
-                          :append-icon="show2 ? 'mdi-eye' : 'mdi-eye-off'"
-                          :rules="[rules.required]"
-                          :type="show2 ? 'text' : 'password'"
-                          counter
-                          @click:append="show2 = !show2"
-                          :label='$t("AccountPage.old_password")+"*"' required></v-text-field>
-          </v-flex>
-        </v-layout>
-        <v-layout>
-          <v-flex xs12>
-            <v-text-field v-model="current_password"
-                          :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
-                          :rules="[rules.required, rules.min]"
-                          :type="show1 ? 'text' : 'password'"
-                          counter
-                          @click:append="show1 = !show1"
-                          :label='$t("AccountPage.new_password")+"*"' :hint='$t("AccountPage.min_8_characters")' required></v-text-field>
-          </v-flex>
-        </v-layout>
-        <v-layout>
-          <v-flex xs12>
-            <v-text-field v-model="confirm_password"
-                          :rules="[rules.required, rules.pwdMatch]"
-                          :type="show1 ? 'text' : 'password'"
-                          counter
-                          :label='$t("AccountPage.password_repeat")+"*"' required></v-text-field>
-          </v-flex>
-        </v-layout>
-        <v-layout>
-          <v-flex xs12></v-flex>
-          <v-flex xs12></v-flex>
-          <v-flex xs12>
-            <v-btn color="primary"
-                    :disabled="is_processing"
-                    @click.stop="update_password"
-            >{{$t('AccountPage.change_password')}}</v-btn>
-          </v-flex>
-        </v-layout>
-      </v-container>
-    </v-form>
+  <v-card id="p_chpwd" class="ma-0 pa-0 card-account">
+    <v-card-title>
+      <div class="subheading font-weight-medium">
+        {{$t('AccountPage.change_password')}}
+      </div>
+    </v-card-title>
+    <v-card-text>
+      <v-form v-model="valid">
+        <v-container class="ma-0" style="max-width: 800px;">
+          <v-layout>
+            <v-flex xs12>
+              <v-text-field v-model="old_password"
+                            :append-icon="show2 ? 'mdi-eye' : 'mdi-eye-off'"
+                            :rules="[rules.required]"
+                            :type="show2 ? 'text' : 'password'"
+                            counter
+                            @click:append="show2 = !show2"
+                            :label='$t("AccountPage.old_password")+"*"' required></v-text-field>
+            </v-flex>
+          </v-layout>
+          <v-layout>
+            <v-flex xs12>
+              <v-text-field v-model="current_password"
+                            :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
+                            :rules="[rules.required, rules.min]"
+                            :type="show1 ? 'text' : 'password'"
+                            counter
+                            @click:append="show1 = !show1"
+                            :label='$t("AccountPage.new_password")+"*"' :hint='$t("AccountPage.min_8_characters")' required></v-text-field>
+            </v-flex>
+          </v-layout>
+          <v-layout>
+            <v-flex xs12>
+              <v-text-field v-model="confirm_password"
+                            :rules="[rules.required, rules.pwdMatch]"
+                            :type="show1 ? 'text' : 'password'"
+                            counter
+                            :label='$t("AccountPage.password_repeat")+"*"' required></v-text-field>
+            </v-flex>
+          </v-layout>
+          <v-layout>
+            <v-flex xs12></v-flex>
+            <v-flex xs12></v-flex>
+            <v-flex xs12>
+              <v-btn color="primary"
+                      :disabled="is_processing"
+                      @click.stop="update_password"
+              >{{$t('AccountPage.change_password')}}</v-btn>
+            </v-flex>
+          </v-layout>
+        </v-container>
+      </v-form>
+    </v-card-text>
     <v-snackbar
       :color="color_type"
       :bottom=false
@@ -68,7 +75,7 @@
         mdi-close-circle
       </v-icon>
     </v-snackbar>
-  </v-container>
+  </v-card>
 </template>
 <script>
 export default {
