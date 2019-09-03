@@ -308,6 +308,20 @@ export default {
       this.alertMessage = msg
       this.snackbar = true
     },
+    onMainScrollPos(e){
+      // console.log('yes')
+      // console.log(e.target.scrollTop, e.target.scrollHeight, e.target.offsetHeight)
+      // let scrollBottom = e.target.scrollTop + e.target.offsetHeight === e.target.scrollHeight
+      // if(scrollBottom){
+      //   if(this.is_updating_page == true || this.is_last_page == true){
+      //     return
+      //   }
+
+      //   // console.log(this.pageNumber)
+      //   this.getAccountActivityList()
+      // }
+
+    },
   },
   computed: {
       computedStartDateFormatted () {
@@ -316,6 +330,9 @@ export default {
       computedEndDateFormatted () {
           return this.formatDate(this.end_date)
       }
+  },
+  created(){
+    window.addEventListener('scroll', this.onMainScrollPos);
   },
   mounted(){
     this.getIncomeOutcomeList()
