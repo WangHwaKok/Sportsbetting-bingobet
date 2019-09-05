@@ -7,7 +7,8 @@
       >
         <template v-slot:header>
           <div class="d-flex justify-start align-center"> 
-            <div class="mr-2" style="color:white" :class="`sport-title-icon ds-sport-icon ds-icon-${sport.sportID}`"></div>
+            <!-- <div class="mr-2" style="color:white" :class="`sport-title-icon ds-sport-icon ds-icon-${sport.sportID}`"></div> -->
+            <img style="margin-right:5px;" :src="`/img/sport_icon/${sport.sportAlias}.png`" />
             <div class="caption font-weight-regular" style="width:100%;color:white">{{ sport.sportName }}</div>
           </div>
         </template>
@@ -72,6 +73,11 @@ export default {
         .then(response => {
           // console.log(response.data.success.data)          
           this.sportCategories = response.data.success.data;
+          this.$root.$emit('selectLeftMenu', {
+            sportids:[this.sportCategories[0].sportID],
+            categoryids:[this.sportCategories[0].categories[0].categoryID],
+            leagueids:'',
+          })
         })
         .catch(e => {
           console.log(e);

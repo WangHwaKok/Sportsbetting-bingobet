@@ -170,7 +170,7 @@
                 <v-flex class="overflow-x:auto;" style="width:100%">
                   <v-btn-toggle v-model="slipInfo.combination_group" multiple>
                     <v-btn
-                        v-for="n in (1,total_item_count)"
+                        v-for="n in (1,total_item_count-1)"
                         :key="n"
                         @click="update_values()"
                         class="combination_btn"
@@ -186,7 +186,7 @@
                 </div>
               </v-card>
               <v-divider v-if="toggle_slip_type == 2"></v-divider>
-              <v-card class="pa-2 d-flex justify-center align-center column tertiary" style="height:40px;-webkit-border-radius: 0px;-moz-border-radius: 0px;border-radius: 0px;">
+              <v-card dark class="pa-2 d-flex justify-center align-center column tertiary" style="height:40px;-webkit-border-radius: 0px;-moz-border-radius: 0px;border-radius: 0px;">
                 <v-flex>
                   <v-checkbox
                           v-model="acceptChangingRates"
@@ -231,68 +231,68 @@
               <v-layout column justify-center class="ma-0">
 
                 <v-flex class="ma-0" v-if="toggle_slip_type==0">
-                  <v-card class="pa-2 px-3" color="black">
+                  <v-card dark class="pa-2 px-3" color="black">
                     <span style="font-weight:500;font-size:1.1rem;">{{$t('Betting.amount')}}:</span>
                     <span style="float: right;font-weight:500;font-size:1.2rem;">{{ amount_single }}</span>
                   </v-card>
-                  <v-divider></v-divider>
-                  <v-card class="pa-2 px-3" color="black">
+                  <v-divider dark></v-divider>
+                  <v-card dark class="pa-2 px-3" color="black">
                     <span style="font-weight:500;font-size:1.1rem;">{{$t('Betting.total_rate')}}:</span>
                     <span style="float: right;font-weight:500;font-size:1.2rem;">{{ totalRate_single }}</span>
                   </v-card>
-                  <v-divider></v-divider>
-                  <v-card class="pa-2 px-3" color="black">
+                  <v-divider dark></v-divider>
+                  <v-card dark class="pa-2 px-3" color="black">
                     <span style="font-weight:500;font-size:1.1rem;">{{$t('Betting.potential_returns')}}:</span>
                     <span style="float: right;font-weight:500;font-size:1.2rem;">{{ potentialReturns_single }}</span>
                   </v-card>
-                  <v-divider></v-divider>
+                  <v-divider dark></v-divider>
                 </v-flex>
 
 
                 <v-flex class="pa-0" v-if="toggle_slip_type==1">
-                  <v-card class="pa-2 px-3" color="black">
+                  <v-card dark class="pa-2 px-3" color="black">
                     <span style="font-weight:500;font-size:1.1rem;">{{$t('Betting.amount')}}:</span>
                     <span style="float: right;font-weight:500;font-size:1.2rem;">{{ amount_multi }}</span>
                   </v-card>
-                  <v-divider></v-divider>
-                  <v-card class="pa-2 px-3" color="black">
+                  <v-divider dark></v-divider>
+                  <v-card dark class="pa-2 px-3" color="black">
                     <span style="font-weight:500;font-size:1.1rem;">{{$t('Betting.total_rate')}}:</span>
                     <span style="float: right;font-weight:500;font-size:1.2rem;">{{ totalRate_multi }}</span>
                     <!-- <span style="float: right;">{{ potentialReturns_multi }}</span> -->
                   </v-card>
-                  <v-divider></v-divider>
-                  <v-card class="pa-2 px-3" color="black">
+                  <v-divider dark></v-divider>
+                  <v-card dark class="pa-2 px-3" color="black">
                     <span style="font-weight:500;font-size:1.1rem;">{{$t('Betting.potential_returns')}}:</span>
                     <span style="float: right;font-weight:500;font-size:1.2rem;">{{ potentialReturns_multi }}</span>
                     <!-- <span style="float: right;">{{ totalRate_multi }}</span> -->
                   </v-card>
-                  <v-divider></v-divider>
+                  <v-divider dark></v-divider>
                 </v-flex>
 
 
                 <v-flex class="pa-0" v-if="toggle_slip_type==2">
-                  <v-card class="pa-2 px-3" color="black">
+                  <v-card dark class="pa-2 px-3" color="black">
                     <span style="font-weight:500;font-size:1.1rem;">{{$t('Betting.amount')}}:</span>
                     <span style="float: right;font-weight:500;font-size:1.2rem;">{{ amount_system }}</span>
                   </v-card>
-                  <v-divider></v-divider>
-                  <v-card class="pa-2 px-3" color="black">
+                  <v-divider dark></v-divider>
+                  <v-card dark class="pa-2 px-3" color="black">
                     <span style="font-weight:500;font-size:1.1rem;">{{$t('Betting.total_rate')}}:</span>
                     <span style="float: right;font-weight:500;font-size:1.2rem;">{{ totalRate_system }}</span>
                   </v-card>
-                  <v-divider></v-divider>
-                  <v-card class="pa-2 px-3" color="black">
+                  <v-divider dark></v-divider>
+                  <v-card dark class="pa-2 px-3" color="black">
                     <span style="font-weight:500;font-size:1.1rem;">{{$t('Betting.total_stake')}}:</span>
                     <!-- <span style="float: right;">{{ totalStake_system }}</span> -->
                     <span style="float: right;font-weight:500;font-size:1.2rem;">{{ potentialReturns_system }}</span>
                   </v-card>
-                  <v-divider></v-divider>
-                  <v-card class="pa-2 px-3" color="black">
+                  <v-divider dark></v-divider>
+                  <v-card dark class="pa-2 px-3" color="black">
                     <span style="font-weight:500;font-size:1.1rem;">{{$t('Betting.potential_returns')}}:</span>
                     <!-- <span style="float: right;">{{ potentialReturns_system }}</span> -->
                     <span style="float: right;font-weight:500;font-size:1.2rem;">{{ totalStake_system }}</span>
                   </v-card>
-                  <v-divider></v-divider>
+                  <v-divider dark></v-divider>
                 </v-flex>
 
                 <v-flex class="pa-0 pl-2 pr-2 tertiary">
@@ -551,7 +551,8 @@ import { constants } from 'crypto';
                                     potentialReturns: self.potentialReturns_system,
                                     acceptPriceChange: self.acceptChangingRates==true?1:0,
                                     bulletinType: self.bulletinType,
-                                    note:'xxxx',
+                                    // note:'xxxx',
+                                    note:'',
                                     odds: odds
                                 },
                                 {
@@ -778,7 +779,7 @@ import { constants } from 'crypto';
                     // console.log(keys)
                     this.total_item_count = keys.length;
                     this.slipInfo.combination_group = [];
-                    for(var k=0;k<this.total_item_count;k++)
+                    for(var k=0;k<this.total_item_count-1;k++)
                     {
                         this.slipInfo.combination_group.push(k);
                     }

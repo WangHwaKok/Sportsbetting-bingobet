@@ -307,7 +307,7 @@
             <v-chip label small color="#cfd1d2" class="chip-event-detail ma-0" @click="expandEventDetail(false)">
               <v-icon color="#303030" style="cursor:pointer;">mdi-minus</v-icon>
             </v-chip>
-            <v-chip label small color="#cfd1d2" class="chip-event-detail ma-0" @click="eventViewData = false">
+            <v-chip label small color="#cfd1d2" class="chip-event-detail ma-0" @click="eventDetailDialog = false">
               <v-icon color="#303030" style="cursor:pointer;">mdi-close</v-icon>
             </v-chip>
           </v-layout>
@@ -388,9 +388,9 @@ import { parse } from 'path';
         is_last_page: false,
         is_refresh_page: true,
         is_waiting_page: false,
-        selectedSportIds: '',
-        selectedCategoryIds: '',
-        selectedLeagueIds: '',
+        selectedSportIds: [],
+        selectedCategoryIds: [],
+        selectedLeagueIds: [],
         menuSelected: false,
         searchSportItem: '',
         prematchFavourites: [],
@@ -621,7 +621,8 @@ import { parse } from 'path';
         this.is_updating_page = false
         this.is_last_page = false
         this.mainPanel = [true, true]
-        this.getUpcomingResult()
+        // this.getUpcomingResult()
+        this.leftMenuSelected()
       },
       gotoEventView(eventID, expand) {
         if(expand == false){
@@ -694,12 +695,12 @@ import { parse } from 'path';
         this.is_updating_page = true
         this.axios
                 .post("zt_prematch_list", {
-                          sportID: this.selectedSportIds.join(),
+                          sportID: this.selectedSportIds.length>0 ? this.selectedSportIds.join() : '',
                           timeFilter: this.timeFilter,
                           userID: this.$store.getters.getUserId,
                           eventID: "",
-                          categoryID: this.selectedCategoryIds.join(),
-                          leagueID: this.selectedLeagueIds.join(),
+                          categoryID: this.selectedCategoryIds.length>0 ? this.selectedCategoryIds.join() : '',
+                          leagueID: this.selectedLeagueIds.length>0 ? this.selectedLeagueIds.join() : '',
                           query: this.searchPrematchStr,
                           page: this.pageNumber
                         },
@@ -1176,15 +1177,15 @@ import { parse } from 'path';
         this.is_last_page = false
         this.is_updating_page = false
 
-        if(this.selectedSportIds.length == 0 && this.selectedCategoryIds.length == 0 && this.selectedLeagueIds.length == 0){
-          this.menuSelected = false
-          this.getUpcomingResult();
-          this.mainPanel = [true, true]
-        }
-        else{
+        // if(this.selectedSportIds.length == 0 && this.selectedCategoryIds.length == 0 && this.selectedLeagueIds.length == 0){
+        //   this.menuSelected = false
+        //   this.getUpcomingResult();
+        //   this.mainPanel = [true, true]
+        // }
+        // else{
           this.menuSelected = true
           this.leftMenuSelected();
-        }
+        // }
       });
       this.$root.$on("prematchFavouriteSelected", function(){
         self.getPrematchFavourites()

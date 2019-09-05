@@ -42,7 +42,8 @@
                     ripple
                     @click="sportMenuSelected(sport.sportID)"
                   >
-                    <div class="mr-1" :class="`sport-title-icon ds-sport-icon ds-icon-${sport.sportID}`"></div>
+                    <!-- <div class="mr-1" :class="`sport-title-icon ds-sport-icon ds-icon-${sport.sportID}`"></div> -->
+                    <img style="margin-right:5px;" :src="`/img/sport_icon/${sport.alias}.png`" />
                     {{sport.name}}
                   </v-tab>
                 </v-tabs>
@@ -110,10 +111,11 @@
                             :width="table.headers[0].width"
                           >
                             <v-layout row justify-start align-center>
-                              <div v-if="table.headers[0].sportID"
+                              <!-- <div v-if="table.headers[0].sportID"
                                 style="margin-right:1rem"
                                 :class="`sport-title-icon ds-sport-icon ds-icon-${table.headers[0].sportID}`">
-                              </div>
+                              </div> -->
+                              <img v-if="table.headers[0].sportID" style="margin-right:1rem;" :src="`/img/sport_icon/${table.headers[0].sportAlias}.png`" />
                               <div>
                                 {{props.item.homeTeam}}
                                 <br/>
@@ -798,6 +800,7 @@ export default {
             {
               text: this.$t('Betting.matches_list'),
               sportID: league.sportID,
+              sportAlias: league.sportAlias,
               countryFlag: "/img/country_flag/" + league.categoryAlias + ".png",
               width: "20%",
               align: "left"
