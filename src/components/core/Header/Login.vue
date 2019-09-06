@@ -158,6 +158,8 @@ export default {
     logout() {
       this.$store.dispatch("clearVuex");
       localStorage.removeItem("betic_storage");
+      localStorage.betslip_array = "";
+      localStorage.betslip_info = "";
       this.$router.push("/");
       location.reload()
     },

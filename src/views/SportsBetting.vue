@@ -814,7 +814,7 @@ import { parse } from 'path';
                     // console.log(this.prematchListTable[0].data.length)
                     // this.prematchListTable[0].data = data
 
-                    // console.log(this.prematchListTable)
+                    console.log(this.prematchListTable)
                     this.leaguePanel = [...this.prematchListTable].map(_ => true)
                     this.is_updating_page = false
                   }
@@ -1065,15 +1065,15 @@ import { parse } from 'path';
         }
       },
       setHasSize(){
-        if (window.innerWidth >= 1450) {
-          this.hasSize = 0
-        }
-        else if(window.innerWidth >= 1350){
-          this.hasSize = 1
-        }
-        else {
-          this.hasSize = 2
-        }
+        // if (window.innerWidth >= 1450) {
+        //   this.hasSize = 0
+        // }
+        // else if(window.innerWidth >= 1350){
+        //   this.hasSize = 1
+        // }
+        // else {
+        //   this.hasSize = 2
+        // }
       },
       getBoardSportName(){
         if(this.$store.getters.getSports != undefined && this.$store.getters.getSports.length > 0){
@@ -1154,7 +1154,7 @@ import { parse } from 'path';
       
       var system_info = JSON.parse(localStorage.system_conf);
       this.closingMinuteBetting = system_info.closingMinuteBetting
-      this.setHasSize()
+      // this.setHasSize()
       this.$root.$on("UpdatePrematchOddTypeRules", payload => {
         this.updatePrematchOddTypeRules()
 
@@ -1190,9 +1190,9 @@ import { parse } from 'path';
       this.$root.$on("prematchFavouriteSelected", function(){
         self.getPrematchFavourites()
       })
-      this.$root.$on('resizeEvent', payload=>{
-        this.hasSize = payload.hasSize
-      })
+      // this.$root.$on('resizeEvent', payload=>{
+      //   this.hasSize = payload.hasSize
+      // })
       this.$root.$on('searchEvent', payload=>{
         this.searchPrematchStr = payload.searchPrematchStr
         this.searchPrematchList()

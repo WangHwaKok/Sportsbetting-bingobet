@@ -57,15 +57,15 @@ export default {
       //
     },
     onResponsiveInverted() {
-      if (window.innerWidth >= 1450) {
-        this.$root.$emit("resizeEvent", {hasSize: 0})
-      }
-      else if(window.innerWidth >= 1350){
-        this.$root.$emit("resizeEvent", {hasSize: 1})
-      }
-      else {
-        this.$root.$emit("resizeEvent", {hasSize: 2})
-      }
+      // if (window.innerWidth >= 1450) {
+      //   this.$root.$emit("resizeEvent", {hasSize: 0})
+      // }
+      // else if(window.innerWidth >= 1350){
+      //   this.$root.$emit("resizeEvent", {hasSize: 1})
+      // }
+      // else {
+      //   this.$root.$emit("resizeEvent", {hasSize: 2})
+      // }
     },
     getParameters(){
         this.axios
