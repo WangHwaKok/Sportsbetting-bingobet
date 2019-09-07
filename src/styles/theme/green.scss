@@ -312,30 +312,36 @@
   //   border-width: 1rem;
   // }
 
-  table.v-table {
-    thead {
-      th:not(:first-child) {
-        padding: 0 6px;
+  .prematch-table{
+    .v-table {
+      thead {
+        th:not(:first-child) {
+          padding: 0 3px;
+          font-size:1.168rem !important;
+        }
+        th:first-child{
+          padding-right: 3px;
+          padding-left: 3px;
+          font-size:1.168rem !important;
+        }
       }
-      th:first-child{
-        padding-right: 16px;
-        padding-left: 6px;
-      }
-    }
-    tbody {
-      td:not(:first-child) {
-        padding: 0 6px;
-      }
-      td:first-child{
-        padding-right: 16px;
-        padding-left: 6px;
-      }
-      td{
-        font-weight: bold;
-        color:black;
+      tbody {
+        td:not(:first-child) {
+          padding: 0 3px;
+        }
+        td:first-child{
+          padding-right: 3px;
+          padding-left: 3px;
+        }
+        td{
+          font-weight: bold;
+          color:black;
+          font-size:1.16rem !important;
+        }
       }
     }
   }
+  
   .prematchMainPanel {
     .v-expansion-panel__header {
       background-color: #141414;
@@ -1529,12 +1535,12 @@
       background-image: linear-gradient(#303030, #282828);
     }
     .league-category-item{
-      color:black;
+      color:white;
       white-space:nowrap;
       overflow:hidden;
       text-overflow: ellipsis;
       &.selected{
-        color:white;
+        color:#e09007;
       }
     }
   }
@@ -1619,6 +1625,7 @@
     td{
       padding: 0 6px !important;
       color: white !important;
+      font-size:1.168rem !important;
     }
   }
   .bet-slip-card{

@@ -73,7 +73,7 @@
                           :id="`table_${index}`"
                           :headers="table.headers"
                           :items="table.data"
-                          class="elevation-1"
+                          class="prematch-table"
                           :pagination.sync="pagination"
                           item-key="eventID"
                           hide-actions
@@ -201,11 +201,11 @@
                                     {{props.item.homeTeam}} - {{props.item.awayTeam}}
                                   </div>
                                   <v-spacer></v-spacer>
-                                  <v-btn light small style="margin:0px; margin-right:3px;height:unset; padding:0px;border:1px solid black;background-image:linear-gradient(#eadfd0, #dbccb8)" @click="expandEventDetail(true)">
+                                  <v-btn light small style="margin:0px; margin-right:3px;height:unset; padding:0px;border:1px solid black;background-image:linear-gradient(#eadfd0, #dbccb8)" @click="expandEventDetail(-1, true)">
                                     <v-icon>mdi-arrow-down-drop-circle-outline</v-icon>
                                     {{$t('Betting.expand')}}
                                   </v-btn>
-                                  <v-btn light small style="margin:0px; height:unset; padding:0px;border:1px solid black;background-image:linear-gradient(#eadfd0, #dbccb8)" @click="expandEventDetail(false)">
+                                  <v-btn light small style="margin:0px; height:unset; padding:0px;border:1px solid black;background-image:linear-gradient(#eadfd0, #dbccb8)" @click="expandEventDetail(-1, false)">
                                     <v-icon>mdi-arrow-up-drop-circle-outline</v-icon>
                                     {{$t('Betting.collapse')}}
                                   </v-btn>
@@ -214,7 +214,37 @@
                                   </v-btn>
                                 </v-card-title>
                                 <v-card-text style="background:black;">
-                                  <v-expansion-panel v-model="eventDetailPanel" expand light>
+                                  <v-card v-for="(oddType, oddTypeIdx) in oddTypeList" :key="oddTypeIdx" class="eventview mb-2" style="background:#1a1a1a">
+                                    <v-card-title class="ma-0 pa-1" @click="expandEventDetail(oddTypeIdx)" style="cursor:pointer;">
+                                      <div class="d-flex justify-start align-center pl-2" style="width:100%">
+                                        <div class="body-2 font-weight-bold" style="width:100%;color:#e09007">{{ oddType.name }}</div>
+                                        <v-icon color="primary">{{eventDetailPanel[oddTypeIdx] == true ? 'mdi-chevron-up' : 'mdi-chevron-down'}}</v-icon>
+                                      </div>
+                                    </v-card-title>
+                                    <v-card-text class="ma-0 pa-1" v-if="eventDetailPanel[oddTypeIdx] == true">
+                                      <v-flex
+                                          v-if="oddType.lines != null"
+                                          v-for="(line,index) in oddType.lines"
+                                          :key="index"
+                                      >
+                                        <v-layout xs12 row>
+                                          <v-flex
+                                                  v-for="(item, idx) in line"
+                                                  :key="idx"
+                                                  :class="`xs${12/line.length} ma-1 event-detail-cell ${is_betslip_odd(eventViewData.eventID, oddType.oddTypeID, item.oddID)?'active':''}`"
+                                                  @click="update_betslip('prematch', eventViewData.eventID, eventViewData.homeTeam, eventViewData.awayTeam, oddType.oddTypeID, oddType.name,
+                                              item.oddID, item.value, item.name, item.special, item.isSuspended==undefined?0:item.isSuspended)"
+                                          >
+                                            <p class="body-2 font-weight-medium pa-1 ma-0 market-odd-name" v-if="item.special != undefined && item.special!= 0">{{item.name}}({{item.special}})</p>
+                                            <p class="body-2 font-weight-medium pa-1 ma-0 market-odd-name" v-else>{{item.name}}</p>
+                                            <span class="body-2 font-weight-medium pa-1 market-odd-score" v-if="item.isSuspended == 1"><v-icon color="yellow">mdi-lock-outline</v-icon></span>
+                                            <span class="body-2 font-weight-medium pa-1 market-odd-score" v-else>{{item.value}}</span>
+                                          </v-flex>
+                                        </v-layout>
+                                      </v-flex>
+                                    </v-card-text>
+                                  </v-card>
+                                  <!-- <v-expansion-panel v-model="eventDetailPanel" expand light>
                                     <v-expansion-panel-content v-for="(oddType, oddTypeIdx) in oddTypeList" :key="oddTypeIdx" class="event-detail-panel eventview" >
                                       <template v-slot:actions>
                                         <v-icon color="primary">$vuetify.icons.expand</v-icon>
@@ -245,7 +275,7 @@
                                         </v-layout>
                                       </v-flex>
                                     </v-expansion-panel-content>
-                                  </v-expansion-panel>
+                                  </v-expansion-panel> -->
                                 </v-card-text>
                               </template>
                             </v-card>
@@ -301,10 +331,10 @@
               {{eventViewData.eventDate | moment("DD/MM")}}-{{eventViewData.eventDate | moment("HH:mm")}}
             </div>
             <v-spacer></v-spacer>
-            <v-chip label small color="#cfd1d2" class="chip-event-detail ma-0" @click="expandEventDetail(true)">
+            <v-chip label small color="#cfd1d2" class="chip-event-detail ma-0" @click="expandEventDetail(-1, true)">
               <v-icon color="#303030" style="cursor:pointer;">mdi-plus</v-icon>
             </v-chip>
-            <v-chip label small color="#cfd1d2" class="chip-event-detail ma-0" @click="expandEventDetail(false)">
+            <v-chip label small color="#cfd1d2" class="chip-event-detail ma-0" @click="expandEventDetail(-1, false)">
               <v-icon color="#303030" style="cursor:pointer;">mdi-minus</v-icon>
             </v-chip>
             <v-chip label small color="#cfd1d2" class="chip-event-detail ma-0" @click="eventDetailDialog = false">
@@ -313,7 +343,37 @@
           </v-layout>
         </v-card-title>
         <v-card-text style="background:#171717">
-          <v-expansion-panel v-model="eventDetailPanel" expand light>
+          <v-card v-for="(oddType, oddTypeIdx) in oddTypeList" :key="oddTypeIdx" class="eventview mb-2" style="background:#3c3c3c">
+            <v-card-title class="ma-0 pa-1" @click="expandEventDetail(oddTypeIdx)" style="cursor:pointer;">
+              <div class="d-flex justify-start align-center pl-2" style="width:100%">
+                <div class="body-2 font-weight-bold" style="width:100%;color:#e09007">{{ oddType.name }}</div>
+                <v-icon color="primary">{{eventDetailPanel[oddTypeIdx] == true ? 'mdi-chevron-up' : 'mdi-chevron-down'}}</v-icon>
+              </div>
+            </v-card-title>
+            <v-card-text class="ma-0 pa-1" v-if="eventDetailPanel[oddTypeIdx] == true">
+              <v-flex
+                  v-if="oddType.lines != null"
+                  v-for="(line,index) in oddType.lines"
+                  :key="index"
+              >
+                <v-layout xs12 row>
+                  <v-flex
+                          v-for="(item, idx) in line"
+                          :key="idx"
+                          :class="`xs${12/line.length} ma-1 event-detail-cell ${is_betslip_odd(eventViewData.eventID, oddType.oddTypeID, item.oddID)?'active':''}`"
+                          @click="update_betslip('prematch', eventViewData.eventID, eventViewData.homeTeam, eventViewData.awayTeam, oddType.oddTypeID, oddType.name,
+                      item.oddID, item.value, item.name, item.special, item.isSuspended==undefined?0:item.isSuspended)"
+                  >
+                    <p class="body-2 font-weight-medium pa-1 ma-0 market-odd-name" v-if="item.special != undefined && item.special!= 0">{{item.name}}({{item.special}})</p>
+                    <p class="body-2 font-weight-medium pa-1 ma-0 market-odd-name" v-else>{{item.name}}</p>
+                    <span class="body-2 font-weight-medium pa-1 market-odd-score" v-if="item.isSuspended == 1"><v-icon color="yellow">mdi-lock-outline</v-icon></span>
+                    <span class="body-2 font-weight-medium pa-1 market-odd-score" v-else>{{item.value}}</span>
+                  </v-flex>
+                </v-layout>
+              </v-flex>
+            </v-card-text>
+          </v-card>
+          <!-- <v-expansion-panel v-model="eventDetailPanel" expand light>
             <v-expansion-panel-content v-for="(oddType, oddTypeIdx) in oddTypeList" :key="oddTypeIdx" class="event-detail-dialog-panel eventview" >
               <template v-slot:actions>
                 <v-icon color="primary">$vuetify.icons.expand</v-icon>
@@ -344,7 +404,7 @@
                 </v-layout>
               </v-flex>
             </v-expansion-panel-content>
-          </v-expansion-panel>
+          </v-expansion-panel> -->
         </v-card-text>
       </v-card>
     </v-dialog>
@@ -760,7 +820,7 @@ import { parse } from 'path';
                         var specialCell = 0
                         // partHeader.specialCell = specialCell
                         partHeader.cellCount = self.prematchOddTypeRules.lineRules[oddType].length + specialCell
-                        partHeader.width = (partHeader.cellCount)*15 + "%"
+                        partHeader.width = (partHeader.cellCount)*12 + "%"
                         partHeader.cell = self.prematchOddTypeRules.lineRules[oddType]
                         headers.push(partHeader)
                       }
@@ -1106,11 +1166,21 @@ import { parse } from 'path';
         }
         return ''
       },
-      expandEventDetail(flag){
-        if(flag)
-          this.eventDetailPanel = [...this.oddTypeList].map(_ => true)
-        else
-          this.eventDetailPanel = [...this.oddTypeList].map(_ => false)
+      expandEventDetail(oddTypeIdx, flag){
+        if(oddTypeIdx == -1){
+          if(flag)
+            this.eventDetailPanel = [...this.oddTypeList].map(_ => true)
+          else
+            this.eventDetailPanel = [...this.oddTypeList].map(_ => false)
+        }
+        else{
+          this.eventDetailPanel[oddTypeIdx] = !this.eventDetailPanel[oddTypeIdx]
+          this.eventDetailPanel = this.eventDetailPanel.map(item => {
+            return item
+          })
+          // console.log(this.eventDetailPanel[oddTypeIdx], oddTypeIdx)
+        }
+        // console.log(this.eventDetailPanel, oddTypeIdx)
       }
     },
     watch: {

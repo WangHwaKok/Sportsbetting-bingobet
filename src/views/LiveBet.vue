@@ -155,7 +155,7 @@
                                   @click="update_betslip('live', props.item.eventID, props.item.homeTeam, props.item.awayTeam, props.item.oddTypes[oddType].oddTypeID, props.item.oddTypes[oddType].name,
                                     props.item.oddTypes[oddType].lines[0][oddCellIdx].oddID, props.item.oddTypes[oddType].lines[0][oddCellIdx].value, props.item.oddTypes[oddType].lines[0][oddCellIdx].name, props.item.oddTypes[oddType].lines[0][oddCellIdx].special, props.item.oddTypes[oddType].lines[0][oddCellIdx].isSuspended==undefined?0:props.item.oddTypes[oddType].lines[0][oddCellIdx].isSuspended)"
                                 >
-                                  <div class="captiong font-weight-medium" style="color:black;z-index:1;">{{props.item.oddTypes[oddType].lines[0][oddCellIdx].value}}</div>
+                                  <div class="caption font-weight-medium" style="color:black;z-index:1;">{{props.item.oddTypes[oddType].lines[0][oddCellIdx].value}}</div>
                                 </v-flex>
 
                                 <v-flex d-flex
@@ -172,9 +172,13 @@
                           </td>
 
                           <td class="text-xs-center" :width="table.headers[table.headers.length-2].width">
-                            <v-chip label small color="#454545" class="ma-0" @click="getLiveEventSingle(props.item.eventID, props.expanded = !props.expanded)">
-                              <v-icon color="white" style="cursor:pointer;">mdi-plus</v-icon>
-                            </v-chip>
+                              <v-layout row style="height:80%">
+                                <v-flex d-flex class="ma-0 my-2 align-center" style="cursor:pointer;background:#454545;position: relative;border-radius: 3px;">
+                                  <div @click="getLiveEventSingle(props.item.eventID, props.expanded = !props.expanded)">
+                                    {{'+'+props.item.marketCount}}
+                                  </div>
+                                </v-flex>
+                              </v-layout>
                           </td>
                           <td class="text-xs-center" :width="table.headers[table.headers.length-1].width">
                             <v-chip label small color="#454545" class="ma-0">
@@ -184,7 +188,7 @@
                         </tr>
                       </template>
                       <template v-slot:expand="props">
-                        <v-card style="border-radius:0px;background:black;height:300px;" class="scroll-y">
+                        <v-card style="border-radius:0px;background:black;height:500px;" class="scroll-y">
                           <v-layout v-if="is_detail_updating_page" justify-center align-center>
                             <FadeLoader
                                 class="fade-loader"
