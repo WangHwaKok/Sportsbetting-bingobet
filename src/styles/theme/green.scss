@@ -260,10 +260,6 @@
   .v-datatable__progress{
     display: none;
   }
-  thead tr:first-child{
-    background: #e09007;
-    height: 4rem;
-  }
 
   .marketCell{
     height:60%;
@@ -315,6 +311,10 @@
   .prematch-table{
     .v-table {
       thead {
+        tr{
+          background: #e09007;
+          height: 3rem;
+        }
         th:not(:first-child) {
           padding: 0 3px;
           font-size:1.168rem !important;
@@ -337,6 +337,7 @@
           font-weight: bold;
           color:black;
           font-size:1.16rem !important;
+          height: 3rem;
         }
       }
     }
