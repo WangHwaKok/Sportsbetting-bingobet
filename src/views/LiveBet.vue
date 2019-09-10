@@ -1408,17 +1408,19 @@ export default {
 
       if(betslip_array[eventID] && betslip_array[eventID][oddTypeID] && betslip_array[eventID][oddTypeID][oddID])
       {
-          delete betslip_array[eventID][oddTypeID][oddID];
-          if(Object.keys(betslip_array[eventID][oddTypeID]).length == 0)
-              delete betslip_array[eventID][oddTypeID];
-          if(Object.keys(betslip_array[eventID]).length == 0)
-              delete betslip_array[eventID];
-          localStorage.betslip_array = JSON.stringify(betslip_array);
-          this.$root.$emit('update-bet-slip');
-          this.$forceUpdate();
-          return;
+        delete betslip_array[eventID][oddTypeID][oddID];
+        if(Object.keys(betslip_array[eventID][oddTypeID]).length == 0)
+            delete betslip_array[eventID][oddTypeID];
+        if(Object.keys(betslip_array[eventID]).length == 0)
+            delete betslip_array[eventID];
+        localStorage.betslip_array = JSON.stringify(betslip_array);
+        this.$root.$emit('update-bet-slip');
+        this.$forceUpdate();
+        return;
       }
-
+      else if(betslip_array[eventID] != undefined && Object.keys(betslip_array[eventID]).length >= 1){
+        return;
+      }
 
       if(!betslip_array[eventID])
           betslip_array[eventID] = {};

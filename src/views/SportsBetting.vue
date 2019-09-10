@@ -300,7 +300,7 @@
               </v-layout>
             </v-flex>
 
-            <v-flex xs2 class="mr-1 mt-2 scroll-y" style="overflow-x:hidden;min-width:250px;">
+            <v-flex xs2 class="mr-1 mt-2 scroll-y" style="overflow-x:hidden;">
               <core-bet-slip/>
             </v-flex>
           </v-layout>
@@ -750,7 +750,7 @@ import { parse } from 'path';
         this.leftMenuSelected(false)
       },
       leftMenuSelected(pagination = false) {
-        if(this.prematchOddTypeRules.oddRules.length == 0)
+        if(Object.keys(this.prematchOddTypeRules.oddRules).length == 0)
           return
         this.is_updating_page = true
         this.axios
@@ -798,9 +798,7 @@ import { parse } from 'path';
                         { text: this.$t('Betting.date'), align:'center', width:'5%' },
                         { text: this.$t('Betting.event'), align:'left', width:'*' },
                       ];
-
                       if(this.prematchOddTypeRules.oddRules[league.sportAlias] != undefined){
-                        var self = this
                         // this.prematchOddTypeRules.oddRules[league.sportAlias].oddTypes.forEach(function(oddType, oddIndex, Object){
                         //   var partHeader = {}
                         //   partHeader.text = self.prematchOddTypeRules.oddNames[oddType]
@@ -814,14 +812,14 @@ import { parse } from 'path';
                         // });
                         var oddType = this.prematchOddTypeRules.oddRules[league.sportAlias].oddTypes[0]
                         var partHeader = {}
-                        partHeader.text = self.prematchOddTypeRules.oddNames[oddType]
+                        partHeader.text = this.prematchOddTypeRules.oddNames[oddType]
                         partHeader.align = "center"
-                        // var specialCell = self.prematchOddTypeRules.oddRules[league.sportAlias].hasSpecial[oddIndex] ? 1 : 0
+                        // var specialCell = this.prematchOddTypeRules.oddRules[league.sportAlias].hasSpecial[oddIndex] ? 1 : 0
                         var specialCell = 0
                         // partHeader.specialCell = specialCell
-                        partHeader.cellCount = self.prematchOddTypeRules.lineRules[oddType].length + specialCell
+                        partHeader.cellCount = this.prematchOddTypeRules.lineRules[oddType].length + specialCell
                         partHeader.width = (partHeader.cellCount)*12 + "%"
-                        partHeader.cell = self.prematchOddTypeRules.lineRules[oddType]
+                        partHeader.cell = this.prematchOddTypeRules.lineRules[oddType]
                         headers.push(partHeader)
                       }
 
@@ -969,18 +967,21 @@ import { parse } from 'path';
         if(localStorage.betslip_array)
           betslip_array = JSON.parse(localStorage.betslip_array);
 
-        if(betslip_array[eventID] && betslip_array[eventID][oddTypeID] && betslip_array[eventID][oddTypeID][oddID])
-        {
-          delete betslip_array[eventID][oddTypeID][oddID];
-          if(Object.keys(betslip_array[eventID][oddTypeID]).length == 0)
+      if(betslip_array[eventID] && betslip_array[eventID][oddTypeID] && betslip_array[eventID][oddTypeID][oddID])
+      {
+        delete betslip_array[eventID][oddTypeID][oddID];
+        if(Object.keys(betslip_array[eventID][oddTypeID]).length == 0)
             delete betslip_array[eventID][oddTypeID];
-          if(Object.keys(betslip_array[eventID]).length == 0)
+        if(Object.keys(betslip_array[eventID]).length == 0)
             delete betslip_array[eventID];
-          localStorage.betslip_array = JSON.stringify(betslip_array);
-          this.$root.$emit('update-bet-slip');
-          this.$forceUpdate();
-          return;
-        }
+        localStorage.betslip_array = JSON.stringify(betslip_array);
+        this.$root.$emit('update-bet-slip');
+        this.$forceUpdate();
+        return;
+      }
+      else if(betslip_array[eventID] != undefined && Object.keys(betslip_array[eventID]).length >= 1){
+        return;
+      }
 
 
         if(!betslip_array[eventID])
@@ -1227,15 +1228,15 @@ import { parse } from 'path';
       // this.setHasSize()
       this.$root.$on("UpdatePrematchOddTypeRules", payload => {
         this.updatePrematchOddTypeRules()
-
       })
+      this.updatePrematchOddTypeRules()
+
       this.$root.$on("update-list", function(){
         // console.log("yes of course")
         self.$forceUpdate()
       })
 
       this.$root.$on("selectLeftMenu", payload => {
-        // console.log(payload)
         this.selectedSportIds = payload.sportids
         this.selectedCategoryIds = payload.categoryids
         this.selectedLeagueIds = payload.leagueids

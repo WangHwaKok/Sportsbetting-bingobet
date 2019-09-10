@@ -3,25 +3,17 @@
     <v-container fluid pa-0 style="min-height:40px;">
       <v-card color="black" class="bet-slip-card">
         <v-card-title class="pa-1" style="padding-right:5px;">
-          <v-icon color="black">mdi-format-list-bulleted</v-icon>
-          <span class="subheading font-weight-bold" style="color:black">{{$t('Betting.bets')}}</span>
+          <div class="d-flex" style="width:100%;">
+            <v-icon color="black">mdi-format-list-bulleted</v-icon>
+            <div class="subheading font-weight-bold" style="color:black;width:100%;float:left;align-self:center">{{$t('Betting.bets')}}</div>
+            <div class="caption" style="color:white;background:rgba(0, 0, 0, 0.3);padding:3px;border-radius:3px;width:100px;">{{Object.keys(slipList).length}}{{$t('Betting.selection')}}</div>
+          </div>
         </v-card-title>
         <v-card-text>
           <v-layout column fill-height>
-            <v-flex class="justify-center align-center">
+            <!-- <v-flex class="justify-center align-center">
               <v-layout row justify-center class="ma-0">
                 <v-flex class="pa-0">
-                  <!-- <v-btn-toggle v-model="toggle_slip_type" mandatory class="betslip-btntoggle tertiary">
-                    <v-flex xs4>
-                      <v-btn flat style="width:100%">{{$t('Betting.single')}}</v-btn>
-                    </v-flex>
-                    <v-flex xs4>
-                      <v-btn flat style="width:100%">{{$t('Betting.multiple')}}</v-btn>
-                    </v-flex>
-                    <v-flex xs4>
-                      <v-btn flat style="width:100%">{{$t('Betting.system')}}</v-btn>
-                    </v-flex>
-                  </v-btn-toggle> -->
                   <v-toolbar light height="36px" id="bet_menu" color="black">
                     <v-toolbar-items style="width:100%">
                       <v-layout align-center justify-center>
@@ -65,10 +57,10 @@
                   <v-divider></v-divider>
                 </v-flex>
               </v-layout>
-            </v-flex>
+            </v-flex> -->
 
             <v-flex class="justify-center align-center">
-              <v-container class="pa-0" style="">
+              <v-container class="pa-0" style="position:relative">
                 <div v-if="Object.keys(slipList).length == 0">
                   <v-container fluid pa-2 class="white">
                     <div class="d-flex body-1 justify-center align-center" style="color:black;font-weight:500;">
@@ -114,7 +106,7 @@
                             >{{odd.oddValue}}</div>
                           </div>
 
-                          <div class="odd-info with-inp"
+                          <!-- <div class="odd-info with-inp"
                                 v-if="toggle_slip_type == 0"
                           >
                             <div>
@@ -143,7 +135,7 @@
                                 {{odd.potentialReturns}}
                               </div>
                             </div>
-                          </div>
+                          </div> -->
 
                           <div class="odd-info with-inp"
                                 v-if="odd.hasError == true || odd.isSuspended == 1"
@@ -159,11 +151,29 @@
                     </template>
                   </template>
                 </template>
+                <v-card style="position:absolute;bottom:5px;border:3px solid white;border-radius:3px;width:90%;left:5%" v-if="showCombinationBox && Object.keys(slipList).length > 1">
+                  <v-card-title style="background:#090909;border-radius:3px;" class="pa-0 px-1">
+                    <div class="d-flex" style="width:100%;">
+                      <div class="body-2" style="color:#e09007;width:100%;float:left">{{$t('Betting.system_bets')}}</div>
+                      <v-icon color="#e09007" @click="showCombinationBox = false">mdi-close</v-icon>
+                    </div>
+                  </v-card-title>
+                  <div style="width:100%;background:black">
+                    <div class="body-2 pa-1" style="color:#c0c0c0;transform:translate(30%, 0)">{{$t('Betting.combination')}}</div>
+                    <div style="max-height:150px;overflow-y:auto;overflow-x:hidden">
+                      <div v-for="n in (1,total_item_count-1)" :key="n" 
+                          @click="select_combination(n)"
+                          :class="`pa-1 combination_btn ${is_combine(n)?'active':''} ${n == total_item_count-1?'bottom-line':''}`">
+                        <div class="body-2" style="transform:translate(45%, 0);">{{total_item_count - n + 1}}</div>
+                      </div>
+                    </div>
+                  </div>
+                </v-card>
               </v-container>
             </v-flex>
 
             <v-flex v-if="Object.keys(slipList).length != 0" class="justify-center align-center">
-              <v-card
+              <!-- <v-card
                       v-if="toggle_slip_type == 2"
                       class="pa-1 px-2 justify-center tertiary1"
                       style="-webkit-border-radius: 0px;-moz-border-radius: 0px;border-radius: 0px;flex-direction: column;">
@@ -185,8 +195,41 @@
                   <span>{{total_item_count}} {{$t('Betting.matched', {combination:total_combination}) }}</span>
                 </div>
               </v-card>
-              <v-divider v-if="toggle_slip_type == 2"></v-divider>
-              <v-card dark class="pa-2 d-flex justify-center align-center column tertiary" style="height:40px;-webkit-border-radius: 0px;-moz-border-radius: 0px;border-radius: 0px;">
+              <v-divider v-if="toggle_slip_type == 2"></v-divider> -->
+              <v-card dark style="background:black;-webkit-border-radius: 0px;-moz-border-radius: 0px;border-radius: 0px;flex-direction: column;">
+                <div class="d-flex pa-1" style="width:100%;">
+                  <div class="body-2" style="color:white;width:100%;float:left;">{{$t('Betting.system_bets')}}</div>
+                  <v-icon color="white" @click="showCombinationBox = !showCombinationBox">mdi-arrow-up-bold-circle</v-icon>
+                </div>
+              </v-card>
+              <v-card dark style="background:black;-webkit-border-radius: 0px;-moz-border-radius: 0px;border-radius: 0px;flex-direction: column;">
+                <div class="d-flex pa-1" style="width:100%;background:#303030;border:1px solid #202020;">
+                  <div class="body-2 font-weight-regular" style="color:#c0c0c0;float:left">{{total_combination+$t('Betting.combinations')}}</div>
+                  <!-- <div class="body-2" style="color:#c0c0c0;float:left">{{total_item_count}} {{$t('Betting.matched', {combination:total_combination}) }}</div> -->
+                  <div class="body-2 font-weight-regular" style="color:#c0c0c0;">{{$t('Betting.total_rate')+': '+totalRate_system}}</div>
+                </div>
+              </v-card>
+              <v-card dark style="background:black;-webkit-border-radius: 0px;-moz-border-radius: 0px;border-radius: 0px;flex-direction: column;">
+                <div class="d-flex pa-1" style="width:100%;background:#303030;border:1px solid #202020;">
+                  <v-text-field
+                    light
+                    solo
+                    class="ma-0 pa-0 bet-box"
+                    suffix="TRY"
+                    :label='$t("Betting.bet_amount")'
+                    :hide-details="true"
+                    :height="25"
+                    @change="update_system_format()"
+                    @keyup="update_values()"
+                    v-model="slipInfo.amount_system"
+                    :disabled="is_updating_page"
+                    :rules="[v => !!v || $t('AccountPage.required')]" required
+                    style="width:6rem;"
+                  ></v-text-field>
+                  <div class="body-2 font-weight-regular pl-2" style="color:#c0c0c0;float:right;align-self:center;">{{$t('Betting.potential_returns')+': '+potentialReturns_system}}</div>
+                </div>
+              </v-card>
+              <!-- <v-card dark class="pa-2 d-flex justify-center align-center column tertiary" style="height:40px;-webkit-border-radius: 0px;-moz-border-radius: 0px;border-radius: 0px;">
                 <v-flex>
                   <v-checkbox
                           v-model="acceptChangingRates"
@@ -227,92 +270,61 @@
                   </v-text-field>
                 </v-flex>
               </v-card>
-              <v-divider></v-divider>
+              <v-divider></v-divider> -->
               <v-layout column justify-center class="ma-0">
-
-                <v-flex class="ma-0" v-if="toggle_slip_type==0">
-                  <v-card dark class="pa-2 px-3" color="black">
-                    <span style="font-weight:500;font-size:1.1rem;">{{$t('Betting.amount')}}:</span>
-                    <span style="float: right;font-weight:500;font-size:1.2rem;">{{ amount_single }}</span>
-                  </v-card>
-                  <v-divider dark></v-divider>
-                  <v-card dark class="pa-2 px-3" color="black">
-                    <span style="font-weight:500;font-size:1.1rem;">{{$t('Betting.total_rate')}}:</span>
-                    <span style="float: right;font-weight:500;font-size:1.2rem;">{{ totalRate_single }}</span>
-                  </v-card>
-                  <v-divider dark></v-divider>
-                  <v-card dark class="pa-2 px-3" color="black">
-                    <span style="font-weight:500;font-size:1.1rem;">{{$t('Betting.potential_returns')}}:</span>
-                    <span style="float: right;font-weight:500;font-size:1.2rem;">{{ potentialReturns_single }}</span>
-                  </v-card>
-                  <v-divider dark></v-divider>
-                </v-flex>
-
-
-                <v-flex class="pa-0" v-if="toggle_slip_type==1">
-                  <v-card dark class="pa-2 px-3" color="black">
-                    <span style="font-weight:500;font-size:1.1rem;">{{$t('Betting.amount')}}:</span>
-                    <span style="float: right;font-weight:500;font-size:1.2rem;">{{ amount_multi }}</span>
-                  </v-card>
-                  <v-divider dark></v-divider>
-                  <v-card dark class="pa-2 px-3" color="black">
-                    <span style="font-weight:500;font-size:1.1rem;">{{$t('Betting.total_rate')}}:</span>
-                    <span style="float: right;font-weight:500;font-size:1.2rem;">{{ totalRate_multi }}</span>
-                    <!-- <span style="float: right;">{{ potentialReturns_multi }}</span> -->
-                  </v-card>
-                  <v-divider dark></v-divider>
-                  <v-card dark class="pa-2 px-3" color="black">
-                    <span style="font-weight:500;font-size:1.1rem;">{{$t('Betting.potential_returns')}}:</span>
-                    <span style="float: right;font-weight:500;font-size:1.2rem;">{{ potentialReturns_multi }}</span>
-                    <!-- <span style="float: right;">{{ totalRate_multi }}</span> -->
-                  </v-card>
-                  <v-divider dark></v-divider>
-                </v-flex>
-
-
-                <v-flex class="pa-0" v-if="toggle_slip_type==2">
-                  <v-card dark class="pa-2 px-3" color="black">
+                <v-flex class="pa-0">
+                  <!-- <v-card dark class="pa-2 px-3" color="black">
                     <span style="font-weight:500;font-size:1.1rem;">{{$t('Betting.amount')}}:</span>
                     <span style="float: right;font-weight:500;font-size:1.2rem;">{{ amount_system }}</span>
-                  </v-card>
-                  <v-divider dark></v-divider>
+                  </v-card> -->
                   <v-card dark class="pa-2 px-3" color="black">
-                    <span style="font-weight:500;font-size:1.1rem;">{{$t('Betting.total_rate')}}:</span>
-                    <span style="float: right;font-weight:500;font-size:1.2rem;">{{ totalRate_system }}</span>
+                    <div class="body-2 font-weight-bold" v-if="Object.keys(slipList).length > 1 && slipInfo.combination_group.length > 0"
+                      style="text-align:center;color:#e09007">{{$t('Betting.total_stake')+': '+potentialReturns_system}}</div>
                   </v-card>
-                  <v-divider dark></v-divider>
                   <v-card dark class="pa-2 px-3" color="black">
-                    <span style="font-weight:500;font-size:1.1rem;">{{$t('Betting.total_stake')}}:</span>
-                    <!-- <span style="float: right;">{{ totalStake_system }}</span> -->
-                    <span style="float: right;font-weight:500;font-size:1.2rem;">{{ potentialReturns_system }}</span>
+                    <v-checkbox
+                      v-model="acceptChangingRates"
+                      :label='$t("Betting.accept_price_change")'
+                      hide-details
+                      class="ma-0 pa-0"
+                    ></v-checkbox>
                   </v-card>
-                  <v-divider dark></v-divider>
                   <v-card dark class="pa-2 px-3" color="black">
-                    <span style="font-weight:500;font-size:1.1rem;">{{$t('Betting.potential_returns')}}:</span>
-                    <!-- <span style="float: right;">{{ potentialReturns_system }}</span> -->
-                    <span style="float: right;font-weight:500;font-size:1.2rem;">{{ totalStake_system }}</span>
+                    <v-layout row align-center justify-center>
+                      <div class="body-2 font-weight-bold mr-2" style="text-align:center;color:#e09007">{{$t('AccountPage.note')}}:</div>
+                      <v-text-field
+                        light
+                        solo
+                        class="ma-0 pa-0"
+                        :hide-details="true"
+                        :height="25"
+                      ></v-text-field>
+                    </v-layout>
                   </v-card>
-                  <v-divider dark></v-divider>
                 </v-flex>
 
                 <v-flex class="pa-0 pl-2 pr-2 tertiary">
                   <v-layout row mt-4 mb-2>
-                    <v-btn
+                    <!-- <v-btn
                       style="border: 1px solid red;"
                       outlined
                       @click="reset_bets"
                       >{{$t('Betting.reset')}}
                     </v-btn>
-                    <v-spacer></v-spacer>
+                    <v-spacer></v-spacer> -->
                     <v-btn
+                        block
                         :loading="is_updating_page"
                         :disabled="is_updating_page"
                         outlined color="primary"
-                        @click="send_coupon">
+                        @click="send_coupon"
+                        class="body-2 font-weight-bold"
+                        style="color:black">
                       <template v-if="is_updating_page == true">
                         <v-icon>mdi-loading</v-icon>
                       </template>
                       {{hasChanged == true?$t('Betting.accept_changes'):$t('Betting.save_slip')}}
+                      <v-icon color="black">mdi-chevron-right</v-icon>
                     </v-btn>
                   </v-layout>
                 </v-flex>
@@ -388,6 +400,7 @@ import { constants } from 'crypto';
                 snackbar: false,
                 color_type: '',
                 alertMessage: '',
+                showCombinationBox: false,
             }
         },
         methods:{
@@ -621,35 +634,43 @@ import { constants } from 'crypto';
                     val = 0.00;
                 return Math.trunc(parseFloat(val)*Math.pow(10, decimals))/Math.pow(10, decimals);
             },
-            updateAllValues(all_odds, obj, level, start_level=1) {
-                for(var key in obj) {
-                    if(start_level == level)
-                    {
-                        if(obj[key].type == 'live'){
-                            this.bulletinType = 2;
-                        }
-
-                        var oddValue = this.decimalFormat(obj[key].oddValue);
-
-                        //single
-                        var treble = this.decimalFormat(obj[key].treble);
-                        this.amount_single = parseFloat((this.amount_single + treble).toFixed(2));
-                        obj[key].potentialReturns = this.decimalFormat(treble * parseFloat(obj[key].oddValue));
-                        this.totalRate_single = parseFloat((this.totalRate_single +oddValue).toFixed(2));
-                        this.potentialReturns_single = parseFloat((this.potentialReturns_single + obj[key].potentialReturns).toFixed(2));
-
-                        //multi
-                        this.totalRate_multi = this.decimalFormat(this.totalRate_multi * oddValue);
-                        this.potentialReturns_multi = this.decimalFormat(this.amount_multi * this.totalRate_multi);
-
-
-                        //system
-                        // this.amount_system += (obj[key].treble?parseFloat(obj[key].treble):0);
-                        all_odds.push(obj[key]);
-                    }
-                    if(typeof(obj[key]) == 'object' && !(obj[key] instanceof Array))
-                        this.updateAllValues(all_odds, obj[key], level, start_level + 1);
+            getOddValue(obj, start_level=1){
+              if(start_level == 2){
+                if(obj[Object.keys(obj)[0]].type == 'live'){
+                  this.bulletinType = 2;
                 }
+                return this.decimalFormat(obj[Object.keys(obj)[0]].oddValue)
+              }
+              else{
+                return this.getOddValue(obj[Object.keys(obj)[0]], start_level+1)
+              }
+            },
+            updateAllValues(all_odds, obj, level, start_level=1) {
+              if(Object.keys(obj).length == 1){     //single
+                this.totalRate_system = parseFloat(this.getOddValue(obj[Object.keys(obj)[0]])).toFixed(2);
+                this.potentialReturns_system = parseFloat(this.amount_system*this.getOddValue(obj[Object.keys(obj)[0]])).toFixed(2);
+              }
+              else if(this.slipInfo.combination_group.length == 0){   //multiple
+                this.totalRate_system = 1
+                this.potentialReturns_system = 1
+                for(var key in obj){
+                  for(var secondKey in obj[key]){
+                    for(var thirdKey in obj[key][secondKey]){
+                      this.totalRate_system = this.decimalFormat(this.totalRate_system * obj[key][secondKey][thirdKey].oddValue);
+                      this.potentialReturns_system = this.decimalFormat(this.amount_system * this.totalRate_system);
+                    }
+                  }
+                }
+              }
+              else{     //system
+                for(var key in obj){
+                  for(var secondKey in obj[key]){
+                    for(var thirdKey in obj[key][secondKey]){
+                      all_odds.push(obj[key][secondKey][thirdKey])
+                    }
+                  }
+                }
+              }
             },
             collectOdds(odds, obj, level, start_level=1) {
                 for(var key in obj) {
@@ -700,14 +721,14 @@ import { constants } from 'crypto';
                 this.bulletinType = 1;
 
                 //single
-                this.amount_single = 0.00;
-                this.totalRate_single = 0.00;
-                this.potentialReturns_single = 0.00;
+                // this.amount_single = 0.00;
+                // this.totalRate_single = 0.00;
+                // this.potentialReturns_single = 0.00;
 
                 //multi
-                this.amount_multi = this.decimalFormat(this.slipInfo.amount_multi == ''? 0: this.slipInfo.amount_multi);
-                this.totalRate_multi = 1;
-                this.potentialReturns_multi = 1;
+                // this.amount_multi = this.decimalFormat(this.slipInfo.amount_system == ''? 0: this.slipInfo.amount_system);
+                // this.totalRate_multi = 1;
+                // this.potentialReturns_multi = 1;
                 
                 //system
                 this.amount_system = this.decimalFormat(this.slipInfo.amount_system == '' ? 0: this.slipInfo.amount_system);
@@ -716,24 +737,27 @@ import { constants } from 'crypto';
                 var all_odds = [];
                 this.updateAllValues(all_odds, this.slipList, 3);
 
+                // console.log(all_odds)
                 //calc combination rate
 
-                var rate_system = 0;
-
-                this.slipInfo.combination_group.forEach((item)=>{
-                    var temp_set = this.k_combinations(all_odds, this.total_item_count - item);
-                    temp_set.forEach((subItem)=>{
-                        var temp_multi = 1;
-                        subItem.forEach((odd)=>{
-                            temp_multi = this.decimalFormat(temp_multi * parseFloat(odd.oddValue));
-                        });
-                        rate_system = parseFloat((rate_system + temp_multi).toFixed(2));
-                    });
-                });
-
-                this.totalRate_system = rate_system;
-                this.totalStake_system = this.decimalFormat(this.amount_system * this.totalRate_system);
-                this.potentialReturns_system = this.decimalFormat(this.amount_system * this.total_combination);
+                if(Object.keys(this.slipList).length > 1 && this.slipInfo.combination_group.length > 0){
+                  var rate_system = 0;
+  
+                  this.slipInfo.combination_group.forEach((item)=>{
+                      var temp_set = this.k_combinations(all_odds, this.total_item_count - item);
+                      temp_set.forEach((subItem)=>{
+                          var temp_multi = 1;
+                          subItem.forEach((odd)=>{
+                              temp_multi = this.decimalFormat(temp_multi * parseFloat(odd.oddValue));
+                          });
+                          rate_system = parseFloat((rate_system + temp_multi).toFixed(2));
+                      });
+                  });
+  
+                  this.totalRate_system = rate_system;
+                  this.totalStake_system = this.decimalFormat(this.amount_system * this.totalRate_system);
+                  this.potentialReturns_system = this.decimalFormat(this.amount_system * this.total_combination);
+                }
 
                 localStorage.betslip_array = JSON.stringify(this.slipList);
                 localStorage.betslip_info = JSON.stringify(this.slipInfo);
@@ -779,17 +803,17 @@ import { constants } from 'crypto';
                     // console.log(keys)
                     this.total_item_count = keys.length;
                     this.slipInfo.combination_group = [];
-                    for(var k=0;k<this.total_item_count-1;k++)
-                    {
-                        this.slipInfo.combination_group.push(k);
-                    }
+                    // for(var k=0;k<this.total_item_count-1;k++)
+                    // {
+                    //     this.slipInfo.combination_group.push(k);
+                    // }
 
-                    var total_combination = 0;
-                    this.slipInfo.combination_group.forEach((item, n)=>{
-                        total_combination += this.combinations(this.total_item_count, this.total_item_count - item);
-                    });
+                    // var total_combination = 0;
+                    // this.slipInfo.combination_group.forEach((item, n)=>{
+                    //     total_combination += this.combinations(this.total_item_count, this.total_item_count - item);
+                    // });
 
-                    this.total_combination = total_combination;
+                    // this.total_combination = total_combination;
                 }
 
                 localStorage.betslip_info = JSON.stringify(this.slipInfo);
@@ -948,6 +972,42 @@ import { constants } from 'crypto';
               this.$root.$emit('updateBalance')
               this.reset_bets()
             },
+            is_combine(n){
+              var number = -1
+              if(this.slipInfo.combination_group.length > 0){
+                this.slipInfo.combination_group.find((val, i) => {
+                  if(val == n-1){
+                    number = i
+                    return
+                  }
+                })
+                if(number != -1){
+                  return true
+                }
+              }
+              return false
+            },
+            select_combination(n){
+              var number = -1
+              if(this.slipInfo.combination_group.length > 0){
+                this.slipInfo.combination_group.find((val, i) => {
+                  if(val == n-1){
+                    number = i
+                    return
+                  }
+                })
+                if(number != -1){
+                  this.slipInfo.combination_group.splice(number, 1)
+                }
+                else{
+                  this.slipInfo.combination_group.push(n-1)
+                }
+              }
+              else{
+                this.slipInfo.combination_group.push(n-1)
+              }
+              this.update_values()
+            }
         },
         watch:{
             // $route(val) {
@@ -1072,10 +1132,23 @@ import { constants } from 'crypto';
     /* background-color:currentColor; */
   }
   .combination_btn{
-    background-color:grey;
+    margin-left:5px;
+    margin-right:5px;
+    background-color:#202020;
+    color:#c0c0c0;
+    border-top:1px solid #505050;
+    width: 100%;
+    cursor:pointer;
   }
-  .combination_btn.v-btn--active{
+  .combination_btn.bottom-line{
+    border-bottom:1px solid #505050;
+  }
+  .combination_btn.active{
     background-color:#e09007;
-    
+    color:black;
+  }
+  .combination_btn:hover{
+    background-color:#303030;
+    color:#c0c0c0;
   }
 </style>

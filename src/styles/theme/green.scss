@@ -337,7 +337,7 @@
           font-weight: bold;
           color:black;
           font-size:1.16rem !important;
-          height: 3rem;
+          height: 3.2rem;
         }
       }
     }
@@ -1637,5 +1637,20 @@
     }
     .v-card__text{
       padding: 0px;
+    }
+  }
+  .bet-box{
+    .v-input__slot{
+      padding-right: unset !important;
+    }
+    input{
+      text-align:right;
+    }
+    .v-text-field__suffix{
+      background:#e09007;
+      margin-left:5px;
+      color:black !important;
+      height: 25px;
+      padding-top:4px;
     }
   }

@@ -50,5 +50,9 @@
     "live_now": "Şimdi canlı",
     "matches_list": "Maçlar Listesi",
     "scope": "kapsam",
-    "bets": "BAHISLER"
+    "bets": "BAHISLER",
+    "selection": "seçim",
+    "system_bets": "Sistem Bahisleri",
+    "combination": "kombinasyon",
+    "combinations": "kombinasyonlar"
 }

@@ -50,5 +50,9 @@
     "live_now": "Live Now",
     "matches_list": "Matches List",
     "scope": "Scope",
-    "bets": "Bets"
+    "bets": "Bets",
+    "selection": "Selection",
+    "system_bets": "System Bets",
+    "combination": "Combination",
+    "combinations": "Combinations"
 }
