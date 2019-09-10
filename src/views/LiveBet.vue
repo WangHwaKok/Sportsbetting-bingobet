@@ -181,7 +181,7 @@
                               </v-layout>
                           </td>
                           <td class="text-xs-center" :width="table.headers[table.headers.length-1].width">
-                            <v-chip label small color="#454545" class="ma-0">
+                            <v-chip label color="#454545" class="ma-0">
                               <v-icon color="white" style="cursor:pointer;">mdi-chart-bar-stacked</v-icon>
                             </v-chip>
                           </td>
