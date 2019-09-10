@@ -212,6 +212,7 @@
               <v-card dark style="background:black;-webkit-border-radius: 0px;-moz-border-radius: 0px;border-radius: 0px;flex-direction: column;">
                 <div class="d-flex pa-1" style="width:100%;background:#303030;border:1px solid #202020;">
                   <v-text-field
+                    ref="bet_amount"
                     light
                     solo
                     class="ma-0 pa-0 bet-box"
@@ -279,7 +280,7 @@
                   </v-card> -->
                   <v-card dark class="pa-2 px-3" color="black">
                     <div class="body-2 font-weight-bold" v-if="Object.keys(slipList).length > 1 && slipInfo.combination_group.length > 0"
-                      style="text-align:center;color:#e09007">{{$t('Betting.total_stake')+': '+potentialReturns_system}}</div>
+                      style="text-align:center;color:#e09007">{{$t('Betting.total_stake')+': '+totalStake_system}}</div>
                   </v-card>
                   <v-card dark class="pa-2 px-3" color="black">
                     <v-checkbox
@@ -427,7 +428,7 @@ import { constants } from 'crypto';
                 }
             },
             send_coupon(){
-                if (this.toggle_slip_type >= 1 && !this.$refs.bet_amount.validate()) {
+                if (!this.$refs.bet_amount.validate()) {
                   this.snack('error', this.$t('Betting.bet_amount_is_required'))
                   return;
                 }
@@ -446,15 +447,15 @@ import { constants } from 'crypto';
                     this.collectOdds(odds, this.slipList, 3);
                     var self = this;
 
-                    if(this.toggle_slip_type == 0){
+                    if(Object.keys(this.slipList).length == 1){
                         this.axios
                             .post(
                                 "zt_create_coupon_single",
                                 {
-                                    amount: self.amount_single,
-                                    totalRate: self.totalRate_single,
+                                    amount: self.amount_system,
+                                    totalRate: self.totalRate_system,
                                     totalStake: 1,
-                                    potentialReturns: self.potentialReturns_single,
+                                    potentialReturns: self.potentialReturns_system,
                                     acceptPriceChange: self.acceptChangingRates==true?1:0,
                                     bulletinType: self.bulletinType,
                                     odds: odds
@@ -497,15 +498,15 @@ import { constants } from 'crypto';
                                 console.log(e);
                             });
                     }
-                    else if(this.toggle_slip_type == 1){
+                    else if(this.slipInfo.combination_group.length == 0){
                         this.axios
                             .post(
                                 "zt_create_coupon_combined",
                                 {
-                                    amount: self.amount_multi,
-                                    totalRate: self.totalRate_multi,
+                                    amount: self.amount_system,
+                                    totalRate: self.totalRate_system,
                                     totalStake: 1,
-                                    potentialReturns: self.potentialReturns_multi,
+                                    potentialReturns: self.potentialReturns_system,
                                     acceptPriceChange: self.acceptChangingRates==true?1:0,
                                     bulletinType: self.bulletinType,
                                     odds: odds
@@ -548,7 +549,7 @@ import { constants } from 'crypto';
                                 console.log(e);
                             });
                     }
-                    else if(this.toggle_slip_type == 2){
+                    else if(Object.keys(this.slipList).length > 1 && this.slipInfo.combination_group.length > 0){
                         var combinations = [];
                         this.slipInfo.combination_group.forEach((item) => {
                             combinations.push(this.total_item_count - item);
@@ -656,6 +657,9 @@ import { constants } from 'crypto';
                 for(var key in obj){
                   for(var secondKey in obj[key]){
                     for(var thirdKey in obj[key][secondKey]){
+                      if(obj[key][secondKey][thirdKey].type == 'live'){
+                        this.bulletinType = 2;
+                      }
                       this.totalRate_system = this.decimalFormat(this.totalRate_system * obj[key][secondKey][thirdKey].oddValue);
                       this.potentialReturns_system = this.decimalFormat(this.amount_system * this.totalRate_system);
                     }
@@ -666,6 +670,9 @@ import { constants } from 'crypto';
                 for(var key in obj){
                   for(var secondKey in obj[key]){
                     for(var thirdKey in obj[key][secondKey]){
+                      if(obj[key][secondKey][thirdKey].type == 'live'){
+                        this.bulletinType = 2;
+                      }
                       all_odds.push(obj[key][secondKey][thirdKey])
                     }
                   }
@@ -755,8 +762,8 @@ import { constants } from 'crypto';
                   });
   
                   this.totalRate_system = rate_system;
-                  this.totalStake_system = this.decimalFormat(this.amount_system * this.totalRate_system);
-                  this.potentialReturns_system = this.decimalFormat(this.amount_system * this.total_combination);
+                  this.totalStake_system = this.decimalFormat(this.amount_system * this.total_combination);
+                  this.potentialReturns_system = this.decimalFormat(this.amount_system * this.totalRate_system);
                 }
 
                 localStorage.betslip_array = JSON.stringify(this.slipList);
